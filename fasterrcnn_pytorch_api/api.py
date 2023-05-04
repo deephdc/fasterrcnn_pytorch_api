@@ -28,7 +28,7 @@ from pathlib import Path
 import shutil
 import tempfile
 import pkg_resources
- 
+from datetime import datetime 
 
 from fasterrcnn_pytorch_api.misc import _catch_error
 import fasterrcnn_pytorch_api.config as cfg
@@ -75,8 +75,9 @@ def get_train_args():
 
 
 def train(**args):
-        
-        args['name']=  cfg.MODEL_DIR
+        timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
+
+        args['name']=os.path.join(cfg.MODEL_DIR,timestamp)
         main(args)
         return {f'model was save'}
 
