@@ -28,10 +28,12 @@ from pathlib import Path
 import shutil
 import tempfile
 import pkg_resources
+ 
 
 from fasterrcnn_pytorch_api.misc import _catch_error
 import fasterrcnn_pytorch_api.config as cfg
 from fasterrcnn_pytorch_api.scripts import inference
+from fasterrcnn_pytorch_api.scripts.train import main
 
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -70,6 +72,14 @@ def get_metadata():
 
 def get_train_args():
      return  cfg.training_args
+
+
+def train(**args):
+        
+        args['name']=  cfg.MODEL_DIR
+        main(args)
+        return {f'model was save'}
+
 def get_predict_args():
      return cfg.predict_args
 
@@ -79,7 +89,7 @@ def predict(**args):
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in args['input_files']:
            shutil.move(f.filename, tmpdir + F'/{f.original_filename}')
-           filenames =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
+           args['input'] =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
 
     outputs, buffer=inference.main(args)
     if args['accept']== 'image/png':
@@ -93,8 +103,28 @@ def predict(**args):
                 return message
     else:
             return   outputs
+if __name__=='__main__':
+     args={'model': 'fasterrcnn_convnext_small',
+           'data_config':'/home/se1131/fasterrcnn_pytorch_api/data/submarine_det/brackish.yaml',
+           'use_train_aug':False,
+           'device':True,
+           'epochs':1,
+           'workers':4,
+           'batch':2,
+           'lr':0.001,
+           'imgsz':640,
+           'vis_transformed':False,
+           'no_mosaic':True,
+           'use_train_aug':False,
+           'SAVE_VALID_PREDICTION_IMAGES':False,
+           'cosine_annealing':True,
+           'weights':None,
+           'resume_training':False,
+           'square_training':False,
+           'seed':0
 
-
+           }
+     train(**args)
 # def warm():
 #     pass
 #
@@ -105,9 +135,6 @@ def predict(**args):
 
 #
 #
-# def get_train_args():
-#     return {}
+ 
 #
-#
-# def train(**kwargs):
-#     return None
+# 

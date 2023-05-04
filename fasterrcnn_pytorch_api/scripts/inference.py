@@ -38,8 +38,8 @@ def main(args):
 
     # Load the data configurations.
     data_configs = None
-    if args['data'] is not None:
-        with open(args['data']) as file:
+    if args['data_config'] is not None:
+        with open(args['data_config']) as file:
             data_configs = yaml.safe_load(file)
         NUM_CLASSES = data_configs['NC']
         CLASSES = data_configs['CLASSES']
@@ -63,12 +63,9 @@ def main(args):
     model.to(DEVICE).eval()
 
     COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
-    if args['input'] == None:
-        DIR_TEST = data_configs['image_path']
-        test_images = collect_all_images(DIR_TEST)
-    else:
-        DIR_TEST = args['input']
-        test_images = collect_all_images(DIR_TEST)
+    
+    DIR_TEST = args['input']
+    test_images = collect_all_images(DIR_TEST)
     print(f"Test instances: {len(test_images)}")
 
     # Define the detection threshold any detection having

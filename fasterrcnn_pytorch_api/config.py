@@ -1,5 +1,18 @@
+from os import path
 from webargs import fields, validate
  
+
+#####################################################
+#  GENERAL CONFIG
+#####################################################
+BASE_DIR=path.dirname(path.normpath(path.dirname(__file__)))
+DATASET_DIR = path.join(BASE_DIR,'data/submarine_det') # Location of the dataset
+MODEL_DIR=path.join(BASE_DIR,'models')
+
+
+#####################################################
+#  Options to  train your model
+#####################################################
 
 training_args={'model': fields.Str(
    enum= [
@@ -87,7 +100,7 @@ missing=640,
 required=False,
 missing=True,
 enum=[True,False],
- description= ' header task of the backbone model.'
+ description= 'visualize transformed images fed to the network '
  ),
 'no_mosaic': fields.Bool(
 required=False,
@@ -119,6 +132,7 @@ enum=[True,False],
 
 'weights': fields.Str(
 required=False,
+missing=None,
  description= 'path to model weights if using pretrained weights.'
  ),
 
