@@ -27,7 +27,7 @@ from pathlib import Path
 import pkg_resources
 
 from fasterrcnn_pytorch_api.misc import _catch_error
-
+import fasterrcnn_pytorch_api.config as cfg
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
@@ -62,13 +62,13 @@ def get_metadata():
 
     return meta
 
-
+def get_predict_args():
+     return cfg.prediction
 # def warm():
 #     pass
 #
 #
-# def get_predict_args():
-#     return {}
+
 #
 #
 # @_catch_error
