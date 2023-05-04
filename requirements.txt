@@ -1,0 +1,2 @@
+webargs>=5.5.2
+deepaas>=1.3.0
