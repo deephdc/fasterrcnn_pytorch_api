@@ -23,11 +23,16 @@ module [2].
 [2]: https://github.com/deephdc/demo_app
 """
 
+import os
 from pathlib import Path
+import shutil
+import tempfile
 import pkg_resources
 
 from fasterrcnn_pytorch_api.misc import _catch_error
 import fasterrcnn_pytorch_api.config as cfg
+from fasterrcnn_pytorch_api.scripts import inference
+
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 
@@ -62,8 +67,34 @@ def get_metadata():
 
     return meta
 
+
+def get_train_args():
+     return  cfg.training_args
 def get_predict_args():
-     return cfg.prediction
+     return cfg.predict_args
+
+@_catch_error
+def predict(**args):
+    args['input'] = [args['input']]
+    with tempfile.TemporaryDirectory() as tmpdir: 
+        for f in args['input_files']:
+           shutil.move(f.filename, tmpdir + F'/{f.original_filename}')
+           filenames =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
+
+    outputs, buffer=inference.main(args)
+    if args['accept']== 'image/png':
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
+                tmpfile.write(buffer.read())
+                tmpfile.flush()
+                current_name = tmpfile.name
+                new_name = 'plot_contactmaps'
+                os.rename(current_name,new_name)
+                message = open(new_name , 'rb')
+                return message
+    else:
+            return   outputs
+
+
 # def warm():
 #     pass
 #
@@ -71,9 +102,7 @@ def get_predict_args():
 
 #
 #
-# @_catch_error
-# def predict(**kwargs):
-#     return None
+
 #
 #
 # def get_train_args():

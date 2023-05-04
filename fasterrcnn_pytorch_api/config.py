@@ -2,7 +2,7 @@ from webargs import fields, validate
  
 
 training_args={'model': fields.Str(
-   missing= [
+   enum= [
     'fasterrcnn_convnext_small',
     'fasterrcnn_convnext_tiny',
     'fasterrcnn_custom_resnet', 
@@ -148,7 +148,13 @@ missing=0,
 #  Options to test your model
 #####################################################
 
-predict={
+predict_args={
+'input': fields.Field(
+required=True,
+type="file",
+location="form",
+ description= 'Input an image.'
+ ),    
 'data_config': fields.Str(
 required=False,
  description= 'path to the data config file.'
