@@ -14,19 +14,17 @@ dist-url: is not used in the main function and it is not needed
 from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     train_one_epoch, evaluate, utils
 )
-from fasterrcnn_pytorch_training_pipeline.torch.utils.data import (
-    distributed, RandomSampler, SequentialSampler
-)
+
 from fasterrcnn_pytorch_training_pipeline.datasets import (
     create_train_dataset, create_valid_dataset, 
     create_train_loader, create_valid_loader
 )
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import create_model
 from fasterrcnn_pytorch_training_pipeline.utils.general import (
-    set_training_dir, Averager, 
-    save_model, save_loss_plot,
+    Averager, 
+    save_model ,
     show_tranformed_image,
-    save_mAP, save_model_state, SaveBestModel,
+      save_model_state, SaveBestModel,
     yaml_save, init_seeds
 )
 from fasterrcnn_pytorch_training_pipeline.utils.logging import (
@@ -35,13 +33,12 @@ from fasterrcnn_pytorch_training_pipeline.utils.logging import (
     tensorboard_loss_log, 
     tensorboard_map_log,
     csv_log,
-    wandb_log, 
-    wandb_save_model,
-    wandb_init
+   
 )
-
+from  torch.utils.data import (
+     RandomSampler, SequentialSampler
+)
 import torch
-import argparse
 import yaml
 import numpy as np
 import torchinfo
