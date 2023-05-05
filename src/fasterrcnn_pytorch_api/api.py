@@ -76,8 +76,9 @@ def get_train_args():
 
 def train(**args):
         timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
-
+        os.mkdir(os.path.join(cfg.MODEL_DIR,timestamp))
         args['name']=os.path.join(cfg.MODEL_DIR,timestamp)
+        args['data_config']=os.path.join(cfg.DATASET_DIR, args['data_config'])
         main(args)
         return {f'model was save'}
 
@@ -94,14 +95,7 @@ def predict(**args):
 
     outputs, buffer=inference.main(args)
     if args['accept']== 'image/png':
-            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
-                tmpfile.write(buffer.read())
-                tmpfile.flush()
-                current_name = tmpfile.name
-                new_name = 'plot_contactmaps'
-                os.rename(current_name,new_name)
-                message = open(new_name , 'rb')
-                return message
+             return buffer
     else:
             return   outputs
 if __name__=='__main__':
