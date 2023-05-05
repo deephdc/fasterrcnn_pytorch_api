@@ -120,10 +120,10 @@ def main(args):
     )
     print(f"Number of training samples: {len(train_dataset)}")
     print(f"Number of validation samples: {len(valid_dataset)}\n")
-
-    if VISUALIZE_TRANSFORMED_IMAGES:
-        show_tranformed_image(train_loader, DEVICE, CLASSES, COLORS)
-
+     
+    #if VISUALIZE_TRANSFORMED_IMAGES:
+       # show_tranformed_image(train_loader, DEVICE, CLASSES, COLORS)
+     
     # Initialize the Averager class.
     train_loss_hist = Averager()
     # Train and validation loss lists to store loss values of all
@@ -137,7 +137,7 @@ def main(args):
     val_map_05 = []
     val_map = []
     start_epochs = 0
-
+    print('we are before if ')
     if args['weights'] is None:
         print('Building model from scratch...')
         build_model = create_model[args['model']]

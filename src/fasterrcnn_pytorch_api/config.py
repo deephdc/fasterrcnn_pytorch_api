@@ -138,7 +138,7 @@ missing=None,
 
 'resume_training': fields.Bool(
 required=False,
-missing=True,
+missing=False,
 enum=[True,False],
  description= ' path to model weights if using pretrained weights.'
  ),
