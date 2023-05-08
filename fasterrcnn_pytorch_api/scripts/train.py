@@ -43,6 +43,11 @@ import yaml
 import numpy as np
 import torchinfo
 import os
+import gc 
+
+import os
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:1024"
+ 
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 
@@ -294,17 +299,17 @@ def main(args):
             epoch=epoch
         )
 
-        coco_log(OUT_DIR, stats)
-        csv_log(
-            OUT_DIR, 
-            stats, 
-            epoch,
-            train_loss_list,
-            loss_cls_list,
-            loss_box_reg_list,
-            loss_objectness_list,
-            loss_rpn_list
-        )
+        #coco_log(OUT_DIR, stats)
+        #csv_log(
+         #   OUT_DIR, 
+          #  stats, 
+           # epoch,
+            #train_loss_list,
+           # loss_cls_list,
+            #loss_box_reg_list,
+            #loss_objectness_list,
+            #loss_rpn_list
+        #)
 
 
         # Save the current epoch model state. This can be used 

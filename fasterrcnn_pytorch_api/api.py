@@ -36,7 +36,6 @@ from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
 
 
-BASE_DIR = Path(__file__).resolve().parents[1]
 
 
 @_catch_error
@@ -100,12 +99,12 @@ def predict(**args):
             return   outputs
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
-           'data_config':'/home/se1131/fasterrcnn_pytorch_api/data/submarine_det/brackish.yaml',
+           'data_config':'brackish.yaml',
            'use_train_aug':False,
            'device':True,
-           'epochs':1,
+           'epochs':5,
            'workers':4,
-           'batch':2,
+           'batch':1,
            'lr':0.001,
            'imgsz':640,
            'vis_transformed':False,

@@ -217,7 +217,8 @@ enum=[True,False],
  }
 
   
-      
+if __name__=='__main__':
+    print(f'the base dir is {DATASET_DIR }')      
  
   
  
