@@ -169,16 +169,8 @@ type="file",
 location="form",
  description= 'Input an image.'
  ),    
-'data_config': fields.Str(
-required=False,
- description= 'path to the data config file.'
- ),
-'model': fields.Str(
-required=False,
-missing=None,
-description= 'name of the model.'
- ),
- 
+
+
 'timestamp': fields.Str(
 required=True,
  description= 'Model timestamp to be used for prediction. To see the available timestamp for each header task, please run the get_metadata function.'

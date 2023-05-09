@@ -43,10 +43,7 @@ import yaml
 import numpy as np
 import torchinfo
 import os
-import gc 
 
-import os
-os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "max_split_size_mb:1024"
  
 
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -174,11 +171,12 @@ def main(args):
         model.roi_heads.box_predictor.bbox_pred = torch.nn.Linear(
             in_features=in_features, out_features=NUM_CLASSES*4, bias=True
         )
-
+        #FIXME: should be loaded from the last chaeckpoint or from a timestamp
         if args['resume_training']:
-            print('RESUMING TRAINING...')
+            print('RESUMING TRAINING FROM LAST CHECKPOINT...')
             # Update the starting epochs, the batch-wise loss list, 
             # and the epoch-wise loss list.
+
             if checkpoint['epoch']:
                 start_epochs = checkpoint['epoch']
                 print(f"Resuming from epoch {start_epochs}...")

@@ -38,11 +38,7 @@ def main(args):
 
     # Load the data configurations.
     data_configs = None
-    if args['data_config'] is not None:
-        with open(args['data_config']) as file:
-            data_configs = yaml.safe_load(file)
-        NUM_CLASSES = data_configs['NC']
-        CLASSES = data_configs['CLASSES']
+    
         
         
     if  args['device'] and torch.cuda.is_available():
@@ -52,14 +48,13 @@ def main(args):
     print(f'Device: {DEVICE}')
    
     checkpoint = torch.load(args['weights'], map_location=DEVICE)
+   
         # If config file is not given, load from model dictionary.
     
-    if args['model'] is not None:
-        
-            build_model = create_model[str(args['model'])]
-    else:   
+    NUM_CLASSES =len(checkpoint['data']['CLASSES'])
+    CLASSES=(checkpoint['data']['CLASSES'])
              
-            build_model = create_model[checkpoint['model_name']]
+    build_model = create_model[checkpoint['model_name']]
           
     model = build_model(num_classes=NUM_CLASSES, coco_model=False)
     
@@ -134,14 +129,7 @@ def main(args):
                 image_resized,
                 args
             )
-           # if args['show']:
-           #     cv2.imshow('Prediction', orig_image)
-           #     cv2.waitKey(1)
-         #   if args['mpl_show']:
-         #       plt.imshow(orig_image[:, :, ::-1])
-         #       plt.axis('off')
-          #      plt.show()
-        #cv2.imwrite(f"{OUT_DIR}/{image_name}.jpg", orig_image)
+     
         is_success, buffer = cv2.imencode('.png', orig_image)
       
         io_buf = BytesIO(buffer)
