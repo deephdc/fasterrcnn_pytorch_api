@@ -87,22 +87,27 @@ def get_predict_args():
 @_catch_error
 def predict(**args):
     args['input'] = [args['input']]
+    args['data_config']=os.path.join(cfg.DATASET_DIR, args['data_config'])
+    args['weights']=os.path.join(cfg.MODEL_DIR,args['timestamp'], args['weights'])
+    
     with tempfile.TemporaryDirectory() as tmpdir: 
-        for f in args['input_files']:
+        for f in args['input']:
            shutil.move(f.filename, tmpdir + F'/{f.original_filename}')
-           args['input'] =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
-
-    outputs, buffer=inference.main(args)
-    if args['accept']== 'image/png':
+        args['input'] =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
+     
+   
+        outputs, buffer=inference.main(args)
+        print('we are in after prediction')
+        if args['accept']== 'image/png':
              return buffer
-    else:
+        else:
             return   outputs
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
            'data_config':'brackish.yaml',
            'use_train_aug':False,
            'device':True,
-           'epochs':5,
+           'epochs':20,
            'workers':4,
            'batch':1,
            'lr':0.001,

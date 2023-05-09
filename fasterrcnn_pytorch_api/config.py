@@ -174,8 +174,9 @@ required=False,
  description= 'path to the data config file.'
  ),
 'model': fields.Str(
-required=True,
- description= 'name of the model.'
+required=False,
+missing=None,
+description= 'name of the model.'
  ),
  
 'timestamp': fields.Str(
@@ -183,11 +184,13 @@ required=True,
  description= 'Model timestamp to be used for prediction. To see the available timestamp for each header task, please run the get_metadata function.'
  ), 
 'weights' :fields.Str(
-required=True,
+required=False,
+missing='best_model.pth',
  description= ' path to trained checkpoint weights.'),
 
 'threshold' :fields.Float(
-required=True,
+required=False,
+missing=0.5,
  description= 'detection threshold.'),
 
 'imgsz': fields.Int(
@@ -214,6 +217,11 @@ enum=[True,False],
  description= 'whether to use square image resize, else use aspect ratio resize.'
  ),
 
+'accept':fields.Str(
+                    missing ="application/pdf",
+                    location="headers",
+                    validate =validate.OneOf(['image/png', 'application/json']) ,
+                    description ="Returns png file with detection resutlts or a json with the prediction.")
  }
 
   
