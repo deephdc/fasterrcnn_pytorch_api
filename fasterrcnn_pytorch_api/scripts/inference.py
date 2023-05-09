@@ -49,23 +49,32 @@ def main(args):
          DEVICE  = torch.device('cuda:0')
     else:
          DEVICE  = torch.device('cpu')
-  
+    print(f'Device: {DEVICE}')
+   
     checkpoint = torch.load(args['weights'], map_location=DEVICE)
         # If config file is not given, load from model dictionary.
-   
-    try:
-            print('Building from model name arguments...')
+    
+    if args['model'] is not None:
+        
             build_model = create_model[str(args['model'])]
-    except:
+    else:   
+             
             build_model = create_model[checkpoint['model_name']]
+          
     model = build_model(num_classes=NUM_CLASSES, coco_model=False)
+    
     model.load_state_dict(checkpoint['model_state_dict'])
+     
     model.to(DEVICE).eval()
+     
+
 
     COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
     
-    DIR_TEST = args['input']
-    test_images = collect_all_images(DIR_TEST)
+   # DIR_TEST = os.path.dirname(args['input'][0]) 
+    #print('DIR_TEST')
+    test_images = args['input']
+     
     print(f"Test instances: {len(test_images)}")
 
     # Define the detection threshold any detection having
@@ -79,8 +88,11 @@ def main(args):
     for i in range(len(test_images)):
         # Get the image file name for saving output later on.
         image_name = test_images[i].split(os.path.sep)[-1].split('.')[0]
+        
         orig_image = cv2.imread(test_images[i])
+      
         frame_height, frame_width, _ = orig_image.shape
+       
         if args['imgsz'] != None:
             RESIZE_TO = args['imgsz']
         else:
@@ -89,17 +101,20 @@ def main(args):
         image_resized = resize(
             orig_image, RESIZE_TO, square=args['square_img']
         )
+       
         image = image_resized.copy()
         # BGR to RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = infer_transforms(image)
+       
         # Add batch dimension.
         image = torch.unsqueeze(image, 0)
         start_time = time.time()
+
         with torch.no_grad():
             outputs = model(image.to(DEVICE))
         end_time = time.time()
-
+   
         # Get the current fps.
         fps = 1 / (end_time - start_time)
         # Add `fps` to `total_fps`.
@@ -119,15 +134,16 @@ def main(args):
                 image_resized,
                 args
             )
-            if args['show']:
-                cv2.imshow('Prediction', orig_image)
-                cv2.waitKey(1)
-            if args['mpl_show']:
-                plt.imshow(orig_image[:, :, ::-1])
-                plt.axis('off')
-                plt.show()
+           # if args['show']:
+           #     cv2.imshow('Prediction', orig_image)
+           #     cv2.waitKey(1)
+         #   if args['mpl_show']:
+         #       plt.imshow(orig_image[:, :, ::-1])
+         #       plt.axis('off')
+          #      plt.show()
         #cv2.imwrite(f"{OUT_DIR}/{image_name}.jpg", orig_image)
         is_success, buffer = cv2.imencode('.png', orig_image)
+      
         io_buf = BytesIO(buffer)
         io_buf.seek(0)
 
@@ -136,13 +152,17 @@ def main(args):
         print('-'*50)
 
     print('TEST PREDICTIONS COMPLETE')
-    cv2.destroyAllWindows()
+ #   cv2.destroyAllWindows()
     # Calculate and print the average FPS.
     avg_fps = total_fps / frame_count
     print(f"Average FPS: {avg_fps:.3f}")
-    
-    
-    return json.dumps(outputs), io_buf
+    for item in outputs:
+        item['boxes'] = item['boxes'].tolist()
+        item['labels'] = item['labels'].tolist()
+        item['scores'] = item['scores'].tolist()
+    json_string = json.dumps(outputs)
+  
+    return  json_string , io_buf
 
 if __name__ == '__main__':
     print('OK')
