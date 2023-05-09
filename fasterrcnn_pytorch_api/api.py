@@ -23,7 +23,7 @@ module [2].
 [2]: https://github.com/deephdc/demo_app
 """
 
-import glob
+ 
 import os
 from pathlib import Path
 import shutil
@@ -38,7 +38,7 @@ from fasterrcnn_pytorch_api.scripts.train import main
 
 
 
-
+BASE_DIR = Path(__file__).resolve().parents[1]
 @_catch_error
 def get_metadata():
     """
@@ -80,7 +80,7 @@ def train(**args):
         args['name']=os.path.join(cfg.MODEL_DIR,timestamp)
         args['data_config']=os.path.join(cfg.DATASET_DIR, args['data_config'])
         main(args)
-        return {f'model was save'}
+        return {f'model was saved in {args["name"]}'}
 
 def get_predict_args():
      return cfg.predict_args
