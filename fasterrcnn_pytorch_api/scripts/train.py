@@ -297,22 +297,7 @@ def main(args):
             epoch=epoch
         )
 
-        #coco_log(OUT_DIR, stats)
-        #csv_log(
-         #   OUT_DIR, 
-          #  stats, 
-           # epoch,
-            #train_loss_list,
-           # loss_cls_list,
-            #loss_box_reg_list,
-            #loss_objectness_list,
-            #loss_rpn_list
-        #)
-
-
-        # Save the current epoch model state. This can be used 
-        # to resume training. It saves model state dict, number of
-        # epochs trained for, optimizer state dict, and loss function.
+ 
         save_model(
             epoch, 
             model, 

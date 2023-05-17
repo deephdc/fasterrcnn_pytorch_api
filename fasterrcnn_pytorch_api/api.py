@@ -25,75 +25,74 @@ module [2].
 
  
 import os
-from pathlib import Path
 import shutil
 import tempfile
-import pkg_resources
 from datetime import datetime 
-
-from fasterrcnn_pytorch_api.misc import _catch_error
-import fasterrcnn_pytorch_api.config as cfg
+from fasterrcnn_pytorch_api.utils import _catch_error
+from fasterrcnn_pytorch_api import configs, fields,utils
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
 
-
-
-BASE_DIR = Path(__file__).resolve().parents[1]
 @_catch_error
 def get_metadata():
+    """Returns a dictionary containing metadata information about the module.
+
+    Returns:
+        A dictionary containing metadata information required by DEEPaaS.
     """
-    DO NOT REMOVE - All modules should have a get_metadata() function
-    with appropriate keys.
-    """
-    distros = list(pkg_resources.find_distributions(str(BASE_DIR), only=True))
-    if len(distros) == 0:
-        raise Exception("No package found.")
-    pkg = distros[0]  # if several select first
-
-    meta_fields = {
-        "name": None,
-        "version": None,
-        "summary": None,
-        "home-page": None,
-        "author": None,
-        "author-email": None,
-        "license": None,
-    }
-    meta = {}
-    for line in pkg.get_metadata_lines("PKG-INFO"):
-        line_low = line.lower()  # to avoid inconsistency due to letter cases
-        for k in meta_fields:
-            if line_low.startswith(k + ":"):
-                _, value = line.split(": ", 1)
-                meta[k] = value
-
-    return meta
-
+    metadata = {
+        'authors': configs.MODEL_METADATA.get("author"),
+        'description': configs.MODEL_METADATA.get("summary"),
+        'license': configs.MODEL_METADATA.get("license"),
+        'version': configs.MODEL_METADATA.get("version"),
+ }
+    return  metadata
 
 def get_train_args():
-     return  cfg.training_args
+     """Return the arguments that are needed to perform a  training.
 
+    Returns:
+        Dictionary of webargs fields.
+      """
+     return  fields.training_args
 
-def train(**args):
+def  train(**args):
+        """Performs training on the dataset.
+    Args:
+        **args:   keyword arguments from get_train_args.
+    Returns:
+        path to the trained model
+        """
+ 
         timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
-        os.mkdir(os.path.join(cfg.MODEL_DIR,timestamp))
-        args['name']=os.path.join(cfg.MODEL_DIR,timestamp)
-        args['data_config']=os.path.join(cfg.DATASET_DIR, args['data_config'])
+        os.mkdir(os.path.join(configs.MODEL_DIR,timestamp))
+        args['name']=os.path.join(configs.MODEL_DIR,timestamp)
+        args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
         main(args)
         return {f'model was saved in {args["name"]}'}
 
 def get_predict_args():
-     return cfg.predict_args
+     """Return the arguments that are needed to perform a  prediciton.
+
+    Returns:
+        Dictionary of webargs fields.
+      """
+     return fields.predict_args
     
 @_catch_error
 def predict(**args):
-    args['input'] =[ args['input'] ] 
-    args['weights']=os.path.join(cfg.MODEL_DIR,args['timestamp'], args['weights'])
-    
+    """Performs inference  on an input image.
+    Args:
+        **args:   keyword arguments from get_predict_args.
+    Returns:
+        either a json file or png image with bounding box 
+    """
+    utils.download_model_from_url( args['timestamp'])
+    args['weights']=os.path.join(configs.MODEL_DIR,args['timestamp'], 'best_model.pth')
     with tempfile.TemporaryDirectory() as tmpdir: 
-        for f in args['input']:
+        for f in [args['input']]:
            shutil.move(f.filename, tmpdir + F'/{f.original_filename}')
-        args['input'] =[ os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
+        args['input'] =[os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
         outputs, buffer=inference.main(args)
         
         if args['accept']== 'image/png':
