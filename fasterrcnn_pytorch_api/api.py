@@ -23,17 +23,18 @@ module [2].
 [2]: https://github.com/deephdc/demo_app
 """
 
- 
+import logging 
 import os
 import shutil
 import tempfile
 from datetime import datetime 
-from fasterrcnn_pytorch_api.utils import _catch_error
-from fasterrcnn_pytorch_api import configs, fields,utils
+
+from fasterrcnn_pytorch_api import configs, fields, utils
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
 
-@_catch_error
+logger = logging.getLogger('__name__')
+
 def get_metadata():
     """Returns a dictionary containing metadata information about the module.
 
@@ -44,42 +45,47 @@ def get_metadata():
         'authors': configs.MODEL_METADATA.get("author"),
         'description': configs.MODEL_METADATA.get("summary"),
         'license': configs.MODEL_METADATA.get("license"),
-        'version': configs.MODEL_METADATA.get("version"),
- }
+        'version': configs.MODEL_METADATA.get("version") 
+        }
+    logger.debug("Package model metadata: %d", metadata)
     return  metadata
 
 def get_train_args():
-     """Return the arguments that are needed to perform a  training.
+    """Return the arguments that are needed to perform a  training.
 
     Returns:
         Dictionary of webargs fields.
       """
-     return  fields.training_args
+    predict_args=fields.TrainArgsSchema().fields
+    logger.debug("Web arguments: %d", predict_args) 
+    return  predict_args
+
+def get_predict_args():
+    """Return the arguments that are needed to perform a  prediciton.
+
+    Returns:
+        Dictionary of webargs fields.
+      """
+    predict_args=fields.PredictArgsSchema().fields
+    logger.debug("Web arguments: %d", predict_args)
+    return predict_args
 
 def  train(**args):
-        """Performs training on the dataset.
+    """Performs training on the dataset.
     Args:
         **args:   keyword arguments from get_train_args.
     Returns:
         path to the trained model
-        """
+    """
  
-        timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
-        os.mkdir(os.path.join(configs.MODEL_DIR,timestamp))
-        args['name']=os.path.join(configs.MODEL_DIR,timestamp)
-        args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
-        main(args)
-        return {f'model was saved in {args["name"]}'}
+    timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
+    os.mkdir(os.path.join(configs.MODEL_DIR,timestamp))
+    args['name']=os.path.join(configs.MODEL_DIR,timestamp)
+    args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
+    main(args)
+    return {f'model was saved in {args["name"]}'}
 
-def get_predict_args():
-     """Return the arguments that are needed to perform a  prediciton.
 
-    Returns:
-        Dictionary of webargs fields.
-      """
-     return fields.predict_args
-    
-@_catch_error
 def predict(**args):
     """Performs inference  on an input image.
     Args:
@@ -99,8 +105,6 @@ def predict(**args):
              return buffer
         else:
             return   outputs
-        
-
 
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
@@ -126,14 +130,3 @@ if __name__=='__main__':
      train(**args)
 # def warm():
 #     pass
-#
-#
-
-#
-#
-
-#
-#
- 
-#
-# 
