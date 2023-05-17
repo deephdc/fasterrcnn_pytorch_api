@@ -179,7 +179,6 @@ class PredictArgsSchema(Schema):
     accept= fields.Str(
         missing ="application/pdf",
         location="headers",
-        required=True,
         validate =validate.OneOf(['image/png', 'application/json']) ,
         description ="Returns png file with detection resutlts or a json with the prediction.")
  

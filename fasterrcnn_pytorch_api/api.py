@@ -116,16 +116,13 @@ if __name__=='__main__':
            'batch':1,
            'lr':0.001,
            'imgsz':640,
-           'vis_transformed':False,
            'no_mosaic':True,
            'use_train_aug':False,
-           'SAVE_VALID_PREDICTION_IMAGES':False,
            'cosine_annealing':True,
            'weights':None,
            'resume_training':False,
            'square_training':False,
            'seed':0
-
            }
      train(**args)
 # def warm():

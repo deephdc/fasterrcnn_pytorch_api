@@ -8,6 +8,10 @@ To launch it, first install the package then run [deepaas](https://github.com/in
 git clone https://github.com/falibabaei//fasterrcnn_pytorch_api
 cd fasterrcnn_pytorch_api
 pip install -e .
+git submodule init
+git submodule update
+cd submodule/
+pip install e .
 deepaas-run --listen-ip 0.0.0.0
 ```
 The associated Docker container for this module can be found in https://github.com/falibabaei//DEEP-OC-fasterrcnn_pytorch_api.
@@ -25,10 +29,14 @@ The associated Docker container for this module can be found in https://github.c
 │                             fasterrcnn_pytorch_api can be imported
 │
 ├── fasterrcnn_pytorch_api    <- Source code for use in this project.
-│   │
-│   ├── __init__.py        <- Makes fasterrcnn_pytorch_api a Python module
-│   │
-│   └── api.py             <- Main script for the integration with DEEP API
-│
-└── Jenkinsfile            <- Describes basic Jenkins CI/CD pipeline
+│       ├── config                  <- API configuration subpackage
+│       ├── scripts                 <- API scripts subpackage for predictions
+│       ├── __init__.py             <- File for initializing the python library
+│       ├── api.py                  <- API core module for endpoint methods
+│       ├── fields.py               <- API core fields for arguments
+│       └── utils.py                <- API utilities module
+└── Jenkinsfile   <- Describes basic Jenkins CI/CD pipeline
+├── data                <- Folder to store data for training and prediction
+├── models                  <- Folder to store checkpoints
+
 ```
