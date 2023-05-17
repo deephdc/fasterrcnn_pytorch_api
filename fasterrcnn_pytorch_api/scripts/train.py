@@ -79,9 +79,7 @@ def main(args):
          DEVICE  = torch.device('cpu')
     print("device",DEVICE)
     NUM_EPOCHS = args['epochs']
-    SAVE_VALID_PREDICTIONS = data_configs['SAVE_VALID_PREDICTION_IMAGES']
     BATCH_SIZE = args['batch']
-    VISUALIZE_TRANSFORMED_IMAGES = args['vis_transformed']
     OUT_DIR = args['name'] 
     COLORS = np.random.uniform(0, 1, size=(len(CLASSES), 3))
     # Set logging file.
@@ -122,9 +120,6 @@ def main(args):
     )
     print(f"Number of training samples: {len(train_dataset)}")
     print(f"Number of validation samples: {len(valid_dataset)}\n")
-     
-    #if VISUALIZE_TRANSFORMED_IMAGES:
-       # show_tranformed_image(train_loader, DEVICE, CLASSES, COLORS)
      
     # Initialize the Averager class.
     train_loss_hist = Averager()
@@ -274,12 +269,9 @@ def main(args):
         val_map_05.append(stats[1])
         val_map.append(stats[0])
 
-
-
         # Save batch-wise train loss plot using TensorBoard. Better not to use it
         # as it increases the TensorBoard log sizes by a good extent (in 100s of MBs).
         # tensorboard_loss_log('Train loss', np.array(train_loss_list), writer)
-
         # Save epoch-wise train loss plot using TensorBoard.
         tensorboard_loss_log(
             'Train loss', 
@@ -287,7 +279,6 @@ def main(args):
             writer,
             epoch
         )
-
         # Save mAP plot using TensorBoard.
         tensorboard_map_log(
             name='mAP', 
@@ -296,7 +287,6 @@ def main(args):
             writer=writer,
             epoch=epoch
         )
-
  
         save_model(
             epoch, 
@@ -322,8 +312,6 @@ def main(args):
             data_configs,
             args['model']
         )
-    
-
 
 if __name__ == '__main__':
     print('OK')

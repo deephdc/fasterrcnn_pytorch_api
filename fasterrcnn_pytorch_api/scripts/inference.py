@@ -6,8 +6,6 @@ import torch
 import glob as glob
 import os
 import time
-import yaml
-import matplotlib.pyplot as plt
 
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import create_model
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import inference_annotations
@@ -35,11 +33,6 @@ def collect_all_images(dir_test):
 def main(args):
     # For same annotation colors each time.
     np.random.seed(42)
-
-    # Load the data configurations.
-    data_configs = None
-    
-        
         
     if  args['device'] and torch.cuda.is_available():
          DEVICE  = torch.device('cuda:0')
@@ -48,25 +41,13 @@ def main(args):
     print(f'Device: {DEVICE}')
    
     checkpoint = torch.load(args['weights'], map_location=DEVICE)
-   
-        # If config file is not given, load from model dictionary.
-    
     NUM_CLASSES =len(checkpoint['data']['CLASSES'])
-    CLASSES=(checkpoint['data']['CLASSES'])
-             
-    build_model = create_model[checkpoint['model_name']]
-          
+    CLASSES=(checkpoint['data']['CLASSES'])   
+    build_model = create_model[checkpoint['model_name']]  
     model = build_model(num_classes=NUM_CLASSES, coco_model=False)
-    
     model.load_state_dict(checkpoint['model_state_dict'])
-     
     model.to(DEVICE).eval()
-     
-
-
     COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
-    
-   # DIR_TEST = os.path.dirname(args['input'][0]) 
     #print('DIR_TEST')
     test_images = args['input']
      
@@ -96,7 +77,6 @@ def main(args):
         image_resized = resize(
             orig_image, RESIZE_TO, square=args['square_img']
         )
-       
         image = image_resized.copy()
         # BGR to RGB
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -129,18 +109,14 @@ def main(args):
                 image_resized,
                 args
             )
-     
         is_success, buffer = cv2.imencode('.png', orig_image)
       
         io_buf = BytesIO(buffer)
         io_buf.seek(0)
-
-
         print(f"Image {i+1} done...")
         print('-'*50)
 
     print('TEST PREDICTIONS COMPLETE')
- #   cv2.destroyAllWindows()
     # Calculate and print the average FPS.
     avg_fps = total_fps / frame_count
     print(f"Average FPS: {avg_fps:.3f}")
@@ -149,7 +125,6 @@ def main(args):
         item['labels'] = item['labels'].tolist()
         item['scores'] = item['scores'].tolist()
     json_string = json.dumps(outputs)
-  
     return  json_string , io_buf
 
 if __name__ == '__main__':

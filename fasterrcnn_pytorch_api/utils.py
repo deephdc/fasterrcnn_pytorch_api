@@ -12,22 +12,6 @@ from aiohttp.web import HTTPBadRequest
 import requests
 from fasterrcnn_pytorch_api import configs
 
-def _catch_error(f):
-    """
-    Decorate API functions to return an error as HTTPBadRequest,
-    in case it fails.
-    """
-
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        try:
-            return f(*args, **kwargs)
-        except Exception as e:
-            raise HTTPBadRequest(reason=e)
-
-    return wrap
-
-
  
 def copy_checkpoint_from_url(public_url,  local_folder_path):
   
