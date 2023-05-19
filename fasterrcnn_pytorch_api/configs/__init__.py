@@ -6,7 +6,7 @@ from importlib.metadata import metadata as _metadata
 
 #from webdav4.client import Client
 homedir = os.path.dirname(os.path.normpath(os.path.dirname(__file__)))
-base_dir=os.path.abspath(homedir)
+base_dir=os.path.dirname(os.path.abspath(homedir))
 
 
 # Get configuration from user env and merge with pkg settings
