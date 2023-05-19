@@ -29,20 +29,23 @@ except KeyError as err:
 try:  # Configure input files for testing and possible training
     BASE_DIR = os.getenv("BASE_DIR", default=settings['base_dir']['path'])
     # Selbstaufsicht requires currently the setup of DATA_PATH env variable
-    os.environ["BASE_DIR"] =resolve_path(BASE_DIR)
-except KeyError as err:
-    raise RuntimeError("Undefined configuration for [base_dir]path") from err 
+    if os.path.isabs(BASE_DIR):
+         os.environ["BASE_DIR"] = BASE_DIR
+    else:
+        os.environ["BASE_DIR"] = os.path.abspath(os.path.join(homedir, BASE_DIR))
 
 try:  # Configure input files for testing and possible training
     DATA_PATH = os.getenv("DATA_PATH", default=settings['data']['path'])
     # Selbstaufsicht requires currently the setup of DATA_PATH env variable
-    os.environ["DATA_PATH"] =os.path.json(BASE_DIR, DATA_PATH)
+    DATA_PATH =os.path.join(BASE_DIR, DATA_PATH)
+    os.environ["DATA_PATH"] =DATA_PATH
 except KeyError as err:
     raise RuntimeError("Undefined configuration for [data]path") from err
 
 try:  # Local path for caching   sub/models
     MODEL_DIR = os.getenv("MODEL_DIR", settings['model_dir']['path'])
-    os.environ["MODEL_DIR"] = os.path.json(BASE_DIR, MODEL_DIR )
+    MODEL_DIR = os.path.join(BASE_DIR, MODEL_DIR)
+    os.environ["MODEL_DIR"] = MODEL_DIR
 except KeyError as err:
     raise RuntimeError("Undefined configuration for model path") from err
  
