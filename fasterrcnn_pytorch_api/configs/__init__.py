@@ -6,6 +6,7 @@ from importlib.metadata import metadata as _metadata
 
 #from webdav4.client import Client
 homedir = os.path.dirname(os.path.normpath(os.path.dirname(__file__)))
+base_dir=os.path.abspath(homedir)
 
 
 # Get configuration from user env and merge with pkg settings
@@ -33,14 +34,14 @@ except KeyError as err:
 try:  # Configure input files for testing and possible training
     DATA_PATH = os.getenv("DATA_PATH", default=settings['data']['path'])
     # Selbstaufsicht requires currently the setup of DATA_PATH env variable
-    DATA_PATH =os.path.join(homedir, DATA_PATH)
+    DATA_PATH =os.path.join(base_dir, DATA_PATH)
     os.environ["DATA_PATH"] =DATA_PATH
 except KeyError as err:
     raise RuntimeError("Undefined configuration for [data]path") from err
 
 try:  # Local path for caching   sub/models
     MODEL_DIR = os.getenv("MODEL_DIR", settings['model_dir']['path'])
-    MODEL_DIR = os.path.join(homedir, MODEL_DIR)
+    MODEL_DIR = os.path.join(base_dir, MODEL_DIR)
     os.environ["MODEL_DIR"] = MODEL_DIR
 except KeyError as err:
     raise RuntimeError("Undefined configuration for model path") from err
