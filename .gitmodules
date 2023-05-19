@@ -1,3 +1,0 @@
-[submodule "fasterrcnn_pytorch_training_pipeline"]
-	path = fasterrcnn_pytorch_training_pipeline
-	url = https://github.com/falibabaei/fasterrcnn_pytorch_training_pipeline.git
