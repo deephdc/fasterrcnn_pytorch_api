@@ -13,6 +13,7 @@ import requests
 from fasterrcnn_pytorch_api import configs
 
  
+
 def copy_checkpoint_from_url(public_url,  local_folder_path):
   
     response = requests.get(public_url)
@@ -22,6 +23,8 @@ def copy_checkpoint_from_url(public_url,  local_folder_path):
  
         if not os.path.exists(local_folder_path):
             os.makedirs(local_folder_path)
+
+
         file_links = set()
         for line in response.text.splitlines():            
              if "download" in line :
@@ -53,7 +56,7 @@ def copy_checkpoint_from_url(public_url,  local_folder_path):
         zf.extractall(local_folder_path)
 
     os.remove(zip_file_path)
-    
+
 
 def download_model_from_url(  timestamp  ):
     """
@@ -74,10 +77,13 @@ def download_model_from_url(  timestamp  ):
 
     """
     local_path=configs.MODEL_DIR
+    print(local_path)
     
     ckpt_path=os.path.join(local_path, timestamp)
+    print(ckpt_path)
 
     if timestamp not in os.listdir(local_path) :
+        print('downloading the model')
     
         url=configs.REMOT_URL
         print(url)
@@ -90,6 +96,9 @@ def download_model_from_url(  timestamp  ):
     else:
         print(f"Skipping download for {timestamp} as the model already exists in {ckpt_path}")
         
+if __name__=='__main__':
+
+        download_model_from_url('2023-05-10_121810')
    
 
  
