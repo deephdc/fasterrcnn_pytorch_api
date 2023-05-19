@@ -14,7 +14,11 @@ SETTINGS_FILE = os.getenv("fasterrcnn-pytorch-training-pipeline_SERRING", defaul
 settings = configparser.ConfigParser()
 settings.read(SETTINGS_FILE)
 
-
+def resolve_path(base_dir):
+    if os.path.isabs(base_dir):
+        return base_dir
+    else:
+        return os.path.abspath(os.path.join(homedir, base_dir))
 
 try:  # Configure model metadata from pkg metadata 
     MODEL_NAME = os.getenv("MODEL_NAME", default=settings['model']['name'])
@@ -22,18 +26,23 @@ try:  # Configure model metadata from pkg metadata
 except KeyError as err:
     raise RuntimeError("Undefined configuration for [model]name") from err
 
- 
+try:  # Configure input files for testing and possible training
+    BASE_DIR = os.getenv("BASE_DIR", default=settings['base_dir']['path'])
+    # Selbstaufsicht requires currently the setup of DATA_PATH env variable
+    os.environ["BASE_DIR"] =resolve_path(BASE_DIR)
+except KeyError as err:
+    raise RuntimeError("Undefined configuration for [base_dir]path") from err 
 
 try:  # Configure input files for testing and possible training
     DATA_PATH = os.getenv("DATA_PATH", default=settings['data']['path'])
     # Selbstaufsicht requires currently the setup of DATA_PATH env variable
-    os.environ["DATA_PATH"] =os.path.json(homedir, DATA_PATH)
+    os.environ["DATA_PATH"] =os.path.json(BASE_DIR, DATA_PATH)
 except KeyError as err:
     raise RuntimeError("Undefined configuration for [data]path") from err
 
 try:  # Local path for caching   sub/models
     MODEL_DIR = os.getenv("MODEL_DIR", settings['model_dir']['path'])
-    os.environ["MODEL_DIR"] = os.path.json(homedir, MODEL_DIR )
+    os.environ["MODEL_DIR"] = os.path.json(BASE_DIR, MODEL_DIR )
 except KeyError as err:
     raise RuntimeError("Undefined configuration for model path") from err
  
