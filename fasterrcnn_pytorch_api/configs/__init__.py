@@ -33,6 +33,9 @@ try:  # Configure input files for testing and possible training
          os.environ["BASE_DIR"] = BASE_DIR
     else:
         os.environ["BASE_DIR"] = os.path.abspath(os.path.join(homedir, BASE_DIR))
+        
+except KeyError as err:
+    raise RuntimeError("Undefined configuration for base_dir") from err
 
 try:  # Configure input files for testing and possible training
     DATA_PATH = os.getenv("DATA_PATH", default=settings['data']['path'])
