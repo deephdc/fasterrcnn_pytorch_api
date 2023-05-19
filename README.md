@@ -104,8 +104,9 @@ cd fasterrcnn_pytorch_api
 pip install -e .
 git submodule init
 git submodule update
-cd submodule/
-pip install e .
+cd submodule/dir
+pip install -e .
+cd ..
 deepaas-run --listen-ip 0.0.0.0
 ```
 The associated Docker container for this module can be found in https://github.com/falibabaei//DEEP-OC-fasterrcnn_pytorch_api.
