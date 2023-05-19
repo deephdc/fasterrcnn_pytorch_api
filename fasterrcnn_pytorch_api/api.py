@@ -29,7 +29,7 @@ import shutil
 import tempfile
 from datetime import datetime 
 
-from fasterrcnn_pytorch_api import configs, fields, utils
+from fasterrcnn_pytorch_api import configs, fields, utils_api
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
 
@@ -93,7 +93,7 @@ def predict(**args):
     Returns:
         either a json file or png image with bounding box 
     """
-    utils.download_model_from_url( args['timestamp'])
+    utils_api.download_model_from_url( args['timestamp'])
     args['weights']=os.path.join(configs.MODEL_DIR,args['timestamp'], 'best_model.pth')
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
