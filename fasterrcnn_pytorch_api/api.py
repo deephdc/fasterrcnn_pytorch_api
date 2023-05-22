@@ -47,8 +47,8 @@ def get_metadata():
         'description': configs.MODEL_METADATA.get("summary"),
         'license': configs.MODEL_METADATA.get("license"),
         'version': configs.MODEL_METADATA.get("version"),
-        'models_on_local': utils_api.ls_local(),
-        'models_on_remote': utils_api.ls_remote(),
+        'checkpoints_local': utils_api.ls_local(),
+        'checkpoints_remote': utils_api.ls_remote(),
         }
     logger.debug("Package model metadata: %d", metadata)
     return  metadata
@@ -60,9 +60,9 @@ def get_train_args():
     Returns:
         Dictionary of webargs fields.
       """
-    predict_args=fields.TrainArgsSchema().fields
-    logger.debug("Web arguments: %d", predict_args) 
-    return  predict_args
+    train_args=fields.TrainArgsSchema().fields
+    logger.debug("Web arguments: %d", train_args) 
+    return  train_args
 
 def get_predict_args():
     """
@@ -86,10 +86,12 @@ def  train(**args):
     Returns:
         path to the trained model
     """
- 
+    assert not (args.get('resume_training', False) and not args.get('weights')), \
+    "weights argument should not be empty when resume_training is True"
+
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
-    os.mkdir(os.path.join(configs.MODEL_DIR,timestamp))
-    args['name']=os.path.join(configs.MODEL_DIR,timestamp)
+    os.mkdir(os.path.join(configs.MODEL_DIR, timestamp))
+    args['name']=os.path.join(configs.MODEL_DIR, timestamp)
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
     main(args)
     return {f'model was saved in {args["name"]}'}
@@ -109,7 +111,7 @@ def predict(**args):
 
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
-           shutil.move(f.filename, tmpdir + F'/{f.original_filename}')
+           shutil.copy(f.filename, tmpdir + F'/{f.original_filename}')
         args['input'] =[os.path.join(tmpdir,t) for t in os.listdir(tmpdir)]
         outputs, buffer=inference.main(args)
         
