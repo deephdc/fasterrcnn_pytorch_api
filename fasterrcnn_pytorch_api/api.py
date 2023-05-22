@@ -36,7 +36,8 @@ from fasterrcnn_pytorch_api.scripts.train import main
 logger = logging.getLogger('__name__')
 
 def get_metadata():
-    """Returns a dictionary containing metadata information about the module.
+    """
+    Returns a dictionary containing metadata information about the module.
 
     Returns:
         A dictionary containing metadata information required by DEEPaaS.
@@ -45,13 +46,16 @@ def get_metadata():
         'authors': configs.MODEL_METADATA.get("author"),
         'description': configs.MODEL_METADATA.get("summary"),
         'license': configs.MODEL_METADATA.get("license"),
-        'version': configs.MODEL_METADATA.get("version") 
+        'version': configs.MODEL_METADATA.get("version"),
+        'models_on_local': utils_api.ls_local(),
+        'models_on_remote': utils_api.ls_remote(),
         }
     logger.debug("Package model metadata: %d", metadata)
     return  metadata
 
 def get_train_args():
-    """Return the arguments that are needed to perform a  training.
+    """
+    Return the arguments that are needed to perform a  training.
 
     Returns:
         Dictionary of webargs fields.
@@ -61,19 +65,24 @@ def get_train_args():
     return  predict_args
 
 def get_predict_args():
-    """Return the arguments that are needed to perform a  prediciton.
+    """
+    Return the arguments that are needed to perform a  prediciton.
+
+    Args:
+        None
 
     Returns:
         Dictionary of webargs fields.
-      """
+    """
     predict_args=fields.PredictArgsSchema().fields
     logger.debug("Web arguments: %d", predict_args)
     return predict_args
 
 def  train(**args):
-    """Performs training on the dataset.
+    """
+    Performs training on the dataset.
     Args:
-        **args:   keyword arguments from get_train_args.
+        **args: keyword arguments from get_train_args.
     Returns:
         path to the trained model
     """
@@ -87,14 +96,17 @@ def  train(**args):
 
 
 def predict(**args):
-    """Performs inference  on an input image.
+    """
+    Performs inference  on an input image.
     Args:
         **args:   keyword arguments from get_predict_args.
     Returns:
         either a json file or png image with bounding box 
     """
-    utils_api.download_model_from_url( args['timestamp'])
+    utils_api.download_model_from_nextcloud(args['timestamp'])
+
     args['weights']=os.path.join(configs.MODEL_DIR,args['timestamp'], 'best_model.pth')
+
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
            shutil.move(f.filename, tmpdir + F'/{f.original_filename}')

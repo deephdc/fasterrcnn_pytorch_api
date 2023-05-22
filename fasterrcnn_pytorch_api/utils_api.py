@@ -4,101 +4,126 @@ across projects. They are not strictly need for integration
 but users might want nevertheless to take advantage from them.
 """
 
-from functools import wraps
+import logging
 import os
-import zipfile
+import subprocess
 
-from aiohttp.web import HTTPBadRequest
-import requests
 from fasterrcnn_pytorch_api import configs
 
+logger = logging.getLogger('__name__')
+
+def ls_local():
+    """
+    Utility to return a list of current models stored in the local folders
+    configured for cache.
  
+    Returns:
+        A list of strings.
+    """
+    logger.debug("Scanning at: %s", configs.MODEL_DIR)
+    dirscan = os.scandir(configs.MODEL_DIR)
+    return [entry.name for entry in dirscan if entry.is_dir()]
 
-def copy_checkpoint_from_url(public_url,  local_folder_path):
-  
-    response = requests.get(public_url)
 
-# Check if the request was successful
-    if response.status_code == 200:
+def ls_remote():
+    """
+    Utility to return a list of current backbone models stored in the
+    remote folder configured in the backbone url.
+
+    Returns:
+        A list of strings.
+    """
+    remote_directory =configs.REMOT_PATH.strip("'") 
+    return list_directories_with_rclone('rshare', remote_directory)
+
  
-        if not os.path.exists(local_folder_path):
-            os.makedirs(local_folder_path)
+def list_directories_with_rclone(remote_name, directory_path):
+    """
+    Function to list directories within a given directory in Nextcloud using rclone.
 
+    Args:
+        remote_name (str): Name of the configured Nextcloud remote in rclone.
+        directory_path (str): Path of the parent directory to list the directories from.
 
-        file_links = set()
-        for line in response.text.splitlines():            
-             if "download" in line :
-                  start_index = line.index("https://")
-                  end_index = line.index("\"", start_index)
-                  file_links.add(line[start_index:end_index])
-        
+    Returns:
+        list: List of directory names within the specified parent directory.
+    """
 
-       
-        for file_link in file_links:
-             file_name = os.path.basename(file_link)
-             file_path = os.path.join(local_folder_path, file_name+'.zip')
-             file_response = requests.get(file_link)
+    command = ['rclone', 'lsf', remote_name + ':' + directory_path]
+    result = subprocess.run(command, capture_output=True, text=True)
 
-        
-             if file_response.status_code == 200:
-                with open(file_path, "wb") as f:
-                    f.write(file_response.content)
-                    print(f"File '{file_name}' downloaded successfully!")
-             else:
-        
-                print("Error downloading file '{file_name}': {file_response.status_code}")           
-
+    if result.returncode == 0:
+        directory_names = result.stdout.splitlines()
+        directory_names = [d.rstrip("/") for d in directory_names if d[0].isdigit()]
+        return directory_names
     else:
-         raise RuntimeError("Error downloading folder: {}".format(response.status_code))
-
-    zip_file_path = os.path.join(local_folder_path, f"{file_name}.zip")
-    with zipfile.ZipFile(zip_file_path) as zf:
-        zf.extractall(local_folder_path)
-
-    os.remove(zip_file_path)
+        print("Error executing rclone command:", result.stderr)
+        return []
 
 
-def download_model_from_url(  timestamp  ):
+def download_model_from_nextcloud(timestamp):
     """
     Downloads the final model from nextcloud to a specified checkpoint path.
 
-   Args:
-    timestamp_type (str): Type of timestamp (downstrram or XGB).
-    task (str): The name of the head task for downstearm model.
-    timestamp (str): The timestamp of the model on Nextcloud.
-    final_model (str): The name of the checkpint file.
-    ckpt_path (str): The path to the checkpoint directory where the model will be put after downloading.
+    Args:
+        timestamp (str): The timestamp of the model on Nextcloud.
 
     Returns:
-    None
+       None
 
     Raises:
-    Exception: If no files were copied to the checkpoint directory after downloading the model from the URL.
+       Exception: If no files were copied to the checkpoint directory after downloading the model from the URL.
 
     """
+    logger.debug("Scanning at: %s", timestamp)
+    logger.debug("Scanning at: %s", configs.REMOT_PATH)
     local_path=configs.MODEL_DIR
-    print(local_path)
-    
     ckpt_path=os.path.join(local_path, timestamp)
-    print(ckpt_path)
 
     if timestamp not in os.listdir(local_path) :
         print('downloading the model')
-    
-        url=configs.REMOT_URL
-        print(url)
-        copy_checkpoint_from_url(url, local_path)
+        remote_directory=configs.REMOT_PATH.strip("'") 
+        model_path=os.path.join(remote_directory, timestamp)
+        download_directory_with_rclone( 'rshare', model_path ,local_path)
 
         if 'best_model.pth' not in os.listdir(ckpt_path):
             raise Exception(f"No files were copied to {ckpt_path}")
 
         print(f"The model for {timestamp} was copied to {ckpt_path}")
+
     else:
         print(f"Skipping download for {timestamp} as the model already exists in {ckpt_path}")
-        
-if __name__=='__main__':
 
-        download_model_from_url('2023-05-10_121810')
+
+
+
+def download_directory_with_rclone(remote_name, remote_directory, local_directory):
+    """
+    Function to download a directory using rclone.
+
+    Args:
+        remote_name (str): Name of the configured remote in rclone.
+        remote_directory (str): Path of the remote directory to be downloaded.
+        local_directory (str): Path of the local directory to save the downloaded files.
+
+    Returns:
+        None
+    """
+
+    command = ['rclone', 'copy', remote_name + ':' + remote_directory, local_directory]
+    result = subprocess.run(command, capture_output=True, text=True)
+
+    if result.returncode == 0:
+        print("Directory downloaded successfully.")
+    else:
+        print("Error executing rclone command:", result.stderr)  
+
+
+
+if __name__=='__main__':
+        print("Remote directory path:", configs.REMOT_PATH)
+      
+        
    
 
  
