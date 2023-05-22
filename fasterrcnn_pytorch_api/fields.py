@@ -145,8 +145,8 @@ class PredictArgsSchema(Schema):
 
     timestamp= fields.Str(
         required=True,
-        description= 'Model timestamp to be used for prediction. To see the available timestamp'
-              'for each header task, please run the get_metadata function.')
+        description= 'Model timestamp to be used for prediction. To see the available timestamp,'
+              ' please run the get_metadata function.')
 
     threshold= fields.Float(
         required=False,

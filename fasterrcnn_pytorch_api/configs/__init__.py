@@ -27,9 +27,6 @@ try:  # Configure model metadata from pkg metadata
 except KeyError as err:
     raise RuntimeError("Undefined configuration for [model]name") from err
 
-        
-except KeyError as err:
-    raise RuntimeError("Undefined configuration for base_dir") from err
 
 try:  # Configure input files for testing and possible training
     DATA_PATH = os.getenv("DATA_PATH", default=settings['data']['path'])
@@ -47,10 +44,10 @@ except KeyError as err:
     raise RuntimeError("Undefined configuration for model path") from err
  
 
-try:  # Local path for caching   sub/models
-    REMOT_URL = os.getenv("REMOT", settings['remote']['url'])
-    os.environ["REMOT_URL"] = REMOT_URL 
+try:  # remote path sub/models
+    REMOT_PATH = os.getenv("REMOT", settings['remote']['path'])
+    os.environ["REMOT_PATH"] = REMOT_PATH
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for url") from err
+    raise RuntimeError("Undefined configuration for Remotepath") from err
 
 
