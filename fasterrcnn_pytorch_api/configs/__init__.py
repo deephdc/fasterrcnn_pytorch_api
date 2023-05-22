@@ -1,4 +1,5 @@
 """Configuration loader for rnacontactmap."""
+import ast
 import configparser
 import os
 import pathlib
@@ -51,3 +52,10 @@ except KeyError as err:
     raise RuntimeError("Undefined configuration for Remotepath") from err
 
 
+try:  # remote path sub/models
+    BACKBONES = os.getenv("REMOT", settings['backbones']['names'])
+    if isinstance(BACKBONES, str):
+        # Parse the string as a list of strings
+        BACKBONES = ast.literal_eval(BACKBONES)
+except KeyError as err:
+    raise RuntimeError("Undefined configuration for backbones") from err

@@ -33,7 +33,7 @@ def ls_remote():
     Returns:
         A list of strings.
     """
-    remote_directory =configs.REMOT_PATH.strip("'") 
+    remote_directory =configs.REMOT_PATH
     return list_directories_with_rclone('rshare', remote_directory)
 
  
@@ -81,8 +81,8 @@ def download_model_from_nextcloud(timestamp):
     ckpt_path=os.path.join(local_path, timestamp)
 
     if timestamp not in os.listdir(local_path) :
-        print('downloading the model')
-        remote_directory=configs.REMOT_PATH.strip("'") 
+        print('downloading the chekpoint from nextcloud')
+        remote_directory=configs.REMOT_PATH
         model_path=os.path.join(remote_directory, timestamp)
         download_directory_with_rclone( 'rshare', model_path ,local_path)
 
