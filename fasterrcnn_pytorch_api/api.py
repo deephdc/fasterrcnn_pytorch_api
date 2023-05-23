@@ -88,7 +88,7 @@ def  train(**args):
     """
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
-
+    
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
     os.mkdir(os.path.join(configs.MODEL_DIR, timestamp))
     args['name']=os.path.join(configs.MODEL_DIR, timestamp)
@@ -107,7 +107,7 @@ def predict(**args):
     """
     utils_api.download_model_from_nextcloud(args['timestamp'])
 
-    args['weights']=os.path.join(configs.MODEL_DIR,args['timestamp'], 'best_model.pth')
+    args['weights']=os.path.join(configs.MODEL_DIR, args['timestamp'], 'best_model.pth')
 
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:

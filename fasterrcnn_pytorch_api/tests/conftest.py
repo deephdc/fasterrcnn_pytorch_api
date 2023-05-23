@@ -24,12 +24,12 @@ def metadata():
 #  Fixtures to test train function
 #####################################################
 
-@pytest.fixture(scope="module", params=os.path.join(configs.DATA_PATH,''))#FIXME:name of the data config
+@pytest.fixture(scope="module", params=os.path.join(configs.DATA_PATH,'test_data/submarin.yaml'))#FIXME:name of the data config
 def data_config(request):
     """Fixture to return data_configs argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params='') #FIXME:path to model weights if using pretrained weights.
+@pytest.fixture(scope="module", params=[None, os.path.join(configs.MODEL_DIR,'2023-05-10_121810/best_model.pth')]) #FIXME:path to model weights if using pretrained weights.
 def weights(request):
     """Fixture to return  no label argument to test."""
     return request.param
