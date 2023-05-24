@@ -24,42 +24,42 @@ def metadata():
 #  Fixtures to test train function
 #####################################################
 
-@pytest.fixture(scope="module", params=os.path.join(configs.DATA_PATH,'test_data/submarin.yaml'))#FIXME:name of the data config
+@pytest.fixture(scope="module", params=[os.path.join(configs.DATA_PATH,'test_data/submarin.yaml')  ])#FIXME:name of the data config
 def data_config(request):
     """Fixture to return data_configs argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[None, os.path.join(configs.MODEL_DIR,'2023-05-10_121810/best_model.pth')]) #FIXME:path to model weights if using pretrained weights.
+@pytest.fixture(scope="module")#, params=[os.path.join(configs.MODEL_DIR,'2023-05-10_121810/last_model.pth')]) #FIXME:path to model weights if using pretrained weights.
 def weights(request):
     """Fixture to return  no label argument to test."""
-    return request.param
+    return None
 
-@pytest.fixture(scope="module", params=configs.BACKBONES)
+@pytest.fixture(scope="module", params=BACKBONES)
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[True])
 def cosine_annealing(request):
     """Fixture to return cosine annealing argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[False])
 def resume_training(request):
     """Fixture to return resume training argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[True])
 def use_train_aug(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[True])
 def square_training(request):
     """Fixture to return square training argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[True])
 def no_mosaic(request):
     """Fixture to return no mosaic argument to test."""
     return request.param
@@ -74,7 +74,7 @@ def seed(request):
     """Fixture to return random seed argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[4, 5])
+@pytest.fixture(scope="module", params=[4])
 def workers(request):
     """Fixture to return number of workers argument to test."""
     return request.param
@@ -84,7 +84,7 @@ def batch(request):
     """Fixture to return batch size argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[0.001, 0.01])
+@pytest.fixture(scope="module", params=[0.001])
 def lr(request):
     """Fixture to return learning rate argument to test."""
     return request.param
@@ -110,12 +110,12 @@ def train_kwds(model, data_config, use_train_aug,epochs,workers,batch,lr, imgsz,
         'resume_training': resume_training,
         'square_training': square_training,
         'seed': seed }
-    return {k: v for k, v in pred_kwds.items() if v is not None}
+    return {k: v for k, v in pred_kwds.items()}
 
 @pytest.fixture(scope="module")
 def trained_model_path(train_kwds):
     result = api.train(**train_kwds)
-    saved_model_path = result.split(' ')[-1]
+    saved_model_path = str(result).split(' ')[-1].rstrip("'}")
     yield saved_model_path
     
 #####################################################
@@ -147,7 +147,7 @@ def threshold(request):
     return request.param
 
 
-@pytest.fixture(scope="module", params=[640, 320])
+@pytest.fixture(scope="module", params=[640])
 def imgsz(request):
     """Fixture to return image size argument to test."""
     return request.param

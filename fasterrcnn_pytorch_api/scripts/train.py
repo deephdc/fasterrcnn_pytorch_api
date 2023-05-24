@@ -134,7 +134,7 @@ def main(args):
     val_map_05 = []
     val_map = []
     start_epochs = 0
-    print('we are before if ')
+
     if args['weights'] is None:
         print('Building model from scratch...')
         build_model = create_model[args['model']]
@@ -175,6 +175,7 @@ def main(args):
             if checkpoint['epoch']:
                 start_epochs = checkpoint['epoch']
                 print(f"Resuming from epoch {start_epochs}...")
+                NUM_EPOCHS=start_epochs+NUM_EPOCHS
             if checkpoint['train_loss_list']:
                 print('Loading previous batch wise loss list...')
                 train_loss_list = checkpoint['train_loss_list']
@@ -226,10 +227,11 @@ def main(args):
         )
     else:
         scheduler = None
-
+   
     save_best_model = SaveBestModel()
 
     for epoch in range(start_epochs, NUM_EPOCHS):
+        print('we are in the training loop')
         train_loss_hist.reset()
 
         _, batch_loss_list, \
@@ -251,7 +253,7 @@ def main(args):
             model, 
             valid_loader, 
             device=DEVICE,
-            save_valid_preds=SAVE_VALID_PREDICTIONS,
+            save_valid_preds=False,
             out_dir=OUT_DIR,
             classes=CLASSES,
             colors=COLORS
