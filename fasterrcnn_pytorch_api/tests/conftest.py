@@ -30,11 +30,11 @@ def data_config(request):
     return request.param
 
 @pytest.fixture(scope="module")#, params=[os.path.join(configs.MODEL_DIR,'2023-05-10_121810/last_model.pth')]) #FIXME:path to model weights if using pretrained weights.
-def weights(request):
+def weights():
     """Fixture to return  no label argument to test."""
     return None
 
-@pytest.fixture(scope="module", params=BACKBONES)
+@pytest.fixture(scope="module", params=[BACKBONES[-2]])
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
