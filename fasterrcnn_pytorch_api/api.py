@@ -88,10 +88,11 @@ def  train(**args):
     """
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
-    
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
-    os.mkdir(os.path.join(configs.MODEL_DIR, timestamp))
-    args['name']=os.path.join(configs.MODEL_DIR, timestamp)
+    ckpt_path=os.path.join(configs.MODEL_DIR, timestamp)
+    if not os.path.exists(ckpt_path):
+        os.mkdir(ckpt_path)
+    args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
     main(args)
     return {f'model was saved in {args["name"]}'}
@@ -122,20 +123,19 @@ def predict(**args):
 
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
-           'data_config':'brackish.yaml',
-           'use_train_aug':False,
-           'device':True,
-           'epochs':20,
-           'workers':4,
-           'batch':1,
-           'lr':0.001,
-           'imgsz':640,
-           'no_mosaic':True,
-           'use_train_aug':False,
-           'cosine_annealing':True,
-           'weights':None,
-           'resume_training':False,
-           'square_training':False,
+           'data_config': 'test_data/submarin.yaml',
+           'use_train_aug': False,
+           'device': True,
+           'epochs': 1,
+           'workers': 4,
+           'batch': 1,
+           'lr': 0.001,
+           'imgsz': 640,
+           'no_mosaic': True,
+           'cosine_annealing': False,
+           'weights': '/home/se1131/fasterrcnn_pytorch_api/models/2023-05-10_121810/last_model.pth',
+           'resume_training': True,
+           'square_training': False,
            'seed':0
            }
      train(**args)
