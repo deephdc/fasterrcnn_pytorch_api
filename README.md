@@ -117,22 +117,20 @@ The associated Docker container for this module can be found in https://github.c
 │
 ├── README.md              <- The top-level README for developers using this project.
 │
-├── requirements.txt       <- The requirements file for reproducing the analysis environment, e.g.
-│                             generated with `pip freeze > requirements.txt`
+├── requirements.txt       <- The requirements file for reproducing the analysis environment, e.g., generated with `pip freeze > requirements.txt`
 │
-├── setup.py, setup.cfg    <- makes project pip installable (pip install -e .) so
-│                             fasterrcnn_pytorch_api can be imported
+├── setup.py, setup.cfg    <- Makes the project pip installable (`pip install -e .`) so that fasterrcnn_pytorch_api can be imported
 │
-├── fasterrcnn_pytorch_api    <- Source code for use in this project.
-│       ├── config                  <- API configuration subpackage
-│       ├── scripts                 <- API scripts subpackage for predictions
-│       ├── __init__.py             <- File for initializing the python library
-│       ├── api.py                  <- API core module for endpoint methods
-│       ├── fields.py               <- API core fields for arguments
-│       └── utils.py                <- API utilities module
-└── Jenkinsfile   <- Describes basic Jenkins CI/CD pipeline
-├── data                <- Folder to store data for training and prediction
-├── models                  <- Folder to store checkpoints
-
+├── fasterrcnn_pytorch_api <- Source code for use in this project.
+│   ├── config            <- API configuration subpackage
+│   ├── scripts           <- API scripts subpackage for predictions and training the model
+│   ├── __init__.py       <- File for initializing the python library
+│   ├── api.py            <- API core module for endpoint methods
+│   ├── fields.py         <- API core fields for arguments
+│   └── utils_api.py          <- API utilities module
+│
+├── Jenkinsfile           <- Describes the basic Jenkins CI/CD pipeline
+├── data                  <- Folder to store data for training and prediction
+└── models                <- Folder to store checkpoints
 ```
 >>>>>>> cb761a1 (initial commit)
