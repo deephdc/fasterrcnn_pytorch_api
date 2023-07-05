@@ -23,16 +23,14 @@ from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import 
 from fasterrcnn_pytorch_training_pipeline.utils.general import (
     Averager, 
     save_model ,
-    show_tranformed_image,
-      save_model_state, SaveBestModel,
+    save_model_state, SaveBestModel,
     yaml_save, init_seeds
 )
 from fasterrcnn_pytorch_training_pipeline.utils.logging import (
-    set_log, coco_log,
+    set_log,
     set_summary_writer, 
     tensorboard_loss_log, 
     tensorboard_map_log,
-    csv_log,
    
 )
 from  torch.utils.data import (
@@ -96,6 +94,7 @@ def main(args):
         TRAIN_DIR_LABELS,
         IMAGE_SIZE, 
         CLASSES,
+        aug_option=args['aug_training_option'],
         use_train_aug=args['use_train_aug'],
         no_mosaic=args['no_mosaic'],
         square_training=args['square_training']
@@ -105,6 +104,7 @@ def main(args):
         VALID_DIR_LABELS, 
         IMAGE_SIZE, 
         CLASSES,
+        aug_option=args['aug_training_option'],
         square_training=args['square_training']
     )
     print('Creating data loaders')
@@ -231,7 +231,6 @@ def main(args):
     save_best_model = SaveBestModel()
 
     for epoch in range(start_epochs, NUM_EPOCHS):
-        print('we are in the training loop')
         train_loss_hist.reset()
 
         _, batch_loss_list, \
@@ -248,16 +247,16 @@ def main(args):
             print_freq=100,
             scheduler=scheduler
         )
-
-        stats, val_pred_image = evaluate(
-            model, 
-            valid_loader, 
-            device=DEVICE,
-            save_valid_preds=False,
-            out_dir=OUT_DIR,
-            classes=CLASSES,
-            colors=COLORS
-        )
+        if epoch % args['eval_n_epochs'] == 0:
+            stats, val_pred_image = evaluate(
+                model, 
+                valid_loader, 
+                device=DEVICE,
+                save_valid_preds=False,
+                out_dir=OUT_DIR,
+                classes=CLASSES,
+                colors=COLORS
+            )
 
         # Append the current epoch's batch-wise losses to the `train_loss_list`.
         train_loss_list.extend(batch_loss_list)

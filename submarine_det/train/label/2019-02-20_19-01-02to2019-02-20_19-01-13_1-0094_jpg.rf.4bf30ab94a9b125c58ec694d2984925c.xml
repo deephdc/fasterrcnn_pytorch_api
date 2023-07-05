@@ -1,0 +1,27 @@
+<annotation>
+	<folder></folder>
+	<filename>2019-02-20_19-01-02to2019-02-20_19-01-13_1-0094_jpg.rf.4bf30ab94a9b125c58ec694d2984925c.jpg</filename>
+	<path>2019-02-20_19-01-02to2019-02-20_19-01-13_1-0094_jpg.rf.4bf30ab94a9b125c58ec694d2984925c.jpg</path>
+	<source>
+		<database>roboflow.ai</database>
+	</source>
+	<size>
+		<width>1920</width>
+		<height>1080</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>small_fish</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<occluded>0</occluded>
+		<bndbox>
+			<xmin>175</xmin>
+			<xmax>351</xmax>
+			<ymin>1017</ymin>
+			<ymax>1079</ymax>
+		</bndbox>
+	</object>
+</annotation>

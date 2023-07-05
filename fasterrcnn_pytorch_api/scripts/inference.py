@@ -7,6 +7,8 @@ import glob as glob
 import os
 import time
 
+import yaml
+
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import create_model
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import inference_annotations
 from fasterrcnn_pytorch_training_pipeline.utils.transforms import infer_transforms, resize
@@ -39,13 +41,28 @@ def main(args):
     else:
          DEVICE  = torch.device('cpu')
     print(f'Device: {DEVICE}')
-   
-    checkpoint = torch.load(args['weights'], map_location=DEVICE)
-    NUM_CLASSES =len(checkpoint['data']['CLASSES'])
-    CLASSES=(checkpoint['data']['CLASSES'])   
-    build_model = create_model[checkpoint['model_name']]  
-    model = build_model(num_classes=NUM_CLASSES, coco_model=False)
-    model.load_state_dict(checkpoint['model_state_dict'])
+    
+    # Load the pretrained model
+    if args['weights'] is None:
+        #load the default one for COCO.
+        
+        with open(os.path.join(configs.DATA_PATH, 'coco_config.yaml')) as file:
+                data_configs = yaml.safe_load(file)
+        NUM_CLASSES = data_configs['NC']
+        CLASSES = data_configs['CLASSES']
+        try:
+            build_model = create_model[args['model']]
+            model, _ = build_model(num_classes=NUM_CLASSES, coco_model=True)
+        except:
+            build_model = create_model['fasterrcnn_resnet50_fpn_v2']
+            model, _ = build_model(num_classes=NUM_CLASSES, coco_model=True)
+    else:        
+        checkpoint = torch.load(args['weights'], map_location=DEVICE)
+        NUM_CLASSES =len(checkpoint['data']['CLASSES'])
+        CLASSES=(checkpoint['data']['CLASSES'])   
+        build_model = create_model[checkpoint['model_name']]  
+        model = build_model(num_classes=NUM_CLASSES, coco_model=False)
+        model.load_state_dict(checkpoint['model_state_dict'])
     model.to(DEVICE).eval()
     COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
     #print('DIR_TEST')
@@ -128,4 +145,15 @@ def main(args):
     return  json_string , io_buf
 
 if __name__ == '__main__':
-    print('OK')
+    from fasterrcnn_pytorch_api import configs
+    weights=os.path.join(configs.MODEL_DIR,  '2023-05-10_121810', 'last_model.pth')
+    print(weights)
+    checkpoint = torch.load(weights, map_location='cpu')
+    NUM_CLASSES =len(checkpoint['data']['CLASSES'])
+    print('NUM_CLASS', NUM_CLASSES)
+    CLASSES=(checkpoint['data']['CLASSES'])   
+    build_model = create_model[checkpoint['model_name']]  
+    model = build_model(num_classes=NUM_CLASSES, coco_model=False)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    model.to('cpu').eval()
+    COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))

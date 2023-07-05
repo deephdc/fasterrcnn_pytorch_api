@@ -2,11 +2,13 @@
 # pylint: disable=redefined-outer-name
 
 import fnmatch
+import json
 import os
 from pathlib import Path
 
 import pytest
 from deepaas.model.v2.wrapper import UploadedFile
+import yaml
 
 from fasterrcnn_pytorch_api import configs, api, utils_api
  
@@ -24,17 +26,18 @@ def metadata():
 #  Fixtures to test train function
 #####################################################
 
-@pytest.fixture(scope="module", params=[os.path.join(configs.DATA_PATH,'test_data/submarin.yaml')  ])#FIXME:name of the data config
+@pytest.fixture(scope="module", params=[os.path.join(configs.DATA_PATH,'brackish.yaml')  ])#FIXME:name of the data config
 def data_config(request):
     """Fixture to return data_configs argument to test."""
     return request.param
 
-@pytest.fixture(scope="module")#, params=[os.path.join(configs.MODEL_DIR,'2023-05-10_121810/last_model.pth')]) #FIXME:path to model weights if using pretrained weights.
+@pytest.fixture(scope="module")#, params=['2023-05-10_121810')]) 
+
 def weights():
     """Fixture to return  no label argument to test."""
     return None
 
-@pytest.fixture(scope="module", params=[BACKBONES[-2]])
+@pytest.fixture(scope="module", params=[BACKBONES[0]])
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
@@ -49,17 +52,39 @@ def resume_training(request):
     """Fixture to return resume training argument to test."""
     return request.param
 
+@pytest.fixture(scope="module", params=[1,2])
+def eval_n_epochs(request):
+    """Fixture to return eval_n_epochs argument to test."""
+    return request.param
+
 @pytest.fixture(scope="module", params=[True])
 def use_train_aug(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
+@pytest.fixture(scope="module", params=[{'blur': {'p':0.1, 'blur_limit':3},
+                                            'motion_blur': {'p':0.1, 'blur_limit':3},
+                                            'median_blur': {'p':0.1, 'blur_limit':3},
+                                            'to_gray': {'p':0.1},
+                                            'random_brightness_contrast': {'p':0.1},
+                                            'color_jitter': {'p':0.1},
+                                            'random_gamma': {'p':0.1}, 
+                                            'horizontal_flip': {'p':1},
+                                            'vertical_flip': {'p':1},
+                                            'rotate': {'limit':45},
+                                            'shift_scale_rotate': {'shift_limit':0.1, 'scale_limit':0.1, 'rotate_limit':30},
+                                            'Cutout': {'num_holes':0, 'max_h_size':0, 'max_w_size':'8', 'fill_value':0, 'p':0},
+                                            'ChannelShuffle': {'p':0},
+                                        }])
 
+def aug_training_option(request):
+    """Fixture to return use train augmentations argument to test."""
+    return  request.param
 @pytest.fixture(scope="module", params=[True])
 def square_training(request):
     """Fixture to return square training argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[True])
+@pytest.fixture(scope="module", params=[False])
 def no_mosaic(request):
     """Fixture to return no mosaic argument to test."""
     return request.param
@@ -91,13 +116,14 @@ def lr(request):
 
 
 @pytest.fixture(scope="module")
-def train_kwds(model, data_config, use_train_aug,epochs,workers,batch,lr, imgsz, device, cosine_annealing, 
-               square_training, resume_training, no_mosaic, weights, seed):
+def train_kwds(model, data_config, use_train_aug,aug_training_option,epochs,workers,batch,lr, imgsz, device, cosine_annealing, 
+               square_training, resume_training, no_mosaic, weights, seed, eval_n_epochs):
     """Fixture to return arbitrary keyword arguments for predictions."""
     pred_kwds = {
         'model': model,
         'data_config': data_config,
         'use_train_aug': use_train_aug,
+        'aug_training_option':aug_training_option,
         'device':device,
         'epochs': epochs,
         'workers': workers,
@@ -109,7 +135,8 @@ def train_kwds(model, data_config, use_train_aug,epochs,workers,batch,lr, imgsz,
         'weights': weights,
         'resume_training': resume_training,
         'square_training': square_training,
-        'seed': seed }
+        'seed': seed ,
+        'eval_n_epochs':eval_n_epochs}
     return {k: v for k, v in pred_kwds.items()}
 
 @pytest.fixture(scope="module")
@@ -130,8 +157,8 @@ def input(request):
     return UploadedFile('input', file, content_type, request.param)
 
 
-@pytest.fixture(scope="module", params=MODELS_CKPT)
-def model_ckpt(request):
+@pytest.fixture(scope="module", params= BACKBONES)
+def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
 
@@ -168,7 +195,7 @@ def square_img(request):
     """Fixture to return square image argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=['2023-05-10_121810'])
+@pytest.fixture(scope="module", params=['2023-05-10_121810', None])
 def timestamp(request):
     """Fixture to return square image argument to test."""
     return request.param
@@ -187,11 +214,12 @@ def local_directory(request):
     return  request.params
 
 @pytest.fixture(scope="module")
-def pred_kwds(input, timestamp, threshold, imgsz, device, no_labels, square_img, accept):
+def pred_kwds(input, timestamp, threshold, model,imgsz, device, no_labels, square_img, accept):
     """Fixture to return arbitrary keyword arguments for predictions."""
     pred_kwds = {
         'input': input,
         'timestamp': timestamp,
+        'model': model,
         'threshold':threshold,
         'imgsz':imgsz,
         'device':device,

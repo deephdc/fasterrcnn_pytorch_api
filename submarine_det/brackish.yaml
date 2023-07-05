@@ -1,0 +1,9 @@
+# Class names.
+CLASSES: [
+    'crab',
+    'small_fish', 'starfish', 'fish', 
+    'jellyfish', 'shrimp'
+    ]
+
+# Number of classes (object classes + 1 for background class in Faster RCNN).
+NC: 6

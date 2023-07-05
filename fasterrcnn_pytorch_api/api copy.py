@@ -89,7 +89,7 @@ def  train(**args):
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
     if args['weights'] is not None:
-        args['weights']=os.path.join(configs.MODEL_DIR, args['weights'], 'last_model.pth')
+        args['weights']=os.path.join(configs.MODEL_DIR, args['weights'])
 
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
     ckpt_path=os.path.join(configs.MODEL_DIR, timestamp)
@@ -116,7 +116,7 @@ def predict(**args):
 
     else:
         print("best_model.pth does not exists at the specified path.")
-        args['weights']=None
+        args['weights']=os.path.join(configs.MODEL_DIR, configs.TEST_MODEL, 'best_model.pth')#FIXME:using warm maybe is better
 
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
@@ -132,36 +132,20 @@ def predict(**args):
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
            'data_config': 'test_data/submarin.yaml',
-           'use_train_aug': True,
-           'aug_training_option':{
-                                            'blur': {'p':0.3, 'blur_limit':3},
-                                            'motion_blur': {'p':0.1, 'blur_limit':3},
-                                            'median_blur': {'p':0.5, 'blur_limit':3},
-                                            'to_gray': {'p':0.1},
-                                            'random_brightness_contrast': {'p':0.1},
-                                            'color_jitter': {'p':0.2},
-                                            'random_gamma': {'p':0.1}, 
-                                            'horizontal_flip': {'p':1},
-                                            'vertical_flip': {'p':1},
-                                            'rotate': {'limit':60},
-                                            'shift_scale_rotate': {'shift_limit':0.1, 'scale_limit':0.1, 'rotate_limit':30},
-                                            'Cutout': {'num_holes':5, 'max_h_size':3, 'max_w_size':5, 'fill_value':0, 'p':1},
-                                            'ChannelShuffle': {'p':1},
-                                        },
+           'use_train_aug': False,
            'device': True,
-           'epochs': 3,
+           'epochs': 1,
            'workers': 4,
            'batch': 1,
            'lr': 0.001,
            'imgsz': 640,
-
            'no_mosaic': True,
            'cosine_annealing': False,
-           'weights': '2023-05-10_121810',
+           'weights': '/home/se1131/fasterrcnn_pytorch_api/models/2023-05-10_121810',
            'resume_training': True,
            'square_training': False,
-           'seed':0,
-           'eval_n_epochs':2
+           'seed':0
            }
      train(**args)
- 
+# def warm():
+#     pass

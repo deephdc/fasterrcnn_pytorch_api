@@ -17,21 +17,31 @@ class TrainArgsSchema(Schema):
         description= 'name of the model.' )
 
     data_config= fields.Str(
-        required=False,
+        required=True,
         description= 'path to the data config file.')
     
-    use_train_aug= fields.Bool(
+    use_train_aug= fields.Bool(#FIXME: give choice to user which transforms they want to use
         required=False,
         missing=False,
         enum=[True,False],
         description='whether to use train augmentation, uses some advanced augmentation' 
-                     'that may make training difficult when used with mosaic.' )
+                     'that may make training difficult when used with mosaic. If true, it use the options'\
+                     'in aug_training_option. You can change that to have costum augumentation.' )
+    
+    aug_training_option = fields.Dict(required=False,
+                          missing=configs.DATA_AGU_OPTION,                              
+                          description= 'augmentation options.')
 
+    eval_n_epochs= fields.Int(
+        required=False,
+        missing=1,
+        description= 'Evalute the model every n epochs during training.')
+    
     device= fields.Bool(
         required=False,
         missing=True,
         enum=[True,False],
-        description= ' computation/training device, default is GPU if GPU present.')
+        description= 'computation/training device, default is GPU if GPU present.')
     
     epochs= fields.Int(
         required=False,
@@ -41,7 +51,7 @@ class TrainArgsSchema(Schema):
     workers= fields.Int(
         required=False,
         missing=4,
-        description= ' number of workers for data processing/transforms/augmentations.')
+        description= 'number of workers for data processing/transforms/augmentations.')
 
     batch= fields.Int(
         required=False,
@@ -62,14 +72,7 @@ class TrainArgsSchema(Schema):
         required=False,
         missing=True,
         enum=[True,False],
-        description= ' pass this to not to use mosaic augmentation.')
-
-    use_train_aug= fields.Bool(
-        required=False,
-        missing=True,
-        enum=[True,False],
-        description= ' whether to use train augmentation, uses some advanced augmentation'\
-                     'that may make training difficult when used with mosaic.')
+        description= 'pass this to not to use mosaic augmentation.')
 
     cosine_annealing= fields.Bool(
         required=False,
@@ -80,13 +83,14 @@ class TrainArgsSchema(Schema):
     weights= fields.Str(
         required=False,
         missing=None,
-        description= 'path to model weights if using pretrained weights.')
+        description= 'path to model weights if using custome pretrained weights.'\
+            'The name of the directory that contains the checkpint within the "model" directory.')
 
     resume_training= fields.Bool(
         required=False,
         missing=False,
         enum=[True,False],
-        description= 'If using pretrained weights, resume trining from the last step of the provided checkpoint.'\
+        description= 'If using custome pretrained weights, resume trining from the last step of the provided checkpoint.'\
             'If True, the path to the weights should be specified in the argument weights')
 
     square_training= fields.Bool(
@@ -100,7 +104,7 @@ class TrainArgsSchema(Schema):
         required=False,
         missing=0,
         description= 'golabl seed for training.')
-     
+    
 #####################################################
 #  Options to test your model
 #####################################################
@@ -117,9 +121,15 @@ class PredictArgsSchema(Schema):
         description= 'Input an image.')    
 
     timestamp= fields.Str(
-        required=True,
+        required=False,
         description= 'Model timestamp to be used for prediction. To see the available timestamp,'
-              ' please run the get_metadata function.')
+              ' please run the get_metadata function. If no timestamp is given,'
+              ' the model will be loaded from coco will be loaded.')
+    
+    model= fields.Str(
+        required=False,
+        enum= configs.BACKBONES,
+        description= 'Name of the model you want to use for inference.')
 
     threshold= fields.Float(
         required=False,
