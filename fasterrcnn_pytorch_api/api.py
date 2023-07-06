@@ -131,7 +131,7 @@ def predict(**args):
 
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
-           'data_config':  'brackish.yaml',
+           'data_config':  'submarine_det/brackish.yaml',
            'use_train_aug': True,
            'aug_training_option':{
                                             'blur': {'p':0.3, 'blur_limit':3},
@@ -163,7 +163,7 @@ if __name__=='__main__':
            'seed':0,
            'eval_n_epochs':3
            }
-     train(**args)
+     #train(**args)
      input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
      from deepaas.model.v2.wrapper import UploadedFile
      pred_kwds = {
@@ -177,6 +177,6 @@ if __name__=='__main__':
         'square_img':False,
         'accept': 'application/json'
     }
-
+     predict(**pred_kwds)
     
 

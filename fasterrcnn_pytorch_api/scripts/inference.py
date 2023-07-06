@@ -47,7 +47,7 @@ def main(args):
     if args['weights'] is None:
         #load the default one for COCO.
         
-        with open(os.path.join(configs.DATA_PATH, 'coco_config.yaml')) as file:
+        with open(os.path.join(configs.DATA_PATH, 'coco_config/coco_config.yaml')) as file:
                 data_configs = yaml.safe_load(file)
         NUM_CLASSES = data_configs['NC']
         CLASSES = data_configs['CLASSES']
