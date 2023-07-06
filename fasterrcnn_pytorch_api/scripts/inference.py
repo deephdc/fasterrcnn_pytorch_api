@@ -12,6 +12,7 @@ import yaml
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import create_model
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import inference_annotations
 from fasterrcnn_pytorch_training_pipeline.utils.transforms import infer_transforms, resize
+from fasterrcnn_pytorch_api import configs
 
 def collect_all_images(dir_test):
     """

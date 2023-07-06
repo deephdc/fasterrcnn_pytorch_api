@@ -217,7 +217,7 @@ def pred_kwds(input, timestamp, threshold, model,imgsz, device, no_labels, squar
         'square_img':square_img,
         'accept':accept
     }
-    return {k: v for k, v in pred_kwds.items() if v is not None}
+    return {k: v for k, v in pred_kwds.items()}
 
 @pytest.fixture(scope="module")
 def test_predict(pred_kwds):

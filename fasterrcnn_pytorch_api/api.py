@@ -108,15 +108,15 @@ def predict(**args):
     Returns:
         either a json file or png image with bounding box 
     """
-    utils_api.download_model_from_nextcloud(args['timestamp'])
     
-    args['weights']=os.path.join(configs.MODEL_DIR, args['timestamp'], 'best_model.pth')
-    if os.path.exists(args['weights']):
-        print("best_model.pth exists at the specified path.")
-
-    else:
-        print("best_model.pth does not exists at the specified path.")
-        args['weights']=None
+    
+    if args['timestamp'] is not None:
+        utils_api.download_model_from_nextcloud(args['timestamp'])
+        args['weights']=os.path.join(configs.MODEL_DIR, args['timestamp'], 'best_model.pth')
+        if os.path.exists(args['weights']):
+            print("best_model.pth exists at the specified path.")        
+    else:        
+         args['weights']=None
 
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
@@ -131,7 +131,7 @@ def predict(**args):
 
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
-           'data_config': 'test_data/submarin.yaml',
+           'data_config':  'brackish.yaml',
            'use_train_aug': True,
            'aug_training_option':{
                                             'blur': {'p':0.3, 'blur_limit':3},
@@ -161,7 +161,22 @@ if __name__=='__main__':
            'resume_training': True,
            'square_training': False,
            'seed':0,
-           'eval_n_epochs':2
+           'eval_n_epochs':3
            }
      train(**args)
- 
+     input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
+     from deepaas.model.v2.wrapper import UploadedFile
+     pred_kwds = {
+        'input': UploadedFile('input', input,  'application/octet-stream','input' ),
+        'timestamp':None,
+        'model':  'fasterrcnn_convnext_tiny',
+        'threshold':0.5,
+        'imgsz':640,
+        'device':False,
+        'no_labels':False,
+        'square_img':False,
+        'accept': 'application/json'
+    }
+
+    
+
