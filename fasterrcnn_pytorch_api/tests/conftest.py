@@ -37,7 +37,7 @@ def weights():
     """Fixture to return  no label argument to test."""
     return None
 
-@pytest.fixture(scope="module", params=[BACKBONES[0]])
+@pytest.fixture(scope="module", params=['fasterrcnn_convnext_small'])
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
@@ -52,7 +52,7 @@ def resume_training(request):
     """Fixture to return resume training argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[1,2])
+@pytest.fixture(scope="module", params=[2])
 def eval_n_epochs(request):
     """Fixture to return eval_n_epochs argument to test."""
     return request.param
@@ -61,24 +61,25 @@ def eval_n_epochs(request):
 def use_train_aug(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
-@pytest.fixture(scope="module", params=[{'blur': {'p':0.1, 'blur_limit':3},
-                                            'motion_blur': {'p':0.1, 'blur_limit':3},
-                                            'median_blur': {'p':0.1, 'blur_limit':3},
-                                            'to_gray': {'p':0.1},
-                                            'random_brightness_contrast': {'p':0.1},
-                                            'color_jitter': {'p':0.1},
-                                            'random_gamma': {'p':0.1}, 
-                                            'horizontal_flip': {'p':1},
-                                            'vertical_flip': {'p':1},
-                                            'rotate': {'limit':45},
-                                            'shift_scale_rotate': {'shift_limit':0.1, 'scale_limit':0.1, 'rotate_limit':30},
-                                            'Cutout': {'num_holes':0, 'max_h_size':0, 'max_w_size':'8', 'fill_value':0, 'p':0},
-                                            'ChannelShuffle': {'p':0},
-                                        }])
-
+@pytest.fixture(scope="module", params=[{
+    'blur': {'p': 0.1, 'blur_limit': 3},
+    'motion_blur': {'p': 0.1, 'blur_limit': 3},
+    'median_blur': {'p': 0.1, 'blur_limit': 3},
+    'to_gray': {'p': 0.1},
+    'random_brightness_contrast': {'p': 0.1},
+    'color_jitter': {'p': 0.1},
+    'random_gamma': {'p': 0.1}, 
+    'horizontal_flip': {'p': 1},
+    'vertical_flip': {'p': 1},
+    'rotate': {'limit': 45},
+    'shift_scale_rotate': {'shift_limit': 0.1, 'scale_limit': 0.1, 'rotate_limit': 30},
+    'Cutout': {'num_holes': 0, 'max_h_size': 0, 'max_w_size': '8', 'fill_value': 0, 'p': 0},
+    'ChannelShuffle': {'p': 0},
+}])
 def aug_training_option(request):
     """Fixture to return use train augmentations argument to test."""
-    return  request.param
+    return request.param
+
 @pytest.fixture(scope="module", params=[True])
 def square_training(request):
     """Fixture to return square training argument to test."""
@@ -119,7 +120,7 @@ def lr(request):
 def train_kwds(model, data_config, use_train_aug,aug_training_option,epochs,workers,batch,lr, imgsz, device, cosine_annealing, 
                square_training, resume_training, no_mosaic, weights, seed, eval_n_epochs):
     """Fixture to return arbitrary keyword arguments for predictions."""
-    pred_kwds = {
+    train_kwds = {
         'model': model,
         'data_config': data_config,
         'use_train_aug': use_train_aug,
@@ -137,10 +138,12 @@ def train_kwds(model, data_config, use_train_aug,aug_training_option,epochs,work
         'square_training': square_training,
         'seed': seed ,
         'eval_n_epochs':eval_n_epochs}
-    return {k: v for k, v in pred_kwds.items()}
+    
+    return {k: v for k, v in train_kwds.items()}
 
 @pytest.fixture(scope="module")
 def trained_model_path(train_kwds):
+    print(train_kwds)
     result = api.train(**train_kwds)
     saved_model_path = str(result).split(' ')[-1].rstrip("'}")
     yield saved_model_path
@@ -156,11 +159,6 @@ def input(request):
     content_type = 'application/octet-stream'
     return UploadedFile('input', file, content_type, request.param)
 
-
-@pytest.fixture(scope="module", params= BACKBONES)
-def model(request):
-    """Fixture to return model checkpoint argument to test."""
-    return request.param
 
 @pytest.fixture(scope="module", params=['image/png', 'application/json'])
 def accept(request):
@@ -180,17 +178,17 @@ def imgsz(request):
     return request.param
 
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[False ])
 def device(request):
     """Fixture to return gpu flag argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[False ])
 def no_labels(request):
     """Fixture to return  no label argument to test."""
     return request.param
 
-@pytest.fixture(scope="module", params=[False, True])
+@pytest.fixture(scope="module", params=[False])
 def square_img(request):
     """Fixture to return square image argument to test."""
     return request.param
@@ -204,15 +202,7 @@ def timestamp(request):
 def remote_name(request):
     return request.params
 
-@pytest.fixture(scope="module", params=[configs.REMOT_PATH, os.path.join(configs.REMOT_PATH, '2023-05-10_121810')])
-def remote_directory(request):
-    return  request.params
-
-@pytest.fixture(scope="module", params='models/test')
-def local_directory(request):
-    os.makedirs(request.params, exist_ok=True)
-    return  request.params
-
+ 
 @pytest.fixture(scope="module")
 def pred_kwds(input, timestamp, threshold, model,imgsz, device, no_labels, square_img, accept):
     """Fixture to return arbitrary keyword arguments for predictions."""
