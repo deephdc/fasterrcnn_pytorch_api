@@ -141,7 +141,7 @@ if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
            'data_config':  'submarine_det/brackish.yaml',
            'use_train_aug': True,
-           'aug_training_option':{
+           'aug_training_option':str({
                                             'blur': {'p':0.3, 'blur_limit':3},
                                             'motion_blur': {'p':0.1, 'blur_limit':3},
                                             'median_blur': {'p':0.5, 'blur_limit':3},
@@ -155,7 +155,7 @@ if __name__=='__main__':
                                             'shift_scale_rotate': {'shift_limit':0.1, 'scale_limit':0.1, 'rotate_limit':30},
                                             'Cutout': {'num_holes':5, 'max_h_size':3, 'max_w_size':5, 'fill_value':0, 'p':1},
                                             'ChannelShuffle': {'p':1},
-                                        },
+                                        }),
            'device': True,
            'epochs': 3,
            'workers': 4,
@@ -171,7 +171,7 @@ if __name__=='__main__':
            'seed':0,
            'eval_n_epochs':3
            }
-     #train(**args)
+     train(**args)
      input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
      from deepaas.model.v2.wrapper import UploadedFile
      pred_kwds = {

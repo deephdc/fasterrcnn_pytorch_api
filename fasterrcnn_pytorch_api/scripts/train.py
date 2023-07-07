@@ -247,6 +247,41 @@ def main(args):
             print_freq=100,
             scheduler=scheduler
         )
+        save_model(
+                epoch, 
+                model, 
+                optimizer, 
+                train_loss_list, 
+                train_loss_list_epoch,
+                val_map,
+                val_map_05,
+                OUT_DIR,
+                data_configs,
+                args['model']
+            )
+            # Save the model dictionary only for the current epoch.
+        save_model_state(model, OUT_DIR, data_configs, args['model'])  
+        # Append the current epoch's batch-wise losses to the `train_loss_list`.
+        train_loss_list.extend(batch_loss_list)
+        loss_cls_list.append(np.mean(np.array(batch_loss_cls_list,)))
+        loss_box_reg_list.append(np.mean(np.array(batch_loss_box_reg_list)))
+        loss_objectness_list.append(np.mean(np.array(batch_loss_objectness_list)))
+        loss_rpn_list.append(np.mean(np.array(batch_loss_rpn_list)))
+
+        # Append curent epoch's average loss to `train_loss_list_epoch`.
+        train_loss_list_epoch.append(train_loss_hist.value)
+            
+
+        # Save batch-wise train loss plot using TensorBoard. Better not to use it
+        # as it increases the TensorBoard log sizes by a good extent (in 100s of MBs).
+        # tensorboard_loss_log('Train loss', np.array(train_loss_list), writer)
+        # Save epoch-wise train loss plot using TensorBoard.
+        tensorboard_loss_log(
+                'Train loss', 
+                np.array(train_loss_list_epoch), 
+                writer,
+                epoch
+            )  
         if epoch % args['eval_n_epochs'] == 0:
             stats, val_pred_image = evaluate(
                 model, 
@@ -257,62 +292,30 @@ def main(args):
                 classes=CLASSES,
                 colors=COLORS
             )
+            val_map_05.append(stats[1])
+            val_map.append(stats[0])
 
-        # Append the current epoch's batch-wise losses to the `train_loss_list`.
-        train_loss_list.extend(batch_loss_list)
-        loss_cls_list.append(np.mean(np.array(batch_loss_cls_list,)))
-        loss_box_reg_list.append(np.mean(np.array(batch_loss_box_reg_list)))
-        loss_objectness_list.append(np.mean(np.array(batch_loss_objectness_list)))
-        loss_rpn_list.append(np.mean(np.array(batch_loss_rpn_list)))
-
-        # Append curent epoch's average loss to `train_loss_list_epoch`.
-        train_loss_list_epoch.append(train_loss_hist.value)
-        val_map_05.append(stats[1])
-        val_map.append(stats[0])
-
-        # Save batch-wise train loss plot using TensorBoard. Better not to use it
-        # as it increases the TensorBoard log sizes by a good extent (in 100s of MBs).
-        # tensorboard_loss_log('Train loss', np.array(train_loss_list), writer)
-        # Save epoch-wise train loss plot using TensorBoard.
-        tensorboard_loss_log(
-            'Train loss', 
-            np.array(train_loss_list_epoch), 
-            writer,
-            epoch
-        )
-        # Save mAP plot using TensorBoard.
-        tensorboard_map_log(
-            name='mAP', 
-            val_map_05=np.array(val_map_05), 
-            val_map=np.array(val_map),
-            writer=writer,
-            epoch=epoch
-        )
- 
-        save_model(
-            epoch, 
-            model, 
-            optimizer, 
-            train_loss_list, 
-            train_loss_list_epoch,
-            val_map,
-            val_map_05,
-            OUT_DIR,
-            data_configs,
-            args['model']
-        )
-        # Save the model dictionary only for the current epoch.
-        save_model_state(model, OUT_DIR, data_configs, args['model'])
-        # Save best model if the current mAP @0.5:0.95 IoU is
-        # greater than the last hightest.
-        save_best_model(
-            model, 
-            val_map[-1], 
-            epoch, 
-            OUT_DIR,
-            data_configs,
-            args['model']
-        )
+        
+            # Save mAP plot using TensorBoard.
+            tensorboard_map_log(
+                name='mAP', 
+                val_map_05=np.array(val_map_05), 
+                val_map=np.array(val_map),
+                writer=writer,
+                epoch=epoch
+            )
+    
+            
+            # Save best model if the current mAP @0.5:0.95 IoU is
+            # greater than the last hightest.
+            save_best_model(
+                model, 
+                val_map[-1], 
+                epoch, 
+                OUT_DIR,
+                data_configs,
+                args['model']
+            )
 
 if __name__ == '__main__':
     print('OK')
