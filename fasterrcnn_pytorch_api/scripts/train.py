@@ -231,7 +231,7 @@ def main(args):
     save_best_model = SaveBestModel()
 
     for epoch in range(start_epochs, NUM_EPOCHS):
-        print('we are in the training loop')
+     
         train_loss_hist.reset()
 
         _, batch_loss_list, \
