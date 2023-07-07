@@ -52,8 +52,17 @@ class TrainArgsSchema(Schema):
     aug_training_option = fields.Str(
         required=False,
         missing=str(configs.DATA_AGU_OPTION),
-        description='augmentation options.'
+        description='augmentation options.\n'
+                    'blur_limit (int) - maximum kernel size for blurring the input image.\n'
+                    'p (float) - probability of applying the transform.\n'
+                    'shift_limit ((float, float) or float) - shift factor range for both height and width.\n'
+                    'scale_limit ((float, float) or float) - scaling factor range.\n'
+                    'rotate_limit ((int, int) or int) - rotation range.\n'
+                    'num_holes (int) - number of regions to zero out.\n'
+                    'max_h_size (int) - maximum height of the hole.\n'
+                    'max_w_size (int) - maximum width of the hole.\n'
     )
+
 
     eval_n_epochs= fields.Int(
         required=False,
