@@ -28,10 +28,12 @@ import os
 import shutil
 import tempfile
 from datetime import datetime 
+from multiprocessing import Process
 
 from fasterrcnn_pytorch_api import configs, fields, utils_api
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
+
 
 logger = logging.getLogger('__name__')
 
@@ -88,14 +90,20 @@ def  train(**args):
     """
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
+
     if args['weights'] is not None:
         args['weights']=os.path.join(configs.MODEL_DIR, args['weights'], 'last_model.pth')
+    #Convert from str to dict
+    args['aug_training_option']= eval(args['aug_training_option'])
 
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
     ckpt_path=os.path.join(configs.MODEL_DIR, timestamp)
     os.makedirs(ckpt_path, exist_ok=True)
     args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
+    port = os.getenv('monitorPORT', 6006)
+    p = Process(target=utils_api.launch_tensorboard, args=(port,  configs.MODEL_DIR), daemon=True)
+    p.start()
     main(args)
     return {f'model was saved in {args["name"]}'}
 
@@ -177,6 +185,6 @@ if __name__=='__main__':
         'square_img':False,
         'accept': 'application/json'
     }
-     predict(**pred_kwds)
-    
-
+     #predict(**pred_kwds)
+ 
+     

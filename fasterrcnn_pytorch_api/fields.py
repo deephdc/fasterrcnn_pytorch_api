@@ -1,3 +1,4 @@
+import json
 from webargs import fields, validate
 from marshmallow import Schema, fields
 from fasterrcnn_pytorch_api import configs
@@ -6,6 +7,25 @@ from fasterrcnn_pytorch_api import configs
 #####################################################
 #  Options to  train your model
 #####################################################
+
+class AugTrainingOptionSchema(Schema):
+    blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    motion_blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    median_blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    to_gray = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    random_brightness_contrast = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    color_jitter = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    random_gamma = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    horizontal_flip = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
+    vertical_flip = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
+    rotate = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
+    shift_scale_rotate = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
+    Cutout = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
+    ChannelShuffle = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
+ 
+     
+    
+
 class TrainArgsSchema(Schema):
 
     class Meta:
@@ -27,10 +47,13 @@ class TrainArgsSchema(Schema):
         description='whether to use train augmentation, uses some advanced augmentation' 
                      'that may make training difficult when used with mosaic. If true, it use the options'\
                      'in aug_training_option. You can change that to have costum augumentation.' )
-    
-    aug_training_option = fields.Dict(required=False,
-                          missing=configs.DATA_AGU_OPTION,                              
-                          description= 'augmentation options.')
+    #aug_training_option = fields.Str( missing="{'blur': 0.1}")
+    #aug_training_option = fields.Nested(AugTrainingOptionSchema, required=False, allow_none=True)
+    aug_training_option = fields.Str(
+        required=False,
+        missing=str(configs.DATA_AGU_OPTION),
+        description='augmentation options.'
+    )
 
     eval_n_epochs= fields.Int(
         required=False,
