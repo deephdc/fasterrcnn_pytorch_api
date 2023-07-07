@@ -64,10 +64,10 @@ class TrainArgsSchema(Schema):
     )
 
 
-    eval_n_epochs= fields.Int(
-        required=False,
-        missing=1,
-        description= 'Evalute the model every n epochs during training.')
+   # eval_n_epochs= fields.Int(
+   #     required=False,
+   #     missing=1,
+   #     description= 'Evalute the model every n epochs during training.')
     
     device= fields.Bool(
         required=False,
@@ -131,7 +131,11 @@ class TrainArgsSchema(Schema):
         enum=[True,False],
         description= ' Resize images to square shape instead of aspect ratio resizing for single image training.'
                     'For mosaic training, this resizes single images to square shape first then puts them on a square canvas.')
-    
+    disable_wandb=fields.Bool(
+        required=False,
+        missing=True,
+        description= 'whether to use the wandb'
+    )
     seed= fields.Int(
         required=False,
         missing=0,

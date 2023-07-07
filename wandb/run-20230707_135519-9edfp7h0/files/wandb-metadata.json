@@ -1,0 +1,79 @@
+{
+    "os": "Linux-5.19.0-46-generic-x86_64-with-glibc2.35",
+    "python": "3.10.10",
+    "heartbeatAt": "2023-07-07T11:55:21.268063",
+    "startedAt": "2023-07-07T11:55:19.360481",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--listen-ip",
+        "0.0.0.0"
+    ],
+    "state": "running",
+    "program": "/home/se1131/anaconda3/envs/frcnn/bin/deepaas-run",
+    "git": {
+        "remote": "https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git",
+        "commit": "ca2db3fe2558df220b248268336e59155674271f"
+    },
+    "email": "khadijeh.alibabaei@kit.edu",
+    "root": "/home/se1131/EGI/fasterrcnn_pytorch_api",
+    "host": "se1131-LIFEBOOK-U7411",
+    "username": "se1131",
+    "executable": "/home/se1131/anaconda3/envs/frcnn/bin/python3.1",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1573.7611249999998,
+        "min": 400.0,
+        "max": 4400.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1585.257,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1600.577,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1638.407,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1475.592,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1498.113,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1454.398,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1650.173,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1219.467,
+            "min": 400.0,
+            "max": 4400.0
+        }
+    ],
+    "disk": {
+        "total": 467.8895797729492,
+        "used": 369.7766761779785
+    },
+    "memory": {
+        "total": 15.223926544189453
+    }
+}

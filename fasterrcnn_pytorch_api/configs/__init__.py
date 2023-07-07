@@ -60,6 +60,12 @@ except KeyError as err:
 
 
 try:   
+    WANDB_TOKEN = os.getenv("wandb_token", settings['wandb_token']['token'])
+except KeyError as err:
+    raise RuntimeError("Undefined configuration for WANDB_TOKEN") from err
+
+
+try:   
     BACKBONES = os.getenv("REMOT", settings['backbones']['names'])
     if isinstance(BACKBONES, str):
         # Parse the string as a list of strings

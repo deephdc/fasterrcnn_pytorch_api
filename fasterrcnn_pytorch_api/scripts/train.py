@@ -11,6 +11,7 @@ python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --data data_configs/v
 python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --use-train-aug --data data_configs/voc.yaml --name resnet50fpn_voc --batch 4
 dist-url: is not used in the main function and it is not needed
 """
+import wandb
 from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     train_one_epoch, evaluate, utils
 )
@@ -31,6 +32,9 @@ from fasterrcnn_pytorch_training_pipeline.utils.logging import (
     set_summary_writer, 
     tensorboard_loss_log, 
     tensorboard_map_log,
+    wandb_log, 
+    wandb_save_model,
+    wandb_init
    
 )
 from  torch.utils.data import (
@@ -55,7 +59,9 @@ np.random.seed(42)
 def main(args):
     # Initialize distributed mode.
     utils.init_distributed_mode(args)
- 
+    if not args['disable_wandb']:
+        wandb_init(name=args['name'])
+            
     
     # Load the data configurations
     with open(args['data_config']) as file:
@@ -282,8 +288,8 @@ def main(args):
                 writer,
                 epoch
             )  
-        if epoch % args['eval_n_epochs'] == 0:
-            stats, val_pred_image = evaluate(
+      #  if epoch % args['eval_n_epochs'] == 0:
+        stats, val_pred_image = evaluate(
                 model, 
                 valid_loader, 
                 device=DEVICE,
@@ -292,12 +298,25 @@ def main(args):
                 classes=CLASSES,
                 colors=COLORS
             )
-            val_map_05.append(stats[1])
-            val_map.append(stats[0])
+        val_map_05.append(stats[1])
+        val_map.append(stats[0])
 
-        
+        if not args['disable_wandb']:
+            wandb_log(
+                train_loss_hist.value,
+                batch_loss_list,
+                loss_cls_list,
+                loss_box_reg_list,
+                loss_objectness_list,
+                loss_rpn_list,
+                stats[1],
+                stats[0],
+                val_pred_image,
+                IMAGE_SIZE
+            )
+
             # Save mAP plot using TensorBoard.
-            tensorboard_map_log(
+        tensorboard_map_log(
                 name='mAP', 
                 val_map_05=np.array(val_map_05), 
                 val_map=np.array(val_map),
@@ -308,7 +327,7 @@ def main(args):
             
             # Save best model if the current mAP @0.5:0.95 IoU is
             # greater than the last hightest.
-            save_best_model(
+        save_best_model(
                 model, 
                 val_map[-1], 
                 epoch, 
@@ -316,7 +335,8 @@ def main(args):
                 data_configs,
                 args['model']
             )
-
+        if not args['disable_wandb']:
+            wandb_save_model(OUT_DIR)
 if __name__ == '__main__':
     print('OK')
 

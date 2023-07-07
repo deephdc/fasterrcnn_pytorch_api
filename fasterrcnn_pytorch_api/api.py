@@ -30,6 +30,8 @@ import tempfile
 from datetime import datetime 
 from multiprocessing import Process
 
+import wandb
+
 from fasterrcnn_pytorch_api import configs, fields, utils_api
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
@@ -90,7 +92,9 @@ def  train(**args):
     """
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
-
+    if not args['disable_wandb']:
+        wandb.login(key=configs.WANDB_TOKEN)
+        
     if args['weights'] is not None:
         args['weights']=os.path.join(configs.MODEL_DIR, args['weights'], 'last_model.pth')
     #Convert from str to dict
@@ -169,7 +173,8 @@ if __name__=='__main__':
            'resume_training': True,
            'square_training': False,
            'seed':0,
-           'eval_n_epochs':3
+           'eval_n_epochs':3,
+           'disable_wandb':False
            }
      train(**args)
      input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
