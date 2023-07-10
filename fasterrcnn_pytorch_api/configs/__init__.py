@@ -58,6 +58,11 @@ try:  # remote path sub/models
 except KeyError as err:
     raise RuntimeError("Undefined configuration for Remotepath") from err
 
+try:  #Port for monitoring using tensorboard
+    MONITOR_PORT= os.getenv("MONITOR_PORT", settings['monitorPORT']['port'])
+    os.environ["MONITOR_PORT"] = MONITOR_PORT
+except KeyError as err:
+    raise RuntimeError("Undefined Monitor port for tensorboar") from err
 
 try:   
     WANDB_TOKEN = os.getenv("wandb_token", settings['wandb_token']['token'])
@@ -74,9 +79,9 @@ except KeyError as err:
     raise RuntimeError("Undefined configuration for backbones") from err
 
 try:   
-    DATA_AGU_OPTION = os.getenv("REMOT", settings['data_augmentaion_options']['names'])
-    if isinstance(DATA_AGU_OPTION, str):
+    DATA_AUG_OPTION = os.getenv("data_augmentaion_options", settings['data_augmentaion_options']['names'])
+    if isinstance(DATA_AUG_OPTION, str):
         # Parse the string as a list of strings
-        DATA_AGU_OPTION = ast.literal_eval(DATA_AGU_OPTION)
+        DATA_AUG_OPTION = ast.literal_eval(DATA_AUG_OPTION)
 except KeyError as err:
     raise RuntimeError("Undefined configuration for data augmentation options") from err

@@ -23,6 +23,7 @@ module [2].
 [2]: https://github.com/deephdc/demo_app
 """
 
+import json
 import logging 
 import os
 import shutil
@@ -31,7 +32,6 @@ from datetime import datetime
 from multiprocessing import Process
 
 import wandb
-
 from fasterrcnn_pytorch_api import configs, fields, utils_api
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
@@ -97,16 +97,13 @@ def  train(**args):
         
     if args['weights'] is not None:
         args['weights']=os.path.join(configs.MODEL_DIR, args['weights'], 'last_model.pth')
-    #Convert from str to dict
-    args['aug_training_option']= eval(args['aug_training_option'])
 
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
     ckpt_path=os.path.join(configs.MODEL_DIR, timestamp)
     os.makedirs(ckpt_path, exist_ok=True)
     args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
-    port = os.getenv('monitorPORT', 6006)
-    p = Process(target=utils_api.launch_tensorboard, args=(port,  configs.MODEL_DIR), daemon=True)
+    p = Process(target=utils_api.launch_tensorboard, args=(configs.MONITOR_PORT,  configs.MODEL_DIR), daemon=True)
     p.start()
     main(args)
     return {f'model was saved in {args["name"]}'}
@@ -145,21 +142,7 @@ if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
            'data_config':  'submarine_det/brackish.yaml',
            'use_train_aug': True,
-           'aug_training_option':str({
-                                            'blur': {'p':0.3, 'blur_limit':3},
-                                            'motion_blur': {'p':0.1, 'blur_limit':3},
-                                            'median_blur': {'p':0.5, 'blur_limit':3},
-                                            'to_gray': {'p':0.1},
-                                            'random_brightness_contrast': {'p':0.1},
-                                            'color_jitter': {'p':0.2},
-                                            'random_gamma': {'p':0.1}, 
-                                            'horizontal_flip': {'p':1},
-                                            'vertical_flip': {'p':1},
-                                            'rotate': {'limit':60},
-                                            'shift_scale_rotate': {'shift_limit':0.1, 'scale_limit':0.1, 'rotate_limit':30},
-                                            'Cutout': {'num_holes':5, 'max_h_size':3, 'max_w_size':5, 'fill_value':0, 'p':1},
-                                            'ChannelShuffle': {'p':1},
-                                        }),
+           'aug_training_option':json.dumps(configs.DATA_AUG_OPTION),
            'device': True,
            'epochs': 3,
            'workers': 4,

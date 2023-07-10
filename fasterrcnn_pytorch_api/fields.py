@@ -1,31 +1,44 @@
 import json
 from webargs import fields, validate
-from marshmallow import Schema, fields
+from marshmallow import Schema, ValidationError, fields
 from fasterrcnn_pytorch_api import configs
- 
- 
+
 #####################################################
 #  Options to  train your model
 #####################################################
+class MyCustomFieldForJson(fields.String):
+    def __init__(self, *args, **kwargs):
+        self.metadata = kwargs.get('metadata', {})
+        self.metadata['description'] = kwargs.get('description')
+        super().__init__(*args, **kwargs)
+    def _deserialize(self, value, attr, data, **kwargs):
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError as err:
+            raise ValidationError(f"Invalid JSON: `{err}`")
+        
+    def _validate(self, value):
+        if not isinstance(value, dict):
+            raise ValidationError("Invalid value. Expected a dictionary.")
+       
+        for k, vale in value.items():
+                if not isinstance(vale, dict):
+                    raise ValidationError(f"Invalid value for {k}. Expected a dictionary.")
 
-class AugTrainingOptionSchema(Schema):
-    blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    motion_blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    median_blur = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    to_gray = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    random_brightness_contrast = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    color_jitter = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    random_gamma = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    horizontal_flip = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
-    vertical_flip = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
-    rotate = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
-    shift_scale_rotate = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Float())
-    Cutout = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
-    ChannelShuffle = fields.Dict(required=True, allow_none=False, keys=fields.Str(), values=fields.Int())
- 
-     
-    
-
+                for key , val in vale.items():
+                    if key == 'p':
+                        if not isinstance(val,float ) or not (0 <= val <= 1.0):
+                            raise ValidationError(f"Invalid value for 'p' in {k}: {val} It must be a float or integer between 0 and 1.")
+                    elif key in ['max_w_size', 'max_h_size','num_holes', 'blur_limit']:
+                        if not isinstance(val, int) or val < 0:
+                            raise ValidationError(f"Invalid value for  '{key}' in {k}: {val}. It must be a non-negative integer.")
+                    elif key  in  ['scale_limit', 'shift_limit' ]:
+                        if not isinstance(val, float) or not isinstance(val,(float, float)):
+                            raise ValidationError(f"Invalid value for '{key}': {val}. It must be a float or (float,float).")
+                    elif key=='rotate_limit':
+                        if not isinstance(val, int) or not isinstance(val,(int, int)):
+                         raise ValidationError(f"Invalid value for '{key}' : {val}. It must be a int or (int, int).")
+                        
 class TrainArgsSchema(Schema):
 
     class Meta:
@@ -47,11 +60,8 @@ class TrainArgsSchema(Schema):
         description='whether to use train augmentation, uses some advanced augmentation' 
                      'that may make training difficult when used with mosaic. If true, it use the options'\
                      'in aug_training_option. You can change that to have costum augumentation.' )
-    #aug_training_option = fields.Str( missing="{'blur': 0.1}")
-    #aug_training_option = fields.Nested(AugTrainingOptionSchema, required=False, allow_none=True)
-    aug_training_option = fields.Str(
-        required=False,
-        missing=str(configs.DATA_AGU_OPTION),
+  
+    aug_training_option = MyCustomFieldForJson(
         description='augmentation options.\n'
                     'blur_limit (int) - maximum kernel size for blurring the input image.\n'
                     'p (float) - probability of applying the transform.\n'
@@ -60,14 +70,10 @@ class TrainArgsSchema(Schema):
                     'rotate_limit ((int, int) or int) - rotation range.\n'
                     'num_holes (int) - number of regions to zero out.\n'
                     'max_h_size (int) - maximum height of the hole.\n'
-                    'max_w_size (int) - maximum width of the hole.\n'
+                    'max_w_size (int) - maximum width of the hole.\n',
+        missing=json.dumps(configs.DATA_AUG_OPTION)
+
     )
-
-
-   # eval_n_epochs= fields.Int(
-   #     required=False,
-   #     missing=1,
-   #     description= 'Evalute the model every n epochs during training.')
     
     device= fields.Bool(
         required=False,

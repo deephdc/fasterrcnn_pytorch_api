@@ -1,0 +1,77 @@
+{
+    "os": "Linux-5.19.0-46-generic-x86_64-with-glibc2.35",
+    "python": "3.10.10",
+    "heartbeatAt": "2023-07-10T09:12:16.514225",
+    "startedAt": "2023-07-10T09:12:15.070009",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/home/se1131/EGI/fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/api.py",
+    "codePath": "fasterrcnn_pytorch_api/api.py",
+    "git": {
+        "remote": "https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git",
+        "commit": "4bbda1d819907efbd62707c995c0bb58c84c7f48"
+    },
+    "email": "khadijeh.alibabaei@kit.edu",
+    "root": "/home/se1131/EGI/fasterrcnn_pytorch_api",
+    "host": "se1131-LIFEBOOK-U7411",
+    "username": "se1131",
+    "executable": "/home/se1131/anaconda3/envs/frcnn/bin/python3",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 1282.0253750000002,
+        "min": 400.0,
+        "max": 4400.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1284.053,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1256.932,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1270.821,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1299.992,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1273.151,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1291.322,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1279.929,
+            "min": 400.0,
+            "max": 4400.0
+        },
+        {
+            "current": 1300.003,
+            "min": 400.0,
+            "max": 4400.0
+        }
+    ],
+    "disk": {
+        "total": 467.8895797729492,
+        "used": 369.31750869750977
+    },
+    "memory": {
+        "total": 15.223934173583984
+    }
+}
