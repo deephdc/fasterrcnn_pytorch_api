@@ -60,20 +60,24 @@ from mlflow.tracking import MlflowClient
 from mlflow import log_metric, log_param, log_artifacts
 
 
+# Remote MLFlow server
+MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu"
 #Set the MLflow server and backend and artifact stores
-mlflow.set_tracking_uri("http://193.196.36.191:5000")
-mlflow.set_experiment("fasterrcnn_exp")
+mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
 
-#set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
-#nginx credentials
+# for direct API calls via HTTP we need to inject credentials
 MLFLOW_TRACKING_USERNAME = 'mlflow_user'
-MLFLOW_TRACKING_PASSWORD =  getpass.getpass()
-
-
-os.environ['MLFLOW_TRACKING_USERNAME'] = 'mlflow_user'
-os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
-os.environ["LOGNAME"] = "lisana.b"  # User who is logging the experiment, if not set then the default value of a user will be your local username
+MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
+USERNAME = "lisana.b" # User who is logging the experiment, if not set then the default value of a user will be your local username
 #set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
+
+# for MLFLow-way we have to set the following environment variables
+os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
+os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+
+os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
+os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+os.environ["LOGNAME"] = USERNAME  
 #nginx credentials
 
 run_name = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -227,22 +231,6 @@ def print_auto_logged_info(r):
     print("params: {}".format(r.data.params))
     print("metrics: {}".format(r.data.metrics))
     print("tags: {}".format(tags))
-
-    #Log all the metrics
-    #mlflow.log_metrics()
-    # metrics_dict = r.data.metrics
-
-    # # for metric_name, metric_value in metrics_dict.items():
-    # #     mlflow.log_metric(metric_name, metric_value)
-
-    # #Log all the params
-    # params_dict = r.data.params
-    # for params_name, params_value in params_dict.items():
-    #     mlflow.log_param(params_name, params_value)
-
-    # #Log all artifacts
-    # for artifact in artifacts:
-    #     mlflow.log_artifact(artifact)
 
 
 def main(args):
@@ -491,6 +479,7 @@ def main(args):
             #print_auto_logged_info(mlflow.get_run(run_id=run_id))
             
     return    run_id
+    print_auto_logged_info(run_id)
     mlflow.end_run()
 
 

@@ -7,11 +7,28 @@ import torch
 import glob as glob
 import os
 import time
+import getpass
 
 from mlflow.tracking.client import MlflowClient
+
 from models.create_fasterrcnn_model import create_model
 from utils.annotations import inference_annotations
 from utils.transforms import infer_transforms, resize
+
+
+# Remote MLFlow server
+MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu"
+#Set the MLflow server and backend and artifact stores
+mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
+
+# for direct API calls via HTTP we need to inject credentials
+MLFLOW_TRACKING_USERNAME = 'mlflow_user'
+MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
+# for MLFLow-way we have to set the following environment variables
+os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
+os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+
+
 
 def collect_all_images(dir_test):
     """
@@ -32,43 +49,69 @@ def collect_all_images(dir_test):
     return test_images    
 
 
-# Select the experiment-name, model from the list of experiments
-def select_experiment(experiments, experiment_name):
-    for experiment in experiments:
-        if experiment.name == experiment_name:
-            return experiment
-    return None
-
-
-
-def load_model_from_Mlflow(model_name, model_stage):
-    client = MlflowClient()
-    model_info = client.get_latest_versions(model_name, stages=[model_stage])[0] 
-    run_id = model_info.run_id
-
-    # Get all experiments
-    experiments = mlflow.list_experiments()
-
-    # Print the list of experiments
-   # print("Available experiments:")
-    #for experiment in experiments:
-     #   print(experiment.name)
-    # Select the desired experiment
-
-    experiment_name = 'fasterrcnn_exp'
-    selected_experiment = select_experiment(experiments, experiment_name)
-
-    if selected_experiment is not None:
-        # Do something with the selected experiment
-        print(f"Selected experiment: {selected_experiment.name}")
+def list_runs_and_models(client, experiment_name):
+    experiment = client.get_experiment_by_name(experiment_name)
+    if experiment is not None:
+        runs = client.search_runs(experiment_ids=[experiment.experiment_id])
+        if runs:
+            print(f"Runs and Models in experiment '{experiment_name}':")
+            for run in runs:
+                print("Run ID:", run.info.run_id)
+                print("Run Name:", run.data.tags.get("mlflow.runName", ""))
+                models = client.search_model_versions(f"run_id='{run.info.run_id}'")
+                if models:
+                    for model in models:
+                        print("Model Version:", model.version)
+                        print("Model Name:", model.name)
+                        print("Model Stage:", model.current_stage)
+                else:
+                    print("No models found for this run.")
+                print("-" * 50)
+            print()
+            return runs
+        else:
+            print("No runs found for experiment:", experiment_name)
     else:
         print(f"Experiment '{experiment_name}' not found.")
-        
-    artifact_uri = mlflow.get_run(run_id).info.artifact_uri
-    model_state = mlflow.pytorch.load_state_dict(artifact_uri + "/model_state")
-    model_uri = "models:/{model_name}/{model_stage}".format(model_name=model_name, model_stage=model_stage)
-    checkpoint = mlflow.pytorch.load_model(model_uri)
-    return model_state, checkpoint
+    return []
+
+
+def load_model_from_Mlflow(client, experiment_name, model_stage):
+    runs = list_runs_and_models(client, experiment_name)
+
+    if runs:
+        # Prompt the user to choose a model name
+        model_name = input("Select the Model Name (in production): ")
+
+        selected_run = None
+        selected_model = None
+
+        for run in runs:
+            models = client.search_model_versions(f"run_id='{run.info.run_id}'")
+            for model in models:
+                if model.name == model_name:
+                    selected_run = run
+                    selected_model = model
+                    break
+            if selected_run is not None:
+                break
+
+        if selected_run is not None and selected_model is not None:
+            run_id = selected_run.info.run_id
+            artifact_uri = mlflow.get_run(run_id).info.artifact_uri
+            model_state = mlflow.pytorch.load_state_dict(artifact_uri + "/model_state")
+            model_uri = "models:/{model_name}/{model_stage}".format(model_name=model_name, model_stage=model_stage)
+            checkpoint = mlflow.pytorch.load_model(model_uri)
+            return model_state, checkpoint
+        else:
+            print(f"No model found with name '{model_name}' in the selected experiment.")
+    else:
+        print("No runs found for the selected experiment.")
+
+    return None, None
+
+
+
 
     # Change model transition to another stage
 
@@ -76,7 +119,7 @@ def load_model_from_Mlflow(model_name, model_stage):
     # name=model_name,
     # stage="Staging",)
 
-def main(args,model_name, model_stage):
+def main(args, model_stage):
     # For same annotation colors each time.
     np.random.seed(42)
         
@@ -86,103 +129,115 @@ def main(args,model_name, model_stage):
          DEVICE  = torch.device('cpu')
     print(f'Device: {DEVICE}')
 
-    # client = MlflowClient()
+    # MLFLOW STATEMENTS
+
+    # Create the MlflowClient object
+    client = MlflowClient()
     
-    # model_info = client.get_latest_versions(model_name, stages=[model_stage])[0] 
-    # run_id = model_info.run_id
-    # artifact_uri = mlflow.get_run(run_id).info.artifact_uri
-    # model_state=mlflow.pytorch.load_state_dict(artifact_uri + "/model_state")
-    # model_uri = "models:/{model_name}/{model_stage}".format(model_name=model_name, model_stage=model_stage)
-    # checkpoint = mlflow.pytorch.load_model(model_uri)
-  
-    # Load model from MLflow
-    model_state, checkpoint = load_model_from_Mlflow(model_name, model_stage)
+    # Get all experiments
+    experiments = mlflow.search_experiments()
 
-    NUM_CLASSES =len(model_state['data']['CLASSES'])
-    print('num_class', NUM_CLASSES)
-    CLASSES=(model_state['data']['CLASSES'])   
-    build_model = create_model[model_state['model_name']]  
-    model = build_model(num_classes=NUM_CLASSES, coco_model=False)
-    model.load_state_dict(checkpoint.state_dict())
-    model.to(DEVICE).eval()
-    COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
-    #print('DIR_TEST')
-    test_images = args['input']
-     
-    print(f"Test instances: {len(test_images)}")
+    # Print the list of experiments
+    print("Available experiments:")
+    for experiment in experiments:
+        print(experiment.name)
 
-    # Define the detection threshold any detection having
-    # score below this will be discarded.
-    detection_threshold = args['threshold']
+    # Prompt the user to choose an experiment
+    experiment_name = input("Enter the name of the experiment: ")
 
-    # To count the total number of frames iterated through.
-    frame_count = 0
-    # To keep adding the frames' FPS.
-    total_fps = 0
-    for i in range(len(test_images)):
-        # Get the image file name for saving output later on.
-        image_name = test_images[i].split(os.path.sep)[-1].split('.')[0]
-        
-        orig_image = cv2.imread(test_images[i])
-      
-        frame_height, frame_width, _ = orig_image.shape
-       
-        if args['imgsz'] != None:
-            RESIZE_TO = args['imgsz']
-        else:
-            RESIZE_TO = frame_width
-        # orig_image = image.copy()
-        image_resized = resize(
-            orig_image, RESIZE_TO, square=args['square_img']
-        )
-        image = image_resized.copy()
-        # BGR to RGB
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        image = infer_transforms(image)
-       
-        # Add batch dimension.
-        image = torch.unsqueeze(image, 0)
-        start_time = time.time()
+    model_state, checkpoint = load_model_from_Mlflow(client, experiment_name, model_stage)
 
-        with torch.no_grad():
-            outputs = model(image.to(DEVICE))
-        end_time = time.time()
-   
-        # Get the current fps.
-        fps = 1 / (end_time - start_time)
-        # Add `fps` to `total_fps`.
-        total_fps += fps
-        # Increment frame count.
-        frame_count += 1
-        # Load all detection to CPU for further operations.
-        outputs = [{k: v.to('cpu') for k, v in t.items()} for t in outputs]
-        # Carry further only if there are detected boxes.
-        if len(outputs[0]['boxes']) != 0:
-            orig_image = inference_annotations(
-                outputs, 
-                detection_threshold, 
-                CLASSES,
-                COLORS, 
-                orig_image, 
-                image_resized,
-                args
+    if model_state is not None and checkpoint is not None:
+        print("Model loaded successfully.")
+
+        NUM_CLASSES =len(model_state['data']['CLASSES'])
+        print('num_class', NUM_CLASSES)
+        CLASSES=(model_state['data']['CLASSES'])   
+        build_model = create_model[model_state['model_name']]  
+        model = build_model(num_classes=NUM_CLASSES, coco_model=False)
+        model.load_state_dict(checkpoint.state_dict())
+        model.to(DEVICE).eval()
+        COLORS = np.random.uniform(0, 255, size=(len(CLASSES), 3))
+        #print('DIR_TEST')
+        test_images = args['input']
+            
+        print(f"Test instances: {len(test_images)}")
+
+        # Define the detection threshold any detection having
+        # score below this will be discarded.
+        detection_threshold = args['threshold']
+
+        # To count the total number of frames iterated through.
+        frame_count = 0
+        # To keep adding the frames' FPS.
+        total_fps = 0
+        for i in range(len(test_images)):
+            # Get the image file name for saving output later on.
+            image_name = test_images[i].split(os.path.sep)[-1].split('.')[0]
+            
+            orig_image = cv2.imread(test_images[i])
+            
+            frame_height, frame_width, _ = orig_image.shape
+            
+            if args['imgsz'] != None:
+                RESIZE_TO = args['imgsz']
+            else:
+                RESIZE_TO = frame_width
+            # orig_image = image.copy()
+            image_resized = resize(
+                orig_image, RESIZE_TO, square=args['square_img']
             )
-        is_success, buffer = cv2.imencode('.png', orig_image)
-      
-        io_buf = BytesIO(buffer)
-        io_buf.seek(0)
-        print(f"Image {i+1} done...")
-        print('-'*50)
+            image = image_resized.copy()
+            # BGR to RGB
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            image = infer_transforms(image)
+            
+            # Add batch dimension.
+            image = torch.unsqueeze(image, 0)
+            start_time = time.time()
 
-    print('TEST PREDICTIONS COMPLETE')
-    # Calculate and print the average FPS.
-    avg_fps = total_fps / frame_count
-    print(f"Average FPS: {avg_fps:.3f}")
-    for item in outputs:
-        item['boxes'] = item['boxes'].tolist()
-        item['labels'] = item['labels'].tolist()
-        item['scores'] = item['scores'].tolist()
-    json_string = json.dumps(outputs)
+            with torch.no_grad():
+                outputs = model(image.to(DEVICE))
+            end_time = time.time()
+
+            # Get the current fps.
+            fps = 1 / (end_time - start_time)
+            # Add `fps` to `total_fps`.
+            total_fps += fps
+            # Increment frame count.
+            frame_count += 1
+            # Load all detection to CPU for further operations.
+            outputs = [{k: v.to('cpu') for k, v in t.items()} for t in outputs]
+            # Carry further only if there are detected boxes.
+            if len(outputs[0]['boxes']) != 0:
+                orig_image = inference_annotations(
+                    outputs, 
+                    detection_threshold, 
+                    CLASSES,
+                    COLORS, 
+                    orig_image, 
+                    image_resized,
+                    args
+                )
+            is_success, buffer = cv2.imencode('.png', orig_image)
+            
+            io_buf = BytesIO(buffer)
+            io_buf.seek(0)
+            print(f"Image {i+1} done...")
+            print('-'*50)
+
+        print('TEST PREDICTIONS COMPLETE')
+        # Calculate and print the average FPS.
+        avg_fps = total_fps / frame_count
+        print(f"Average FPS: {avg_fps:.3f}")
+        for item in outputs:
+            item['boxes'] = item['boxes'].tolist()
+            item['labels'] = item['labels'].tolist()
+            item['scores'] = item['scores'].tolist()
+        json_string = json.dumps(outputs)
+    else:
+        print("Failed to load the model.")
+
     return  json_string , io_buf
 
 if __name__ == '__main__':
@@ -193,8 +248,7 @@ if __name__ == '__main__':
            'device':False,
            'imgsz':640,
            'threshold':0.7
-
            }
-    model_name = 'fasterrcnn'
+    #model_name = 'fasterrcnn'
     model_stage = 'Production'
-    main(args, model_name, model_stage)
+    main(args, model_stage)
