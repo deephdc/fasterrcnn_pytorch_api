@@ -43,7 +43,7 @@ import numpy as np
 import torchinfo
 import os
 
-from prettytable import PrettyTable
+#from prettytable import PrettyTable
 
 import matplotlib.pyplot as plt
 from scipy import stats
