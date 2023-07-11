@@ -43,7 +43,7 @@ import numpy as np
 import torchinfo
 import os
 
-from prettytable import PrettyTable
+#from prettytable import PrettyTable
 
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -71,7 +71,6 @@ MLFLOW_TRACKING_PASSWORD =  getpass.getpass()
 
 
 os.environ['MLFLOW_TRACKING_USERNAME'] = 'mlflow_user'
-#os.environ['MLFLOW_TRACKING_PASSWORD'] = 'Pti0L4hWVheubbVeegGC'
 os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
 os.environ["LOGNAME"] = "lisana.b"  # User who is logging the experiment, if not set then the default value of a user will be your local username
 #set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
@@ -497,8 +496,8 @@ def main(args):
 
 if __name__ == '__main__':
     args={'model': 'fasterrcnn_squeezenet1_1',
-           'data_config': '/home/lisana/MLOps/fastercnn_ML/fasterrcnn_pytorch_training_pipeline/data/submarine_det/brackish.yaml',
-           'name':'/home/lisana/MLOps/fastercnn_ML/fasterrcnn_pytorch_training_pipeline/data/',
+           'data_config': '/home/ubuntu/data/fasterrcnn/fasterrcnn_pytorch_api/data/submarine_det/brackish.yaml',
+           'name':'/home/ubuntu/data/fasterrcnn/fasterrcnn_pytorch_api/data/',
            'use_train_aug': False,
            'device': False,
            'epochs': 1,
