@@ -49,6 +49,20 @@ def collect_all_images(dir_test):
     return test_images    
 
 
+def select_experiment():
+    # Get all experiments
+    experiments = mlflow.search_experiments()
+
+    # Print the list of experiments
+    print("Available experiments:")
+    for experiment in experiments:
+        print(experiment.name)
+
+    # Prompt the user to choose an experiment
+    experiment_name = input("Enter the name of the experiment: ")
+
+    return experiment_name
+
 def list_runs_and_models(client, experiment_name):
     experiment = client.get_experiment_by_name(experiment_name)
     if experiment is not None:
@@ -110,9 +124,6 @@ def load_model_from_Mlflow(client, experiment_name, model_stage):
 
     return None, None
 
-
-
-
     # Change model transition to another stage
 
     # mlflow_run.transition_model_version_stage(
@@ -133,17 +144,9 @@ def main(args, model_stage):
 
     # Create the MlflowClient object
     client = MlflowClient()
-    
-    # Get all experiments
-    experiments = mlflow.search_experiments()
 
-    # Print the list of experiments
-    print("Available experiments:")
-    for experiment in experiments:
-        print(experiment.name)
-
-    # Prompt the user to choose an experiment
-    experiment_name = input("Enter the name of the experiment: ")
+    # Get the name of the experiment
+    experiment_name = select_experiment()
 
     model_state, checkpoint = load_model_from_Mlflow(client, experiment_name, model_stage)
 
