@@ -21,23 +21,24 @@ class MyCustomFieldForJson(fields.String):
         if not isinstance(value, dict):
             raise ValidationError("Invalid value. Expected a dictionary.")
        
-        for k, vale in value.items():
-                if not isinstance(vale, dict):
-                    raise ValidationError(f"Invalid value for {k}. Expected a dictionary.")
+        for k1, v1 in value.items():
+            if not isinstance(v1, dict):
+                raise ValidationError(f"Invalid value for {k1}. Expected a dictionary.")
 
-                for key , val in vale.items():
-                    if key == 'p':
-                        if not isinstance(val,float ) or not (0 <= val <= 1.0):
-                            raise ValidationError(f"Invalid value for 'p' in {k}: {val} It must be a float or integer between 0 and 1.")
-                    elif key in ['max_w_size', 'max_h_size','num_holes', 'blur_limit']:
-                        if not isinstance(val, int) or val < 0:
-                            raise ValidationError(f"Invalid value for  '{key}' in {k}: {val}. It must be a non-negative integer.")
-                    elif key  in  ['scale_limit', 'shift_limit' ]:
-                        if not isinstance(val, float) or not isinstance(val,(float, float)):
-                            raise ValidationError(f"Invalid value for '{key}': {val}. It must be a float or (float,float).")
-                    elif key=='rotate_limit':
-                        if not isinstance(val, int) or not isinstance(val,(int, int)):
-                         raise ValidationError(f"Invalid value for '{key}' : {val}. It must be a int or (int, int).")
+            for k2 , v2 in v1.items():
+                if k2 == 'p':
+                    if not isinstance(v2,float ) or not (0 <= v2 <= 1.0):
+                        raise ValidationError(f"Invalid value for 'p' in {k2}: {v2} It must be a float or integer between 0 and 1.")
+                elif k2 in ['max_w_size', 'max_h_size','num_holes', 'blur_limit']:
+                    if not isinstance(v2, int) or v2 < 0:
+                        raise ValidationError(f"Invalid value for  '{k2}' in {k1}: {v2}. It must be a non-negative integer.")
+                elif k2  in  ['scale_limit', 'shift_limit' ]:
+                    if not isinstance(v2, float) or not isinstance(v2,(float, float)):
+                        raise ValidationError(f"Invalid value for '{k2}': {v2}. It must be a float or (float,float).")
+                elif k2=='rotate_limit':
+                    if not isinstance(v2, int) or not isinstance(v2,(int, int)):
+                        raise ValidationError(f"Invalid value for '{k2}' : {v2}. It must be a int or (int, int).")
+
                         
 class TrainArgsSchema(Schema):
 
