@@ -157,7 +157,7 @@ if __name__=='__main__':
            'square_training': False,
            'seed':0,
            'eval_n_epochs':3,
-           'disable_wandb':False
+           'disable_wandb':True
            }
      train(**args)
      input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
