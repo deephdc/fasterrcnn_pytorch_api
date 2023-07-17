@@ -244,7 +244,7 @@ def main(args, model_stage):
     return  json_string , io_buf
 
 if __name__ == '__main__':
-    args={'input': ['/home/ubuntu/data/fasterrcnn/fasterrcnn_pytorch_api/data/submarine_det/train/img/2019-02-20_19-01-02to2019-02-20_19-01-13_1-0001_jpg.rf.168dadf99e426cf045bc56ecf377eaba.jpg'],
+    args={'input': ['/home/fasterrcnn/mlflow_fasterrcnn/data/submarine_det/train/img/2019-02-20_19-01-02to2019-02-20_19-01-13_1-0001_jpg.rf.168dadf99e426cf045bc56ecf377eaba.jpg'],
            'accept':'image/png',
            'square_img':False,
            'no_labels':False,

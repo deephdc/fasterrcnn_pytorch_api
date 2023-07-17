@@ -2,10 +2,11 @@
 
 ## Getting started
 
-# fasterrcnn_pytorch_api
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/UC--fasterrcnn_pytorch_api/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC--fasterrcnn_pytorch_api/job/master)
-
 Object detection using FasterRCNN model
+Introduce MLFlow as a solution:
+    * to track all experiments during model training (see mlflow_train.py code) 
+    * store the best trained model in the Model Registry (see mlflow_train.py code) 
+    * serve the model (after deployment) to be consumed by users for prediction purposes on new data. (see mlflow_inference.py code) 
 
 To launch it, first install the package then run [deepaas](https://github.com/indigo-dc/DEEPaaS):
 ```bash
@@ -17,29 +18,44 @@ git submodule update
 cd submodule/dir
 pip install -e .
 cd ..
-deepaas-run --listen-ip 0.0.0.0
+
 ```
 The associated Docker container for this module can be found in https://github.com/falibabaei//DEEP-OC-fasterrcnn_pytorch_api.
 
-## Project structure
+You might need to install some other dependent packages/libraries as follows:
+```bash pip install setuptools wheel opencv-python gcc libgl1  vision_transformers albumentations
 ```
-├── LICENSE                <- License file
-│
-├── README.md              <- The top-level README for developers using this project.
-│
-├── requirements.txt       <- The requirements file for reproducing the analysis environment, e.g., generated with `pip freeze > requirements.txt`
-│
-├── setup.py, setup.cfg    <- Makes the project pip installable (`pip install -e .`) so that fasterrcnn_pytorch_api can be imported
-│
-├── fasterrcnn_pytorch_api <- Source code for use in this project.
-│   ├── config            <- API configuration subpackage
-│   ├── scripts           <- API scripts subpackage for predictions and training the model
-│   ├── __init__.py       <- File for initializing the python library
-│   ├── api.py            <- API core module for endpoint methods
-│   ├── fields.py         <- API core fields for arguments
-│   └── utils_api.py          <- API utilities module
-│
-├── Jenkinsfile           <- Describes the basic Jenkins CI/CD pipeline
-├── data                  <- Folder to store data for training and prediction
-└── models                <- Folder to store checkpoints
-```
+
+### Prerequisites
+Main installation
+you have:
+
+python3 > 3.7 but lower than 3.11
+pip is installed
+
+### Install mlflow client 
+pip install mlflow[extras]
+
+
+## Configuring MLFlow constants
+
+# Remote MLFlow server
+MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu" <your mlflow_tracking_server>
+#Set the MLflow server and backend and artifact stores
+mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
+
+# for direct API calls via HTTP we need to inject credentials
+MLFLOW_TRACKING_USERNAME = 'mlflow_user'
+MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
+# for MLFLow-way we have to set the following environment variables
+os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
+os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+
+## Acknowledgment
+This work is co-funded by AI4EOSC project that has received funding from the European Union's Horizon Europe 2022 research and innovation programme under agreement No 101058593
+
+## License
+For open source projects, say how it is licensed.
+
+
+
