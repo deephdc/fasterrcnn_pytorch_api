@@ -30,24 +30,28 @@ pip install setuptools wheel opencv-python gcc libgl1  vision_transformers album
 ### Prerequisites
 ** Main installation **
 you have:
--python3 > 3.7 but lower than 3.11
--pip is installed
+<ul>
+<li>python3 > 3.7 but lower than 3.11
+<li>pip is installed
 
-### Install mlflow client 
+</ul>
+
+### Install mlflow framework
 pip install mlflow[extras]
 
 
 ## Configuring MLFlow constants
 
-** Remote MLFlow server **
+**Remote MLFlow server**
 MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu" <your mlflow_tracking_server>
 #Set the MLflow server and backend and artifact stores
 mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
 
-** for direct API calls via HTTP we need to inject credentials **
+** for direct API calls via HTTP we need to inject credentials**
 MLFLOW_TRACKING_USERNAME = 'mlflow_user'
 MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
-** for MLFLow-way we have to set the following environment variables **
+
+**for MLFLow-way we have to set the following environment variables**
 os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
 os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
 
