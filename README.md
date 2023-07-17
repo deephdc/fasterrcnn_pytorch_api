@@ -28,12 +28,11 @@ pip install setuptools wheel opencv-python gcc libgl1  vision_transformers album
 ```
 
 ### Prerequisites
-** Main installation **
+**Main installation**
 you have:
 <ul>
 <li>python3 > 3.7 but lower than 3.11
 <li>pip is installed
-
 </ul>
 
 ### Install mlflow framework
@@ -43,17 +42,17 @@ pip install mlflow[extras]
 ## Configuring MLFlow constants
 
 **Remote MLFlow server**
-MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu" <your mlflow_tracking_server>
-#Set the MLflow server and backend and artifact stores
-mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
+MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu" <your mlflow_tracking_server> <br />
+#Set the MLflow server and backend and artifact stores <br />
+mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER) <br />
 
-** for direct API calls via HTTP we need to inject credentials**
-MLFLOW_TRACKING_USERNAME = 'mlflow_user'
-MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
+**for direct API calls via HTTP we need to inject credentials** <br />
+MLFLOW_TRACKING_USERNAME = 'mlflow_user' <br />
+MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually <br />
 
-**for MLFLow-way we have to set the following environment variables**
-os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
-os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+**for MLFLow-way we have to set the following environment variables** <br />
+os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME <br />
+os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD <br />
 
 ## Acknowledgment
 This work is co-funded by AI4EOSC project that has received funding from the European Union's Horizon Europe 2022 research and innovation programme under agreement No 101058593
