@@ -23,15 +23,15 @@ cd ..
 The associated Docker container for this module can be found in https://github.com/falibabaei//DEEP-OC-fasterrcnn_pytorch_api.
 
 You might need to install some other dependent packages/libraries as follows:
-```bash pip install setuptools wheel opencv-python gcc libgl1  vision_transformers albumentations
+```bash 
+pip install setuptools wheel opencv-python gcc libgl1  vision_transformers albumentations
 ```
 
 ### Prerequisites
-Main installation
+** Main installation **
 you have:
-
-python3 > 3.7 but lower than 3.11
-pip is installed
+-python3 > 3.7 but lower than 3.11
+-pip is installed
 
 ### Install mlflow client 
 pip install mlflow[extras]
@@ -39,15 +39,15 @@ pip install mlflow[extras]
 
 ## Configuring MLFlow constants
 
-# Remote MLFlow server
+** Remote MLFlow server **
 MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu" <your mlflow_tracking_server>
 #Set the MLflow server and backend and artifact stores
 mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
 
-# for direct API calls via HTTP we need to inject credentials
+** for direct API calls via HTTP we need to inject credentials **
 MLFLOW_TRACKING_USERNAME = 'mlflow_user'
 MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
-# for MLFLow-way we have to set the following environment variables
+** for MLFLow-way we have to set the following environment variables **
 os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
 os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
 
