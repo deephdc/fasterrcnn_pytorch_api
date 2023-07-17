@@ -4,9 +4,11 @@
 
 Object detection using FasterRCNN model
 Introduce MLFlow as a solution:
-    * to track all experiments during model training (see mlflow_train.py code) 
-    * store the best trained model in the Model Registry (see mlflow_train.py code) 
-    * serve the model (after deployment) to be consumed by users for prediction purposes on new data. (see mlflow_inference.py code) 
+<ul>
+    <li> to track all experiments during model training (see mlflow_train.py code) 
+    <li> store the best trained model in the Model Registry (see mlflow_train.py code) 
+    <li> serve the model (after deployment) to be consumed by users for prediction purposes on new data. (see mlflow_inference.py code) 
+</ul>
 
 To launch it, first install the package then run [deepaas](https://github.com/indigo-dc/DEEPaaS):
 ```bash
