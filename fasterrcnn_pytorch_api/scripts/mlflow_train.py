@@ -64,21 +64,24 @@ from mlflow import log_metric, log_param, log_artifacts
 MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu"
 #Set the MLflow server and backend and artifact stores
 mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
+USERNAME = "<your-username>" # User who is logging the experiment, if not set then the default value of a user will be your local username
+#set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
+os.environ["LOGNAME"] = USERNAME  
 
 # for direct API calls via HTTP we need to inject credentials
 MLFLOW_TRACKING_USERNAME = 'mlflow_user'
 MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
-USERNAME = "lisana.b" # User who is logging the experiment, if not set then the default value of a user will be your local username
-#set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
+
 
 # for MLFLow-way we have to set the following environment variables
-os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
 os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
 
 os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
 os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
-os.environ["LOGNAME"] = USERNAME  
-#nginx credentials
+
+# Name of the experiment (e.g. name of the  code repository)
+MLFLOW_EXPERIMENT_NAME="experiment_name"
+
 
 run_name = datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -205,12 +208,12 @@ def parse_opt():
         help='url ysed to set up the distributed training'
     )
 
-    parser.add_argument(
-        '-dw', '--disable-wandb',
-        dest="disable_wandb",
-        action='store_true',
-        help='whether to use the wandb'
-    )
+    # parser.add_argument(
+    #     '-dw', '--disable-wandb',
+    #     dest="disable_wandb",
+    #     action='store_true',
+    #     help='whether to use the wandb'
+    # )
     parser.add_argument(
         '--seed',
         default=0,
@@ -271,7 +274,7 @@ def main(args):
         TRAIN_DIR_LABELS,
         IMAGE_SIZE, 
         CLASSES,
-        use_train_aug=args['use_train_aug'],
+        #use_train_aug=args['use_train_aug'],
         no_mosaic=args['no_mosaic'],
         square_training=args['square_training']
     )
@@ -402,10 +405,18 @@ def main(args):
    
     save_best_model = SaveBestModel()
     best_valid_map=float(0)
+    
+    #MLFLOW PART
+    #Set the MLflow server and backend and artifact stores
+    mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
+
+    #set an experiment name for all different runs
+    mlflow.set_experiment(MLFLOW_EXPERIMENT_NAME)
+    
     with mlflow.start_run(run_name = run_name) as mlflow_run: 
        #mlflow.pytorch.autolog(log_every_n_epoch=1, log_models=True, disable_for_unsupported_versions=False,  registered_model_name='submarin_animal_detection')
 
-    #Log all the params
+        #Log all the params
         mlflow.log_params(args)
         mlflow.set_tag("model",args['model'])
 
@@ -476,17 +487,16 @@ def main(args):
             run_id  = mlflow_run.info.run_id
 
             # fetch the auto logged parameters and metrics
-            #print_auto_logged_info(mlflow.get_run(run_id=run_id))
+            print_auto_logged_info(mlflow.get_run(run_id=run_id))
             
-    return    run_id
-    print_auto_logged_info(run_id)
     mlflow.end_run()
+    return    run_id   
 
 
 if __name__ == '__main__':
     args={'model': 'fasterrcnn_squeezenet1_1',
-           'data_config': '/home/ubuntu/data/fasterrcnn/fasterrcnn_pytorch_api/data/submarine_det/brackish.yaml',
-           'name':'/home/ubuntu/data/fasterrcnn/fasterrcnn_pytorch_api/data/',
+           'data_config': '/home/fasterrcnn/mlflow_fasterrcnn/data/submarine_det/brackish.yaml',
+           'name':'/home/fasterrcnn/mlflow_fasterrcnn/data',
            'use_train_aug': False,
            'device': False,
            'epochs': 1,
