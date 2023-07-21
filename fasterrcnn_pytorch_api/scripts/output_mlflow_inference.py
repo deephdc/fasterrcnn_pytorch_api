@@ -21,6 +21,8 @@ Runs and Models in experiment 'fasterrcnn_exp':
 Run ID: 9671cadd75bb42f4b0fe460ffe12f787
 Run Name: 20230710_155158
 No models found for this run.
+
+
 --------------------------------------------------
 Run ID: be2700f5fc364da78d66378f6e474edd
 Run Name: 20230710_151753
@@ -35,8 +37,9 @@ Model Name: test_fasterrcnn
 Model Stage: None
 --------------------------------------------------
 
+
 Select the Model Name (in production): fasterrcnn
-2023/07/17 11:51:43 WARNING mlflow.pytorch: Stored model version '2.0.1+cu117' does not match installed PyTorch version '1.13.0'
+
 Model loaded successfully.
 num_class 6
 Test instances: 1

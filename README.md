@@ -10,7 +10,7 @@ Introduce MLFlow as a solution:
     <li> serve the model (after deployment) to be consumed by users for prediction purposes on new data. (see mlflow_inference.py code) 
 </ul>
 
-To launch it, first install the package then run [deepaas](https://github.com/indigo-dc/DEEPaaS):
+To launch it, run the following commands:
 ```bash
 git clone https://github.com/falibabaei//fasterrcnn_pytorch_api
 cd fasterrcnn_pytorch_api
