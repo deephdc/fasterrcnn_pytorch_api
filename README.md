@@ -2,17 +2,16 @@
 
 [![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/UC--fasterrcnn_pytorch_api/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC--fasterrcnn_pytorch_api/job/master)
 
-[This external repository](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline) provides a pipeline for training PyTorch FasterRCNN models on custom datasets. You can choose between official PyTorch models trained on the COCO dataset or use any backbone from Torchvision classification models, and even define your own custom backbones.
-
+[This external repository](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline)  provides a pipeline for training PyTorch FasterRCNN models on custom datasets. With this pipeline, you have the flexibility to choose between official PyTorch models trained on the COCO dataset, use any backbone from Torchvision classification models, or even define your own custom backbones. The trained models can be used for object detection tasks on your specific datasets.
 ## Training and Inference
 
 To learn how to train and perform inference using this pipeline, please refer to the following links:
-- [How to Train Faster RCNN ResNet50 FPN V2 on Custom Dataset?](https://debuggercafe.com/how-to-train-faster-rcnn-resnet50-fpn-v2-on-custom-dataset/#download-code)
-- [Small Scale Traffic Light Detection using PyTorch](https://debuggercafe.com/small-scale-traffic-light-detection/)
+- [How to Train Faster RCNN ResNet50 FPN V2 on Custom Dataset?](https://debuggercafe.com/how-to-train-faster-rcnn-resnet50-fpn-v2-on-custom-dataset/#download-code): This tutorial provides a step-by-step guide on training the Faster RCNN model with the ResNet50 FPN V2 backbone on your custom dataset.
+- [Small Scale Traffic Light Detection using PyTorch](https://debuggercafe.com/small-scale-traffic-light-detection/): This article demonstrates a specific use case where the pipeline is used for detecting traffic lights in small-scale images.
 
-We have integrated a DeepaaS API for the existing code of this module for object detection using the FasterRCNN model.
+More information about the model can be found in the [external repository](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline). You can explore additional details and documentation provided in that repository.
 
-More information about the model can be found [here](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline).
+In the current repository, we have integrated a DeepaaS API for this existing pipeline, making it easy to access and use the trained models for inference.
 
 ## Install the API and the external submodule requirement
 
@@ -55,7 +54,7 @@ The associated Docker container for this module can be found at: https://git.scc
 
 ## Dataset Preparation
 
-The dataset should be in coco format (.xml). Put your data in the data directory with the following structure:
+To train the FasterRCNN model, your dataset should be in coco format (.xml). Organize your data in the following structure:
 ```
 data
 	├── train_imgs
@@ -88,3 +87,5 @@ To train the model, run:
 deepaas-run --listen-ip 0.0.0.0
 ```
 Then, open the Swagger interface, change the hyperparameters in the train section, and click on train.
+
+Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform object detection on new images.
