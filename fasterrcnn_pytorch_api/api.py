@@ -159,8 +159,8 @@ if __name__=='__main__':
            'eval_n_epochs':3,
            'disable_wandb':True
            }
-     train(**args)
-     input='/home/se1131/EGI/fasterrcnn_pytorch_api/data/submarine_det/test.jpg'
+    # train(**args)
+     input='/srv/fasterrcnn_pytorch_api/data/2019-02-20_19-01-02to2019-02-20_19-01-13_1-0005_jpg.rf.1734dbcac53c80893dcbfbe72387d94b.jpg'
      from deepaas.model.v2.wrapper import UploadedFile
      pred_kwds = {
         'input': UploadedFile('input', input,  'application/octet-stream','input' ),
@@ -171,8 +171,8 @@ if __name__=='__main__':
         'device':False,
         'no_labels':False,
         'square_img':False,
-        'accept': 'application/json'
+        'accept': 'image/jpeg'
     }
-     #predict(**pred_kwds)
+     predict(**pred_kwds)
  
      

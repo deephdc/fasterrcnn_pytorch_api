@@ -165,6 +165,7 @@ class PredictArgsSchema(Schema):
 
     timestamp= fields.Str(
         required=False,
+        missing=None,
         description= 'Model timestamp to be used for prediction. To see the available timestamp,'
               ' please run the get_metadata function. If no timestamp is given,'
               ' the model will be loaded from coco will be loaded.')
