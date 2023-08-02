@@ -10,15 +10,14 @@ import pytest
 from deepaas.model.v2.wrapper import UploadedFile
 import yaml
 
-from fasterrcnn_pytorch_api import configs, api, utils_api
- 
+from fasterrcnn_pytorch_api import configs, api, utils_ap
 
 DATA_FILES = os.listdir(configs.DATA_PATH)
 MODELS_CKPT = utils_api.ls_local()
-BACKBONES=configs.BACKBONES
+BACKBONES = configs.BACKBONES
  
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope= "module")
 def metadata():
     """Fixture to return defined api metadata."""
     return api.get_metadata()
