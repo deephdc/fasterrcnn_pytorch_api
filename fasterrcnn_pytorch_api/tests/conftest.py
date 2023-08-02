@@ -26,7 +26,7 @@ def metadata():
 #  Fixtures to test train function
 #####################################################
 
-@pytest.fixture(scope="module", params=[os.path.join(configs.DATA_PATH,'brackish.yaml')  ])#FIXME:name of the data config
+@pytest.fixture(scope="module", params=[os.path.join(configs.DATA_PATH,'submarine_det/brackish.yaml')  ])#FIXME:name of the data config
 def data_config(request):
     """Fixture to return data_configs argument to test."""
     return request.param
@@ -61,6 +61,7 @@ def eval_n_epochs(request):
 def use_train_aug(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
+   
 @pytest.fixture(scope="module", params=[{
     'blur': {'p': 0.1, 'blur_limit': 3},
     'motion_blur': {'p': 0.1, 'blur_limit': 3},
@@ -115,10 +116,13 @@ def lr(request):
     """Fixture to return learning rate argument to test."""
     return request.param
 
-
+@pytest.fixture(scope="module", params=[True])
+def disable_wandb(request):
+    """Fixture to return use train augmentations argument to test."""
+    return request.param 
 @pytest.fixture(scope="module")
 def train_kwds(model, data_config, use_train_aug,aug_training_option,epochs,workers,batch,lr, imgsz, device, cosine_annealing, 
-               square_training, resume_training, no_mosaic, weights, seed, eval_n_epochs):
+               square_training, resume_training, no_mosaic, weights, seed, eval_n_epochs, disable_wandb):
     """Fixture to return arbitrary keyword arguments for predictions."""
     train_kwds = {
         'model': model,
@@ -137,7 +141,8 @@ def train_kwds(model, data_config, use_train_aug,aug_training_option,epochs,work
         'resume_training': resume_training,
         'square_training': square_training,
         'seed': seed ,
-        'eval_n_epochs':eval_n_epochs}
+        'eval_n_epochs':eval_n_epochs,
+        'disable_wandb':disable_wandb}
     
     return {k: v for k, v in train_kwds.items()}
 
