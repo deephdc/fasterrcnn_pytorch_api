@@ -57,11 +57,20 @@ The associated Docker container for this module can be found at: https://git.scc
 To train the FasterRCNN model, your dataset should be in coco format (.xml). Organize your data in the following structure:
 ```
 data
-	├── train_imgs
-	├── train_labels
-	├── valid_imgs
-	└── valid_labels
-	└── config.yaml
+    ├── train_imgs
+    │   ├── img1.jpg
+    │   ├── img2.jpg
+    ├── train_labels
+    │   ├── img1.xlm
+    │   ├── img2.xml
+    ├── valid_imgs
+    │   ├── img3.jpg
+    │   ├── img4.jpg
+    ├── valid_labels
+    │   ├── img1.xlm
+    │   ├── img2.xml
+    └── config.yaml
+
 ```
 
 The `config.yaml` file contains the following information about the data:

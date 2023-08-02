@@ -103,6 +103,7 @@ def  train(**args):
     os.makedirs(ckpt_path, exist_ok=True)
     args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
+    print(args['data_config'])
     p = Process(target=utils_api.launch_tensorboard, args=(configs.MONITOR_PORT,  configs.MODEL_DIR), daemon=True)
     p.start()
     main(args)
@@ -159,13 +160,13 @@ if __name__=='__main__':
            'eval_n_epochs':3,
            'disable_wandb':True
            }
-    # train(**args)
+     train(**args)
      input='/srv/fasterrcnn_pytorch_api/data/2019-02-20_19-01-02to2019-02-20_19-01-13_1-0005_jpg.rf.1734dbcac53c80893dcbfbe72387d94b.jpg'
      from deepaas.model.v2.wrapper import UploadedFile
      pred_kwds = {
         'input': UploadedFile('input', input,  'application/octet-stream','input' ),
         'timestamp':None,
-        'model':  'fasterrcnn_convnext_tiny',
+        'model':  '',
         'threshold':0.5,
         'imgsz':640,
         'device':False,
@@ -173,6 +174,6 @@ if __name__=='__main__':
         'square_img':False,
         'accept': 'image/jpeg'
     }
-     predict(**pred_kwds)
+    # predict(**pred_kwds)
  
      

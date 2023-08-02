@@ -172,8 +172,11 @@ class PredictArgsSchema(Schema):
     
     model= fields.Str(
         required=False,
+        missing="fasterrcnn_resnet50_fpn_v2",
         enum= configs.BACKBONES,
-        description= 'Name of the model you want to use for inference.')
+        description= 'Please provide the name of the model you want to use for inference.'
+                      'If you have specified neither nethier timestamp nor model name,'
+                      'the default model "fasterrcnn_resnet50_fpn_v2" is loaded.')
 
     threshold= fields.Float(
         required=False,
