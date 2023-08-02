@@ -11,7 +11,10 @@ from fasterrcnn_pytorch_api import configs, api, utils_api
 DATA_FILES = os.listdir(configs.DATA_PATH)
 MODELS_CKPT = utils_api.ls_local()
 BACKBONES = configs.BACKBONES
- 
+
+#####################################################
+#  Fixtures to test metadata function
+#####################################################
 @pytest.fixture(scope = "module")
 def metadata():
     """Fixture to return defined api metadata."""
