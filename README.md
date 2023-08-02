@@ -5,12 +5,11 @@ Object detection using FasterRCNN model
 
 To launch it, first install the package then run [deepaas](https://github.com/indigo-dc/DEEPaaS):
 ```bash
-git clone https://github.com/falibabaei//fasterrcnn_pytorch_api
+git clone --depth 1 -b wandb https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git
 cd fasterrcnn_pytorch_api
-pip install -e .
 git submodule init
-git submodule update
-cd submodule/dir
+git submodule update --remote --merge
+pip install -e ./fasterrcnn_pytorch_training_pipeline 
 pip install -e .
 cd ..
 deepaas-run --listen-ip 0.0.0.0
