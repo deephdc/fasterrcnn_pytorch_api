@@ -46,34 +46,9 @@ def cosine_annealing(request):
 
 @pytest.fixture(scope= "module", params= [False])
 def resume_training(request):
-    """Fixture to return resume training argument to test."""
-    return request.param
-
-@pytest.fixture(scope= "module", params= [2])
-def eval_n_epochs(request):
-    """Fixture to return eval_n_epochs argument to test."""
-    return request.param
-
-@pytest.fixture(scope= "module", params= [True])
-def use_train_aug(request):
-    """Fixture to return use train augmentations argument to test."""
     return request.param
    
-@pytest.fixture(scope= "module", params= [{
-    'blur': {'p': 0.1, 'blur_limit': 3},
-    'motion_blur': {'p': 0.1, 'blur_limit': 3},
-    'median_blur': {'p': 0.1, 'blur_limit': 3},
-    'to_gray': {'p': 0.1},
-    'random_brightness_contrast': {'p': 0.1},
-    'color_jitter': {'p': 0.1},
-    'random_gamma': {'p': 0.1}, 
-    'horizontal_flip': {'p': 1},
-    'vertical_flip': {'p': 1},
-    'rotate': {'limit': 45},
-    'shift_scale_rotate': {'shift_limit': 0.1, 'scale_limit': 0.1, 'rotate_limit': 30},
-    'Cutout': {'num_holes': 0, 'max_h_size': 0, 'max_w_size': '8', 'fill_value': 0, 'p': 0},
-    'ChannelShuffle': {'p': 0},
-}])
+@pytest.fixture(scope= "module", params= [configs.DATA_AUG_OPTION])
 def aug_training_option(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
@@ -88,7 +63,12 @@ def no_mosaic(request):
     """Fixture to return no mosaic argument to test."""
     return request.param
 
-@pytest.fixture(scope= "module", params= [1])
+@pytest.fixture(scope= "module", params= [True])
+def use_train_aug(request):
+    """Fixture to return use train augmentations argument to test."""
+    return request.param
+
+@pytest.fixture(scope= "module", params= [3])
 def epochs(request):
     """Fixture to return number of epochs argument to test."""
     return request.param
@@ -122,7 +102,7 @@ def disable_wandb(request):
 @pytest.fixture(scope= "module")
 def train_kwds(model, data_config, use_train_aug, aug_training_option,
                 epochs, workers, batch,lr , imgsz, device, cosine_annealing, 
-                square_training, resume_training, no_mosaic, weights, seed, eval_n_epochs,
+                square_training, resume_training, no_mosaic, weights, seed, 
                 disable_wandb):
     """Fixture to return arbitrary keyword arguments for predictions."""
     train_kwds = {
@@ -142,17 +122,13 @@ def train_kwds(model, data_config, use_train_aug, aug_training_option,
         'resume_training': resume_training,
         'square_training': square_training,
         'seed': seed,
-        'eval_n_epochs': eval_n_epochs,
         'disable_wandb': disable_wandb}
-    
     return {k: v for k, v in train_kwds.items()}
 
 @pytest.fixture(scope= "module")
 def trained_model_path(train_kwds):
-    print(train_kwds)
-    result = api.train(**train_kwds)
-    saved_model_path = str(result).split(' ')[-1].rstrip("'}")
-    yield saved_model_path
+    """Fixture to return trained model path."""
+    return api.train(**train_kwds)
     
 #####################################################
 #  Fixtures to test predict function
@@ -184,7 +160,7 @@ def imgsz(request):
     return request.param
 
 
-@pytest.fixture(scope= "module", params= [False ])
+@pytest.fixture(scope= "module", params= [True ])
 def device(request):
     """Fixture to return gpu flag argument to test."""
     return request.param
