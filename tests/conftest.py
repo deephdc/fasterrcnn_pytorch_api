@@ -34,7 +34,7 @@ def weights():
     """Fixture to return  no label argument to test."""
     return None
 
-@pytest.fixture(scope= "module", params= ['fasterrcnn_convnext_small'])
+@pytest.fixture(scope= "module", params= BACKBONES)
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
@@ -68,7 +68,7 @@ def use_train_aug(request):
     """Fixture to return use train augmentations argument to test."""
     return request.param
 
-@pytest.fixture(scope= "module", params= [3])
+@pytest.fixture(scope= "module", params= [2])
 def epochs(request):
     """Fixture to return number of epochs argument to test."""
     return request.param
@@ -128,7 +128,10 @@ def train_kwds(model, data_config, use_train_aug, aug_training_option,
 @pytest.fixture(scope= "module")
 def trained_model_path(train_kwds):
     """Fixture to return trained model path."""
-    return api.train(**train_kwds)
+    result = api.train(**train_kwds)
+    saved_model_path = str(result).split(' ')[-1].rstrip("'}")
+    yield saved_model_path
+    
     
 #####################################################
 #  Fixtures to test predict function
