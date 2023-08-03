@@ -69,11 +69,13 @@ def main(args):
 
     init_seeds(args['seed'] + 1 + RANK, deterministic=True)
     
+    from fasterrcnn_pytorch_api import configs
+
     # Settings/parameters/constants.
-    TRAIN_DIR_IMAGES = os.path.normpath(data_configs['TRAIN_DIR_IMAGES'])
-    TRAIN_DIR_LABELS = os.path.normpath(data_configs['TRAIN_DIR_LABELS'])
-    VALID_DIR_IMAGES = os.path.normpath(data_configs['VALID_DIR_IMAGES'])
-    VALID_DIR_LABELS = os.path.normpath(data_configs['VALID_DIR_LABELS'])
+    TRAIN_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_IMAGES']}"
+    TRAIN_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_LABELS']}"
+    VALID_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_IMAGES']}"
+    VALID_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_LABELS']}"
     CLASSES = data_configs['CLASSES']
     NUM_CLASSES = data_configs['NC']
     NUM_WORKERS = args['workers']

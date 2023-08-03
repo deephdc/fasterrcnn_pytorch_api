@@ -104,8 +104,8 @@ def  train(**args):
     args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
     print(args['data_config'])
-    p = Process(target=utils_api.launch_tensorboard, args=(configs.MONITOR_PORT,  configs.MODEL_DIR), daemon=True)
-    p.start()
+    #p = Process(target=utils_api.launch_tensorboard, args=(configs.MONITOR_PORT,  configs.MODEL_DIR), daemon=True)
+    #p.start()
     main(args)
     return {f'model was saved in {args["name"]}'}
 
