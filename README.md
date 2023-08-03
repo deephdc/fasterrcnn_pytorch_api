@@ -100,11 +100,6 @@ Then, open the Swagger interface, change the hyperparameters in the train sectio
 Note1: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform object detection on new images.
 
 Note2: If you want to use Wandb to track your experience, make sure to follow these steps:
-1. Change the value of `disable_wandb` to `true`.
-2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the `wandb_token` to your token for Wandb.
-   Example: `wandb_token = YOUR_WANDB_TOKEN` 
+1. Change the value of `disable_wandb` to `False`.
+2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the `wandb_token` to your actual Wandb API token. 
 
-Please replace `YOUR_WANDB_TOKEN` with your actual Wandb API token. 
-
-
- Wandb account and obtain your API token before setting it in the configuration file.
