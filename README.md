@@ -101,5 +101,10 @@ Note1: Please note that the model training process may take some time depending 
 
 Note2: If you want to use Wandb to track your experience, make sure to follow these steps:
 1. Change the value of `disable_wandb` to `False`.
-2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the `wandb_token` to your actual Wandb API token. 
+2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the following parameter
+```
+[wandb_token]
+#your token to save and monitor your training model in the wandb
+token= your_token #replace with your actual token string
+```
 
