@@ -138,7 +138,7 @@ deepaas-run --listen-ip 0.0.0.0
 ```
 Then, open the Swagger interface, change the hyperparameters in the train section, and click on train.
 
-Note: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform inference on new images.
+><span style="color:Blue">**Note:**</span>  Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform inference on new images.
 
 ## Using wandb to track your experience
 
