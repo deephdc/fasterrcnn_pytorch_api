@@ -76,11 +76,11 @@ data
 The `config.yaml` file contains the following information about the data:
 
 ```yaml
-# Images and labels directory should be relative to train.py
-TRAIN_DIR_IMAGES: '../data/train_imgs'
-TRAIN_DIR_LABELS: '../data/train_labels'
-VALID_DIR_IMAGES: '../data/valid_imgs'
-VALID_DIR_LABELS: '../data/valid_labels'
+# Images and labels directory should be insade data directory.
+TRAIN_DIR_IMAGES: '../my_dataset/train_imgs'
+TRAIN_DIR_LABELS: '../my_dataset/train_labels'
+VALID_DIR_IMAGES: '../my_dataset/valid_imgs'
+VALID_DIR_LABELS: '../my_dataset/valid_labels'
 # Class names.
 CLASSES: [
     class1, class2, ...
