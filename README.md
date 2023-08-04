@@ -60,15 +60,19 @@ data
     ├── train_imgs
     │   ├── img1.jpg
     │   ├── img2.jpg
+    │   ├── ...
     ├── train_labels
-    │   ├── img1.xlm
+    │   ├── img1.xml
     │   ├── img2.xml
+    │   ├── ...
     ├── valid_imgs
-    │   ├── img3.jpg
-    │   ├── img4.jpg
+    │   ├── img_1.jpg
+    │   ├── img_2.jpg
+    │   ├── ...
     ├── valid_labels
-    │   ├── img1.xlm
-    │   ├── img2.xml
+    │   ├── img_1.xml
+    │   ├── img_2.xml
+    │   ├── ...
     └── config.yaml
 
 ```
@@ -76,7 +80,7 @@ data
 The `config.yaml` file contains the following information about the data:
 
 ```yaml
-# Images and labels directory should be insade data directory.
+# Images and labels directory should be insade 'fasterrcnn_pytorch_api/data' directory.
 TRAIN_DIR_IMAGES: '../my_dataset/train_imgs'
 TRAIN_DIR_LABELS: '../my_dataset/train_labels'
 VALID_DIR_IMAGES: '../my_dataset/valid_imgs'
@@ -86,7 +90,7 @@ CLASSES: [
     class1, class2, ...
 ]
 # Number of classes.
-NC: 2
+NC: n
 ```
 
 ## Launching the API
@@ -99,7 +103,7 @@ Then, open the Swagger interface, change the hyperparameters in the train sectio
 
 Note1: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform inference on new images.
 
-Note2: If you want to use [wandb](https://wandb.ai/) to track your experience, make sure to follow these steps:
+Note2: Weights & Biases ([wandb](https://wandb.ai/)) simplifies the process of tracking your experiments, managing and versioning your data, and fostering collaboration within your team. With these tasks taken care of, you can direct your full attention to building the most optimal models. If you want to use [wandb](https://wandb.ai/) to track your experience, make sure to follow these steps:
 1. Change the value of `disable_wandb` to `False`.
 2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the following parameter
 ```
