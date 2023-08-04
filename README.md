@@ -25,7 +25,7 @@ git submodule update
 pip install -e ./path/to/submodule/dir
 pip install -e .
 ```
-><span style="color:Blue">**Note:**</span> Before installing the API and submodule requirements, please make sure to install >the following system packages: `gcc`, `unzip`, and `libgl1` as well. These packages are essential for a smooth installation >process and proper functioning of the framework.
+><span style="color:Blue">**Note:**</span> Before installing the API and submodule requirements, please make sure to install the following system packages: `gcc`, `unzip`, and `libgl1` as well. These packages are essential for a smooth installation process and proper functioning of the framework.
 ```
 apt update
 apt install -y unzip
