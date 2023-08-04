@@ -97,7 +97,7 @@ deepaas-run --listen-ip 0.0.0.0
 ```
 Then, open the Swagger interface, change the hyperparameters in the train section, and click on train.
 
-Note1: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform object detection on new images.
+Note1: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform inference on new images.
 
 Note2: If you want to use Wandb to track your experience, make sure to follow these steps:
 1. Change the value of `disable_wandb` to `False`.
