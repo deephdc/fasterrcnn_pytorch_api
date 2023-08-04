@@ -106,7 +106,7 @@ Note1: Please note that the model training process may take some time depending 
 Note2: Weights & Biases ([wandb](https://wandb.ai/)) simplifies the process of tracking your experiments, managing and versioning your data, and fostering collaboration within your team. With these tasks taken care of, you can direct your full attention to building the most optimal models. If you want to use [wandb](https://wandb.ai/) to track your experience, make sure to follow these steps:
 1. Sign up in [here](https://wandb.ai/).
 2. Copy Your API key for logging in to the wandb library.
-3. Change the value of `disable_wandb` to `False`.
+3. change the value of disable_wandb in the training arguments to False.
 4. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the following parameter
 ```
 [wandb_token]
