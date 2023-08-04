@@ -54,7 +54,7 @@ The associated Docker container for this module can be found at: https://git.scc
 
 ## Dataset Preparation
 
-To train the FasterRCNN model, your dataset should be in coco format (.xml). Organize your data in the following structure:
+To train the FasterRCNN model, your annotations should be saved as XML files. Please organize your data in the following structure:
 ```
 data
     ├── train_imgs
