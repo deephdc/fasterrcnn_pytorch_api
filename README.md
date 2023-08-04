@@ -154,5 +154,5 @@ Weights & Biases ([wandb](https://wandb.ai/)) simplifies the process of tracking
 #your token to save and monitor your training model in the wandb
 token= your_token #replace with your actual token string
 ```
-5. To track your experiments, simply log in here.
+5. To track your experiments, simply log in [here](https://wandb.ai/).
 
