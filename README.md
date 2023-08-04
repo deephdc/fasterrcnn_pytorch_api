@@ -25,8 +25,15 @@ git submodule update
 pip install -e ./path/to/submodule/dir
 pip install -e .
 ```
+Note1: Before installing the API and submodule requirements, please make sure to install the following system packages: `gcc`, `unzip`, and `libgl1` as well. These packages are essential for a smooth installation process and proper functioning of the framework.
+```
+apt update
+apt install -y unzip
+apt install -y gcc
+apt install -y libgl1
+```
 
-The associated Docker container for this module can be found at: https://git.scc.kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
+Note2: The associated Docker container for this module can be found at: https://git.scc.kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
 
 ## Project Structure
 
