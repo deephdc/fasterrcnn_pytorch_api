@@ -33,7 +33,7 @@ apt install -y gcc
 apt install -y libgl1
 ```
 
-Note2: The associated Docker container for this module can be found at: https://git.scc.kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
+><span style="color:Blue">**Note:**</span>  The associated Docker container for this module can be found at: https://git.scc.>kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
 
 ## Project Structure
 
