@@ -11,6 +11,7 @@ python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --data data_configs/v
 python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --use-train-aug --data data_configs/voc.yaml --name resnet50fpn_voc --batch 4
 dist-url: is not used in the main function and it is not needed
 """
+import wandb
 from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     train_one_epoch, evaluate, utils
 )
@@ -23,16 +24,17 @@ from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import 
 from fasterrcnn_pytorch_training_pipeline.utils.general import (
     Averager, 
     save_model ,
-    show_tranformed_image,
-      save_model_state, SaveBestModel,
+    save_model_state, SaveBestModel,
     yaml_save, init_seeds
 )
 from fasterrcnn_pytorch_training_pipeline.utils.logging import (
-    set_log, coco_log,
+    set_log,
     set_summary_writer, 
     tensorboard_loss_log, 
     tensorboard_map_log,
-    csv_log,
+    wandb_log, 
+    wandb_save_model,
+    wandb_init
    
 )
 from  torch.utils.data import (
@@ -57,7 +59,9 @@ np.random.seed(42)
 def main(args):
     # Initialize distributed mode.
     utils.init_distributed_mode(args)
- 
+    if not args['disable_wandb']:
+        wandb_init(name=args['name'])
+            
     
     # Load the data configurations
     with open(args['data_config']) as file:
@@ -65,11 +69,13 @@ def main(args):
 
     init_seeds(args['seed'] + 1 + RANK, deterministic=True)
     
+    from fasterrcnn_pytorch_api import configs
+
     # Settings/parameters/constants.
-    TRAIN_DIR_IMAGES = os.path.normpath(data_configs['TRAIN_DIR_IMAGES'])
-    TRAIN_DIR_LABELS = os.path.normpath(data_configs['TRAIN_DIR_LABELS'])
-    VALID_DIR_IMAGES = os.path.normpath(data_configs['VALID_DIR_IMAGES'])
-    VALID_DIR_LABELS = os.path.normpath(data_configs['VALID_DIR_LABELS'])
+    TRAIN_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_IMAGES']}"
+    TRAIN_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_LABELS']}"
+    VALID_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_IMAGES']}"
+    VALID_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_LABELS']}"
     CLASSES = data_configs['CLASSES']
     NUM_CLASSES = data_configs['NC']
     NUM_WORKERS = args['workers']
@@ -96,6 +102,7 @@ def main(args):
         TRAIN_DIR_LABELS,
         IMAGE_SIZE, 
         CLASSES,
+        aug_option=args['aug_training_option'],
         use_train_aug=args['use_train_aug'],
         no_mosaic=args['no_mosaic'],
         square_training=args['square_training']
@@ -105,6 +112,7 @@ def main(args):
         VALID_DIR_LABELS, 
         IMAGE_SIZE, 
         CLASSES,
+        aug_option=args['aug_training_option'],
         square_training=args['square_training']
     )
     print('Creating data loaders')
@@ -231,7 +239,6 @@ def main(args):
     save_best_model = SaveBestModel()
 
     for epoch in range(start_epochs, NUM_EPOCHS):
-        print('we are in the training loop')
         train_loss_hist.reset()
 
         _, batch_loss_list, \
@@ -248,17 +255,20 @@ def main(args):
             print_freq=100,
             scheduler=scheduler
         )
-
-        stats, val_pred_image = evaluate(
-            model, 
-            valid_loader, 
-            device=DEVICE,
-            save_valid_preds=False,
-            out_dir=OUT_DIR,
-            classes=CLASSES,
-            colors=COLORS
-        )
-
+        save_model(
+                epoch, 
+                model, 
+                optimizer, 
+                train_loss_list, 
+                train_loss_list_epoch,
+                val_map,
+                val_map_05,
+                OUT_DIR,
+                data_configs,
+                args['model']
+            )
+            # Save the model dictionary only for the current epoch.
+        save_model_state(model, OUT_DIR, data_configs, args['model'])  
         # Append the current epoch's batch-wise losses to the `train_loss_list`.
         train_loss_list.extend(batch_loss_list)
         loss_cls_list.append(np.mean(np.array(batch_loss_cls_list,)))
@@ -268,53 +278,67 @@ def main(args):
 
         # Append curent epoch's average loss to `train_loss_list_epoch`.
         train_loss_list_epoch.append(train_loss_hist.value)
-        val_map_05.append(stats[1])
-        val_map.append(stats[0])
+            
 
         # Save batch-wise train loss plot using TensorBoard. Better not to use it
         # as it increases the TensorBoard log sizes by a good extent (in 100s of MBs).
         # tensorboard_loss_log('Train loss', np.array(train_loss_list), writer)
         # Save epoch-wise train loss plot using TensorBoard.
         tensorboard_loss_log(
-            'Train loss', 
-            np.array(train_loss_list_epoch), 
-            writer,
-            epoch
-        )
-        # Save mAP plot using TensorBoard.
-        tensorboard_map_log(
-            name='mAP', 
-            val_map_05=np.array(val_map_05), 
-            val_map=np.array(val_map),
-            writer=writer,
-            epoch=epoch
-        )
- 
-        save_model(
-            epoch, 
-            model, 
-            optimizer, 
-            train_loss_list, 
-            train_loss_list_epoch,
-            val_map,
-            val_map_05,
-            OUT_DIR,
-            data_configs,
-            args['model']
-        )
-        # Save the model dictionary only for the current epoch.
-        save_model_state(model, OUT_DIR, data_configs, args['model'])
-        # Save best model if the current mAP @0.5:0.95 IoU is
-        # greater than the last hightest.
-        save_best_model(
-            model, 
-            val_map[-1], 
-            epoch, 
-            OUT_DIR,
-            data_configs,
-            args['model']
-        )
+                'Train loss', 
+                np.array(train_loss_list_epoch), 
+                writer,
+                epoch
+            )  
+      #  if epoch % args['eval_n_epochs'] == 0:
+        stats, val_pred_image = evaluate(
+                model, 
+                valid_loader, 
+                device=DEVICE,
+                save_valid_preds=False,
+                out_dir=OUT_DIR,
+                classes=CLASSES,
+                colors=COLORS
+            )
+        val_map_05.append(stats[1])
+        val_map.append(stats[0])
 
+        if not args['disable_wandb']:
+            wandb_log(
+                train_loss_hist.value,
+                batch_loss_list,
+                loss_cls_list,
+                loss_box_reg_list,
+                loss_objectness_list,
+                loss_rpn_list,
+                stats[1],
+                stats[0],
+                val_pred_image,
+                IMAGE_SIZE
+            )
+
+            # Save mAP plot using TensorBoard.
+        tensorboard_map_log(
+                name='mAP', 
+                val_map_05=np.array(val_map_05), 
+                val_map=np.array(val_map),
+                writer=writer,
+                epoch=epoch
+            )
+    
+            
+            # Save best model if the current mAP @0.5:0.95 IoU is
+            # greater than the last hightest.
+        save_best_model(
+                model, 
+                val_map[-1], 
+                epoch, 
+                OUT_DIR,
+                data_configs,
+                args['model']
+            )
+        if not args['disable_wandb']:
+            wandb_save_model(OUT_DIR)
 if __name__ == '__main__':
     print('OK')
 

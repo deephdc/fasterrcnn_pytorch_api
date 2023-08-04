@@ -1,4 +1,4 @@
-import json, io
+#import json, io
  
 #def test_prediction(test_predict):
 #    """Test the predict function."""
@@ -7,12 +7,11 @@ import json, io
 
     # Assert the expected result based on the 'accept' argument
 #    if accept == 'image/png':
-#        assert isinstance(result, io.BytesIO)  # Ensure the result is a binary image
+#        assert isinstance(result, io.BytesIO)
 #    else:
-#        assert isinstance(result, str)  
+#        assert isinstance(result, str)
 #        try:
-#            json.loads(result) 
+#            json.loads(result)
 #        except json.JSONDecodeError:
 #            assert False, "Result is not a valid JSON file"
-
 

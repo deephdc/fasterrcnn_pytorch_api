@@ -23,15 +23,19 @@ module [2].
 [2]: https://github.com/deephdc/demo_app
 """
 
+import json
 import logging 
 import os
 import shutil
 import tempfile
 from datetime import datetime 
+from multiprocessing import Process
 
+import wandb
 from fasterrcnn_pytorch_api import configs, fields, utils_api
 from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
+
 
 logger = logging.getLogger('__name__')
 
@@ -88,12 +92,20 @@ def  train(**args):
     """
     assert not (args.get('resume_training', False) and not args.get('weights')), \
     "weights argument should not be empty when resume_training is True"
+    if not args['disable_wandb']:
+        wandb.login(key=configs.WANDB_TOKEN)
+        
+    if args['weights'] is not None:
+        args['weights']=os.path.join(configs.MODEL_DIR, args['weights'], 'last_model.pth')
+
     timestamp=datetime.now().strftime('%Y-%m-%d_%H%M%S')
     ckpt_path=os.path.join(configs.MODEL_DIR, timestamp)
-    if not os.path.exists(ckpt_path):
-        os.mkdir(ckpt_path)
+    os.makedirs(ckpt_path, exist_ok=True)
     args['name']=ckpt_path
     args['data_config']=os.path.join(configs.DATA_PATH, args['data_config'])
+    print(args['data_config'])
+    #p = Process(target=utils_api.launch_tensorboard, args=(configs.MONITOR_PORT,  configs.MODEL_DIR), daemon=True)
+    #p.start()
     main(args)
     return {f'model was saved in {args["name"]}'}
 
@@ -106,9 +118,15 @@ def predict(**args):
     Returns:
         either a json file or png image with bounding box 
     """
-    utils_api.download_model_from_nextcloud(args['timestamp'])
-
-    args['weights']=os.path.join(configs.MODEL_DIR, args['timestamp'], 'best_model.pth')
+    
+    
+    if args['timestamp'] is not None:
+        utils_api.download_model_from_nextcloud(args['timestamp'])
+        args['weights']=os.path.join(configs.MODEL_DIR, args['timestamp'], 'best_model.pth')
+        if os.path.exists(args['weights']):
+            print("best_model.pth exists at the specified path.")        
+    else:        
+         args['weights']=None
 
     with tempfile.TemporaryDirectory() as tmpdir: 
         for f in [args['input']]:
@@ -123,21 +141,38 @@ def predict(**args):
 
 if __name__=='__main__':
      args={'model': 'fasterrcnn_convnext_small',
-           'data_config': 'test_data/submarin.yaml',
-           'use_train_aug': False,
+           'data_config':  'submarine_det/brackish.yaml',
+           'use_train_aug': True,
+           'aug_training_option': configs.DATA_AUG_OPTION,
            'device': True,
-           'epochs': 1,
+           'epochs': 3,
            'workers': 4,
            'batch': 1,
            'lr': 0.001,
            'imgsz': 640,
            'no_mosaic': True,
            'cosine_annealing': False,
-           'weights': '/home/se1131/fasterrcnn_pytorch_api/models/2023-05-10_121810/last_model.pth',
-           'resume_training': True,
+           'weights': None,
+           'resume_training': False,
            'square_training': False,
-           'seed':0
+           'seed':0,
+           'eval_n_epochs':3,
+           'disable_wandb':True
            }
      train(**args)
-# def warm():
-#     pass
+     input='/srv/fasterrcnn_pytorch_api/data/2019-02-20_19-01-02to2019-02-20_19-01-13_1-0005_jpg.rf.1734dbcac53c80893dcbfbe72387d94b.jpg'
+     from deepaas.model.v2.wrapper import UploadedFile
+     pred_kwds = {
+        'input': UploadedFile('input', input,  'application/octet-stream','input' ),
+        'timestamp':None,
+        'model':  '',
+        'threshold':0.5,
+        'imgsz':640,
+        'device':False,
+        'no_labels':False,
+        'square_img':False,
+        'accept': 'image/jpeg'
+    }
+    # predict(**pred_kwds)
+ 
+     

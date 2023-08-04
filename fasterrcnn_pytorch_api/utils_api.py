@@ -118,7 +118,11 @@ def download_directory_with_rclone(remote_name, remote_directory, local_director
     else:
         print("Error executing rclone command:", result.stderr)  
 
-
+def launch_tensorboard(port, logdir):
+    subprocess.call(['tensorboard',
+                     '--logdir', '{}'.format(logdir),
+                     '--port', '{}'.format(port),
+                     '--host', '0.0.0.0'])
 
 if __name__=='__main__':
         print("Remote directory path:", configs.REMOT_PATH)
