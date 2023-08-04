@@ -99,7 +99,7 @@ Then, open the Swagger interface, change the hyperparameters in the train sectio
 
 Note1: Please note that the model training process may take some time depending on the size of your dataset and the complexity of your custom backbone. Once the model is trained, you can use the API to perform inference on new images.
 
-Note2: If you want to use Wandb to track your experience, make sure to follow these steps:
+Note2: If you want to use [wandb](https://wandb.ai/) to track your experience, make sure to follow these steps:
 1. Change the value of `disable_wandb` to `False`.
 2. In the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` file, set the following parameter
 ```
