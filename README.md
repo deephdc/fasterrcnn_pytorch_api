@@ -93,10 +93,10 @@ The `config.yaml` file contains the following information about the data:
 
 ```yaml
 # Images and labels directory should be insade 'fasterrcnn_pytorch_api/data' directory.
-TRAIN_DIR_IMAGES: '../my_dataset/train_imgs'
-TRAIN_DIR_LABELS: '../my_dataset/train_labels'
-VALID_DIR_IMAGES: '../my_dataset/valid_imgs'
-VALID_DIR_LABELS: '../my_dataset/valid_labels'
+TRAIN_DIR_IMAGES: 'my_dataset/train_imgs'
+TRAIN_DIR_LABELS: 'my_dataset/train_labels'
+VALID_DIR_IMAGES: 'my_dataset/valid_imgs'
+VALID_DIR_LABELS: 'my_dataset/valid_labels'
 # Class names.
 CLASSES: [
     class1, class2, ...
@@ -139,21 +139,20 @@ The following backbones are available for training:
 
 During the training of the model, you have the following augmentation options available:
 
-- `blur_limit` (int): The maximum kernel size for blurring the input image.
 
-- `p` (float): The probability of applying the transformation.
-
-- `shift_limit` ((float, float) or float): The shift factor range for both height and width.
-
-- `scale_limit` ((float, float) or float): The scaling factor range.
-
-- `rotate_limit` ((int, int) or int): The rotation range.
-
-- `num_holes` (int): The number of regions to zero out.
-
-- `max_h_size` (int): The maximum height of the hole.
-
-- `max_w_size` (int): The maximum width of the hole.
+- **Blur**: Apply blurring effect with a probability of 10% (p=0.1) and a maximum blur kernel size of 3 (blur_limit=3).
+- **Motion Blur**: Apply motion blurring with a probability of 10% (p=0.1) and a maximum blur kernel size of 3 (blur_limit=3).
+- **Median Blur**: Apply median blurring with a probability of 10% (p=0.1) and a maximum blur kernel size of 3 (blur_limit=3).
+- **To Gray**: Convert the image to grayscale with a probability of 10% (p=0.1).
+- **Random Brightness and Contrast**: Apply random changes in brightness and contrast with a probability of 10% (p=0.1).
+- **Color Jitter**: Perform color jittering with a probability of 10% (p=0.1).
+- **Random Gamma**: Apply random gamma correction with a probability of 10% (p=0.1).
+- **Horizontal Flip**: Perform horizontal flipping with a probability of 100% (p=1.0).
+- **Vertical Flip**: Perform vertical flipping with a probability of 100% (p=1.0).
+- **Rotation**: Rotate the image within a range of -45 to 45 degrees (limit=45).
+- **Shift, Scale, and Rotate**: Perform combined shift, scale, and rotation transformation with a probability of 0% (p=0.0), shift limit of 0.1, scale limit of 0.1, and rotation limit of 30 degrees.
+- **Cutout**: Apply cutout augmentation with no holes (num_holes=0), a maximum hole height of 0 (max_h_size=0), a maximum hole width of 8 (max_w_size=8), and fill with zeros, using a probability of 0% (p=0.0).
+- **Channel Shuffle**: Shuffle color channels with a probability of 0% (p=0.0).
 
 Remember that you can control the usage of these options by adjusting the `p`(probability) value. If you want to exclude a particular augmentation option, simply set its `p` value to 0.
 
