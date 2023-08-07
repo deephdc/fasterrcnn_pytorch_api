@@ -1,14 +1,12 @@
-"""Configuration loader for rnacontactmap."""
+"""Configuration loader for FasterRCNN."""
 import ast
 import configparser
 import os
 import pathlib
 from importlib.metadata import metadata as _metadata
 
-#from webdav4.client import Client
 homedir = os.path.dirname(os.path.normpath(os.path.dirname(__file__)))
-base_dir=os.path.dirname(os.path.abspath(homedir))
-
+base_dir = os.path.dirname(os.path.abspath(homedir))
 
 # Get configuration from user env and merge with pkg settings
 SETTINGS_FILE = pathlib.Path(__file__).parent / "settings.ini"
@@ -79,7 +77,7 @@ except KeyError as err:
     raise RuntimeError("Undefined configuration for backbones") from err
 
 try:   
-    DATA_AUG_OPTION = os.getenv("data_augmentaion_options", settings['data_augmentaion_options']['names'])
+    DATA_AUG_OPTION = os.getenv("data_augmentation_options", settings['data_augmentation_options']['names'])
     if isinstance(DATA_AUG_OPTION, str):
         # Parse the string as a list of strings
         DATA_AUG_OPTION = ast.literal_eval(DATA_AUG_OPTION)
