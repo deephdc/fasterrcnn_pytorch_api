@@ -72,10 +72,10 @@ def main(args):
     from fasterrcnn_pytorch_api import configs
 
     # Settings/parameters/constants.
-    TRAIN_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_IMAGES']}"
-    TRAIN_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['TRAIN_DIR_LABELS']}"
-    VALID_DIR_IMAGES = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_IMAGES']}"
-    VALID_DIR_LABELS = f"{configs.DATA_PATH}/{data_configs['VALID_DIR_LABELS']}"
+    TRAIN_DIR_IMAGES = os.path.join(configs.DATA_PATH, data_configs['TRAIN_DIR_IMAGES'])
+    TRAIN_DIR_LABELS = os.path.join(configs.DATA_PATH, data_configs['TRAIN_DIR_LABELS'])
+    VALID_DIR_IMAGES = os.path.join(configs.DATA_PATH, data_configs['VALID_DIR_IMAGES'])
+    VALID_DIR_LABELS = os.path.join(configs.DATA_PATH, data_configs['VALID_DIR_LABELS'])
     CLASSES = data_configs['CLASSES']
     NUM_CLASSES = data_configs['NC']
     NUM_WORKERS = args['workers']
