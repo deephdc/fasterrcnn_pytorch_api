@@ -33,7 +33,7 @@ def ls_remote():
     Returns:
         A list of strings.
     """
-    remote_directory =configs.REMOT_PATH
+    remote_directory =configs.REMOTE_PATH
     return list_directories_with_rclone('rshare', remote_directory)
 
  
@@ -76,13 +76,13 @@ def download_model_from_nextcloud(timestamp):
 
     """
     logger.debug("Scanning at: %s", timestamp)
-    logger.debug("Scanning at: %s", configs.REMOT_PATH)
+    logger.debug("Scanning at: %s", configs.REMOTE_PATH)
     local_path=configs.MODEL_DIR
     ckpt_path=os.path.join(local_path, timestamp)
 
     if timestamp not in os.listdir(local_path) :
         print('downloading the chekpoint from nextcloud')
-        remote_directory=configs.REMOT_PATH
+        remote_directory=configs.REMOTE_PATH
         model_path=os.path.join(remote_directory, timestamp)
         download_directory_with_rclone( 'rshare', model_path ,local_path)
 
@@ -125,7 +125,7 @@ def launch_tensorboard(port, logdir):
                      '--host', '0.0.0.0'])
 
 if __name__=='__main__':
-        print("Remote directory path:", configs.REMOT_PATH)
+        print("Remote directory path:", configs.REMOTE_PATH)
       
         
    

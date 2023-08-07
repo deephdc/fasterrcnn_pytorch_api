@@ -11,7 +11,8 @@ To learn how to train and perform inference using this pipeline, please refer to
 
 More information about the model can be found in the [external repository](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline). You can explore additional details and documentation provided in that repository.
 
-In the current repository, we have integrated a DeepaaS API for this existing pipeline, making it easy to access and use the trained models for inference.
+## Adding DeepaaS API into the existing codebase
+In this repository, we have integrated a DeepaaS API into the existing codebase, enabling the seamless utilization of this pipeline. The inclusion of the DeepaaS API enhances the functionality and accessibility of the code, making it easier for users to leverage and interact with the pipeline efficiently.
 
 ><span style="color:Blue">**Note:**</span> To streamline the process of integrating the API into the external repository and eliminate code duplication, we decided to include a fork of the external repository as a submodule within the API repository. This approach allows us to maintain a separate repository for the API while still leveraging the shared codebase from the external repository, ensuring efficient collaboration and updates between the two projects.
 
@@ -66,6 +67,8 @@ apt install -y libgl1
 To train the FasterRCNN model, your annotations should be saved as XML files. Please organize your data in the following structure:
 ```
 data
+│
+└── my_dataset
     ├── train_imgs
     │   ├── img1.jpg
     │   ├── img2.jpg
@@ -132,6 +135,29 @@ The following backbones are available for training:
     'fasterrcnn_regnet_y_400mf'
 
 ```
+## Augmentation Options
+
+During the training of the model, you have the following augmentation options available:
+
+- `blur_limit` (int): The maximum kernel size for blurring the input image.
+
+- `p` (float): The probability of applying the transformation.
+
+- `shift_limit` ((float, float) or float): The shift factor range for both height and width.
+
+- `scale_limit` ((float, float) or float): The scaling factor range.
+
+- `rotate_limit` ((int, int) or int): The rotation range.
+
+- `num_holes` (int): The number of regions to zero out.
+
+- `max_h_size` (int): The maximum height of the hole.
+
+- `max_w_size` (int): The maximum width of the hole.
+
+Remember that you can control the usage of these options by adjusting the `p`(probability) value. If you want to exclude a particular augmentation option, simply set its `p` value to 0.
+
+Feel free to customize these options based on your dataset characteristics and project requirements to achieve the best results.
 ## Launching the API
 
 To train the model, run:
