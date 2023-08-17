@@ -51,8 +51,8 @@ except KeyError as err:
 
 
 try:  # remote path sub/models
-    REMOT_PATH = os.getenv("REMOT", settings['remote']['path'])
-    os.environ["REMOT_PATH"] = REMOT_PATH
+    REMOTE_PATH = os.getenv("REMOTE", settings['remote']['path'])
+    os.environ["REMOTE_PATH"] = REMOTE_PATH
 except KeyError as err:
     raise RuntimeError("Undefined configuration for Remotepath") from err
 
