@@ -1,7 +1,7 @@
-TRAIN_DIR_IMAGES: '/test_data/train/img'
-TRAIN_DIR_LABELS: '/test_data/train/label'
-VALID_DIR_IMAGES: '/test_data/validation/img'
-VALID_DIR_LABELS: '/test_data/validation/label'
+TRAIN_DIR_IMAGES: 'test_data/train/img'
+TRAIN_DIR_LABELS: 'test_data/train/label'
+VALID_DIR_IMAGES: 'test_data/validation/img'
+VALID_DIR_LABELS: 'test_data/validation/label'
 # Class names.
 CLASSES: [
     'crab',

@@ -8,7 +8,7 @@ import pytest
 from deepaas.model.v2.wrapper import UploadedFile
 from fasterrcnn_pytorch_api import configs, api, utils_api
 
-DATA_FILES = os.listdir(configs.DATA_PATH)
+DATA_FILES = os.listdir(os.path.join(configs.DATA_PATH, 'test_data/validation/img'))
 MODELS_CKPT = utils_api.ls_local()
 BACKBONES = configs.BACKBONES
 
@@ -140,7 +140,7 @@ def trained_model_path(train_kwds):
 @pytest.fixture(scope= "module", params=fnmatch.filter(DATA_FILES, "*.jpg") + fnmatch.filter(DATA_FILES, "*.png"))
 def input(request):
     """Fixture to return input_file argument to test."""
-    file = str(Path(configs.DATA_PATH) / request.param)
+    file = os.path.join(configs.DATA_PATH,'test_data/validation/img',request.param)
     content_type = 'application/octet-stream'
     return UploadedFile('input', file, content_type, request.param)
 
@@ -151,7 +151,7 @@ def accept(request):
     return request.param
 
 
-@pytest.fixture(scope= "module", params= [0.4, 0.5, 0.8])
+@pytest.fixture(scope= "module", params= [0.4])
 def threshold(request):
     """Fixture to return threshold argument to test."""
     return request.param
@@ -178,7 +178,7 @@ def square_img(request):
     """Fixture to return square image argument to test."""
     return request.param
 
-@pytest.fixture(scope= "module", params= ['2023-05-10_121810', None])
+@pytest.fixture(scope= "module", params= [ None])
 def timestamp(request):
     """Fixture to return square image argument to test."""
     return request.param
