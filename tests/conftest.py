@@ -23,7 +23,7 @@ def metadata():
 #####################################################
 #  Fixtures to test train function
 #####################################################
-@pytest.fixture(scope = "module", params = [os.path.join(configs.DATA_PATH,'submarine_det/brackish.yaml')  ])#FIXME:name of the data config
+@pytest.fixture(scope = "module", params = [os.path.join(configs.DATA_PATH,'test_data/submarin.yaml')  ])#FIXME:name of the data config
 def data_config(request):
     """Fixture to return data_configs argument to test."""
     return request.param
