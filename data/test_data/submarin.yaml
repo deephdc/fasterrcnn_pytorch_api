@@ -1,0 +1,15 @@
+TRAIN_DIR_IMAGES: '/test_data/train/img'
+TRAIN_DIR_LABELS: '/test_data/train/label'
+VALID_DIR_IMAGES: '/test_data/validation/img'
+VALID_DIR_LABELS: '/test_data/validation/label'
+# Class names.
+CLASSES: [
+    'crab',
+    'small_fish', 'starfish', 'fish', 
+    'jellyfish', 'shrimp'
+    ]
+
+# Number of classes (object classes + 1 for background class in Faster RCNN).
+NC: 6
+
+SAVE_VALID_PREDICTION_IMAGES: True
