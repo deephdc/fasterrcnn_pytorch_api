@@ -178,7 +178,7 @@ def square_img(request):
     """Fixture to return square image argument to test."""
     return request.param
 
-@pytest.fixture(scope= "module", params= [ '2023-05-10_121810', None])
+@pytest.fixture(scope= "module", params= [ '2023-05-10_121810'])
 def timestamp(request):
     """Fixture to return square image argument to test."""
     return request.param

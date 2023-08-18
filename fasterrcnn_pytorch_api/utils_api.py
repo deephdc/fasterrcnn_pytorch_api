@@ -124,6 +124,22 @@ def launch_tensorboard(port, logdir):
                      '--port', '{}'.format(port),
                      '--host', '0.0.0.0'])
 
+def check_input_type(file_path):
+    # Get the file extension
+    file_extension = file_path.split('.')[-1].lower()
+    
+    # List of video file extensions
+    video_extensions = ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv']
+    
+    # List of image file extensions
+    image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff']
+    
+    if file_extension in video_extensions:
+        return 'video'
+    elif file_extension in image_extensions:
+        return 'image'
+    else:
+        return 'unknown'
 if __name__=='__main__':
         print("Remote directory path:", configs.REMOTE_PATH)
       
