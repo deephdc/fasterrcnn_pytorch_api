@@ -33,8 +33,8 @@ from aiohttp.web import HTTPException
 
 import wandb
 from fasterrcnn_pytorch_api import configs, fields, utils_api
-from fasterrcnn_pytorch_api.scripts import inference
 from fasterrcnn_pytorch_api.scripts.train import main
+from fasterrcnn_pytorch_api.scripts   import combineinfer
 
 logger = logging.getLogger(__name__)
 
@@ -119,7 +119,6 @@ def train(**args):
     except Exception as err:
         raise HTTPException(reason=err) from err
 
-from fasterrcnn_pytorch_api.scripts   import combineinfer
 def predict(**args):
     """
         Performs inference on an input image.
