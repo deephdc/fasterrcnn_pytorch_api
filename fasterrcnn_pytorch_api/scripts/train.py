@@ -11,7 +11,6 @@ python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --data data_configs/v
 python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --use-train-aug --data data_configs/voc.yaml --name resnet50fpn_voc --batch 4
 dist-url: is not used in the main function and it is not needed
 """
-import wandb
 from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     train_one_epoch,
     evaluate,
