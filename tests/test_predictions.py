@@ -1,5 +1,7 @@
-import json, io
- 
+import json
+import io
+
+
 def test_prediction(test_predict):
     """Test the predict function."""
     # Access the test_predict fixture defined in conftest.py
@@ -14,4 +16,3 @@ def test_prediction(test_predict):
             json.loads(result)
         except json.JSONDecodeError:
             assert False, "Result is not a valid JSON file"
-

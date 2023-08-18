@@ -40,7 +40,3 @@ def test_checkpoints_remote(metadata):
     """Tests that metadata provides backbone remote information."""
     assert 'checkpoints_remote' in metadata
     assert isinstance(metadata['checkpoints_remote'], list)
-
-
-
-

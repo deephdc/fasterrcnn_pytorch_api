@@ -10,13 +10,14 @@ import subprocess
 
 from fasterrcnn_pytorch_api import configs
 
-logger = logging.getLogger('__name__')
+logger = logging.getLogger("__name__")
+
 
 def ls_local():
     """
     Utility to return a list of current models stored in the local folders
     configured for cache.
- 
+
     Returns:
         A list of strings.
     """
@@ -33,10 +34,10 @@ def ls_remote():
     Returns:
         A list of strings.
     """
-    remote_directory =configs.REMOTE_PATH
-    return list_directories_with_rclone('rshare', remote_directory)
+    remote_directory = configs.REMOTE_PATH
+    return list_directories_with_rclone("rshare", remote_directory)
 
- 
+
 def list_directories_with_rclone(remote_name, directory_path):
     """
     Function to list directories within a given directory in Nextcloud using rclone.
@@ -49,7 +50,7 @@ def list_directories_with_rclone(remote_name, directory_path):
         list: List of directory names within the specified parent directory.
     """
 
-    command = ['rclone', 'lsf', remote_name + ':' + directory_path]
+    command = ["rclone", "lsf", remote_name + ":" + directory_path]
     result = subprocess.run(command, capture_output=True, text=True)
 
     if result.returncode == 0:
@@ -77,24 +78,24 @@ def download_model_from_nextcloud(timestamp):
     """
     logger.debug("Scanning at: %s", timestamp)
     logger.debug("Scanning at: %s", configs.REMOTE_PATH)
-    local_path=configs.MODEL_DIR
-    ckpt_path=os.path.join(local_path, timestamp)
+    local_path = configs.MODEL_DIR
+    ckpt_path = os.path.join(local_path, timestamp)
 
-    if timestamp not in os.listdir(local_path) :
-        print('downloading the chekpoint from nextcloud')
-        remote_directory=configs.REMOTE_PATH
-        model_path=os.path.join(remote_directory, timestamp)
-        download_directory_with_rclone( 'rshare', model_path ,local_path)
+    if timestamp not in os.listdir(local_path):
+        print("downloading the chekpoint from nextcloud")
+        remote_directory = configs.REMOTE_PATH
+        model_path = os.path.join(remote_directory, timestamp)
+        download_directory_with_rclone("rshare", model_path, local_path)
 
-        if 'best_model.pth' not in os.listdir(ckpt_path):
+        if "best_model.pth" not in os.listdir(ckpt_path):
             raise Exception(f"No files were copied to {ckpt_path}")
 
         print(f"The model for {timestamp} was copied to {ckpt_path}")
 
     else:
-        print(f"Skipping download for {timestamp} as the model already exists in {ckpt_path}")
-
-
+        print(
+            f"Skipping download for {timestamp} as the model already exists in {ckpt_path}"
+        )
 
 
 def download_directory_with_rclone(remote_name, remote_directory, local_directory):
@@ -110,40 +111,46 @@ def download_directory_with_rclone(remote_name, remote_directory, local_director
         None
     """
 
-    command = ['rclone', 'copy', remote_name + ':' + remote_directory, local_directory]
+    command = ["rclone", "copy", remote_name + ":" + remote_directory, local_directory]
     result = subprocess.run(command, capture_output=True, text=True)
 
     if result.returncode == 0:
         print("Directory downloaded successfully.")
     else:
-        print("Error executing rclone command:", result.stderr)  
+        print("Error executing rclone command:", result.stderr)
+
 
 def launch_tensorboard(port, logdir):
-    subprocess.call(['tensorboard',
-                     '--logdir', '{}'.format(logdir),
-                     '--port', '{}'.format(port),
-                     '--host', '0.0.0.0'])
+    subprocess.call(
+        [
+            "tensorboard",
+            "--logdir",
+            "{}".format(logdir),
+            "--port",
+            "{}".format(port),
+            "--host",
+            "0.0.0.0",
+        ]
+    )
+
 
 def check_input_type(file_path):
     # Get the file extension
-    file_extension = file_path.split('.')[-1].lower()
-    
-    # List of video file extensions
-    video_extensions = ['mp4', 'avi', 'mov', 'mkv', 'flv', 'wmv']
-    
-    # List of image file extensions
-    image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff']
-    
-    if file_extension in video_extensions:
-        return 'video'
-    elif file_extension in image_extensions:
-        return 'image'
-    else:
-        return 'unknown'
-if __name__=='__main__':
-        print("Remote directory path:", configs.REMOTE_PATH)
-      
-        
-   
+    file_extension = file_path.split(".")[-1].lower()
 
- 
+    # List of video file extensions
+    video_extensions = ["mp4", "avi", "mov", "mkv", "flv", "wmv"]
+
+    # List of image file extensions
+    image_extensions = ["jpg", "jpeg", "png", "gif", "bmp", "tiff"]
+
+    if file_extension in video_extensions:
+        return "video"
+    elif file_extension in image_extensions:
+        return "image"
+    else:
+        return "unknown"
+
+
+if __name__ == "__main__":
+    print("Remote directory path:", configs.REMOTE_PATH)
