@@ -21,7 +21,7 @@ In this repository, we have integrated a DeepaaS API into the existing codebase,
 To launch the API, first, install the package, and then run [DeepaaS](https://github.com/indigo-dc/DEEPaaS):
 
 ```bash
-git clone --depth 1 https://github.com/falibabaei/fasterrcnn_pytorch_api
+git clone --depth 1 https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git
 cd fasterrcnn_pytorch_api
 git submodule init
 git submodule update
