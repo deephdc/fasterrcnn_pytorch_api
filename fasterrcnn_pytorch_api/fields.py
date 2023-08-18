@@ -165,7 +165,9 @@ class PredictArgsSchema(Schema):
         required=True,
         type="file",
         location="form",
-        description='Input an image.'
+        description='Input either an image or a video.\n'
+                    'video must be in the format MP4, AVI, MKV, MOV, WMV, FLV, WebM.\n'
+                    'Images must be in the format JPEG, PNG, BMP, GIF, TIFF, PPM, EXR, WebP. \n'
     )
 
     timestamp = fields.Str(

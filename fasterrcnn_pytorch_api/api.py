@@ -121,16 +121,16 @@ def train(**args):
 
 from fasterrcnn_pytorch_api.scripts   import combineinfer
 def predict(**args):
-        """
+    """
         Performs inference on an input image.
 
         Args:
             **args: keyword arguments from get_predict_args.
 
         Returns:
-            either a JSON file or PNG image with bounding boxes.
-        """
- #   try:  # Call your AI model predict() method
+            either a JSON file, PNG image or video with bounding boxes.
+    """
+    try:   
         logger.debug("Predict with args: %s", args)
 
         if args['timestamp'] is not None:
@@ -159,8 +159,8 @@ def predict(**args):
             else:
                 return buffer 
 
-    #except Exception as err:
-     #   raise HTTPException(reason=err) from err
+    except Exception as err:
+        raise HTTPException(reason=err) from err
             
             
      
