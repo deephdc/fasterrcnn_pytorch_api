@@ -1,16 +1,3 @@
-"""
-USAGE
-
-# training with Faster RCNN ResNet50 FPN model without mosaic or any other augmentation:
-python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --data data_configs/voc.yaml --no-mosaic --batch 4
-
-# Training on ResNet50 FPN with custom project folder name with mosaic augmentation (ON by default):
-python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --data data_configs/voc.yaml --name resnet50fpn_voc --batch 4
-
-# Training on ResNet50 FPN with custom project folder name with mosaic augmentation (ON by default) and added training augmentations:
-python train.py --model fasterrcnn_resnet50_fpn --epochs 2 --use-train-aug --data data_configs/voc.yaml --name resnet50fpn_voc --batch 4
-dist-url: is not used in the main function and it is not needed
-"""
 from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     train_one_epoch,
     evaluate,
@@ -74,10 +61,18 @@ def main(args):
     from fasterrcnn_pytorch_api import configs
 
     # Settings/parameters/constants.
-    TRAIN_DIR_IMAGES = os.path.join(configs.DATA_PATH, data_configs["TRAIN_DIR_IMAGES"])
-    TRAIN_DIR_LABELS = os.path.join(configs.DATA_PATH, data_configs["TRAIN_DIR_LABELS"])
-    VALID_DIR_IMAGES = os.path.join(configs.DATA_PATH, data_configs["VALID_DIR_IMAGES"])
-    VALID_DIR_LABELS = os.path.join(configs.DATA_PATH, data_configs["VALID_DIR_LABELS"])
+    TRAIN_DIR_IMAGES = os.path.join(
+        configs.DATA_PATH, data_configs["TRAIN_DIR_IMAGES"]
+    )
+    TRAIN_DIR_LABELS = os.path.join(
+        configs.DATA_PATH, data_configs["TRAIN_DIR_LABELS"]
+    )
+    VALID_DIR_IMAGES = os.path.join(
+        configs.DATA_PATH, data_configs["VALID_DIR_IMAGES"]
+    )
+    VALID_DIR_LABELS = os.path.join(
+        configs.DATA_PATH, data_configs["VALID_DIR_LABELS"]
+    )
     CLASSES = data_configs["CLASSES"]
     NUM_CLASSES = data_configs["NC"]
     NUM_WORKERS = args["workers"]
@@ -123,10 +118,16 @@ def main(args):
     valid_sampler = SequentialSampler(valid_dataset)
 
     train_loader = create_train_loader(
-        train_dataset, BATCH_SIZE, NUM_WORKERS, batch_sampler=train_sampler
+        train_dataset,
+        BATCH_SIZE,
+        NUM_WORKERS,
+        batch_sampler=train_sampler,
     )
     valid_loader = create_valid_loader(
-        valid_dataset, BATCH_SIZE, NUM_WORKERS, batch_sampler=valid_sampler
+        valid_dataset,
+        BATCH_SIZE,
+        NUM_WORKERS,
+        batch_sampler=valid_sampler,
     )
     print(f"Number of training samples: {len(train_dataset)}")
     print(f"Number of validation samples: {len(valid_dataset)}\n")
@@ -158,9 +159,9 @@ def main(args):
         checkpoint = torch.load(args["weights"], map_location=DEVICE)
         ckpt_state_dict = checkpoint["model_state_dict"]
         # Get the number of classes from the loaded checkpoint.
-        old_classes = ckpt_state_dict["roi_heads.box_predictor.cls_score.weight"].shape[
-            0
-        ]
+        old_classes = ckpt_state_dict[
+            "roi_heads.box_predictor.cls_score.weight"
+        ].shape[0]
 
         # Build the new model with number of classes same as checkpoint.
         build_model = create_model[args["model"]]
@@ -170,12 +171,18 @@ def main(args):
 
         # Change output features for class predictor and box predictor
         # according to current dataset classes.
-        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        in_features = (
+            model.roi_heads.box_predictor.cls_score.in_features
+        )
         model.roi_heads.box_predictor.cls_score = torch.nn.Linear(
-            in_features=in_features, out_features=NUM_CLASSES, bias=True
+            in_features=in_features,
+            out_features=NUM_CLASSES,
+            bias=True,
         )
         model.roi_heads.box_predictor.bbox_pred = torch.nn.Linear(
-            in_features=in_features, out_features=NUM_CLASSES * 4, bias=True
+            in_features=in_features,
+            out_features=NUM_CLASSES * 4,
+            bias=True,
         )
         # FIXME: should be loaded from the last chaeckpoint or from a timestamp
         if args["resume_training"]:
@@ -192,7 +199,9 @@ def main(args):
                 train_loss_list = checkpoint["train_loss_list"]
             if checkpoint["train_loss_list_epoch"]:
                 print("Loading previous epoch wise loss list...")
-                train_loss_list_epoch = checkpoint["train_loss_list_epoch"]
+                train_loss_list_epoch = checkpoint[
+                    "train_loss_list_epoch"
+                ]
             if checkpoint["val_map"]:
                 print("Loading previous mAP list")
                 val_map = checkpoint["val_map"]
@@ -206,10 +215,12 @@ def main(args):
         )
     try:
         torchinfo.summary(
-            model, device=DEVICE, input_size=(BATCH_SIZE, 3, IMAGE_SIZE, IMAGE_SIZE)
+            model,
+            device=DEVICE,
+            input_size=(BATCH_SIZE, 3, IMAGE_SIZE, IMAGE_SIZE),
         )
-    except:
-        print(model)
+    except Exception as e:
+        print(f"An error occurred while summarizing the model: {e}")
     # Total parameters and trainable parameters.
     total_params = sum(p.numel() for p in model.parameters())
     print(f"{total_params:,} total parameters.")
@@ -220,7 +231,9 @@ def main(args):
     # Get the model parameters.
     params = [p for p in model.parameters() if p.requires_grad]
     # Define the optimizer.
-    optimizer = torch.optim.SGD(params, lr=args["lr"], momentum=0.9, nesterov=True)
+    optimizer = torch.optim.SGD(
+        params, lr=args["lr"], momentum=0.9, nesterov=True
+    )
     # optimizer = torch.optim.AdamW(params, lr=0.0001, weight_decay=0.0005)
     if args["resume_training"]:
         # LOAD THE OPTIMIZER STATE DICTIONARY FROM THE CHECKPOINT.
@@ -231,8 +244,10 @@ def main(args):
         # LR will be zero as we approach `steps` number of epochs each time.
         # If `steps = 5`, LR will slowly reduce to zero every 5 epochs.
         steps = NUM_EPOCHS + 10
-        scheduler = torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
-            optimizer, T_0=steps, T_mult=1, verbose=False
+        scheduler = (
+            torch.optim.lr_scheduler.CosineAnnealingWarmRestarts(
+                optimizer, T_0=steps, T_mult=1, verbose=False
+            )
         )
     else:
         scheduler = None
@@ -273,7 +288,8 @@ def main(args):
         )
         # Save the model dictionary only for the current epoch.
         save_model_state(model, OUT_DIR, data_configs, args["model"])
-        # Append the current epoch's batch-wise losses to the `train_loss_list`.
+        # Append the current epoch's batch-wise losses
+        # to the `train_loss_list`.
         train_loss_list.extend(batch_loss_list)
         loss_cls_list.append(
             np.mean(
@@ -282,19 +298,23 @@ def main(args):
                 )
             )
         )
-        loss_box_reg_list.append(np.mean(np.array(batch_loss_box_reg_list)))
-        loss_objectness_list.append(np.mean(np.array(batch_loss_objectness_list)))
+        loss_box_reg_list.append(
+            np.mean(np.array(batch_loss_box_reg_list))
+        )
+        loss_objectness_list.append(
+            np.mean(np.array(batch_loss_objectness_list))
+        )
         loss_rpn_list.append(np.mean(np.array(batch_loss_rpn_list)))
 
         # Append curent epoch's average loss to `train_loss_list_epoch`.
         train_loss_list_epoch.append(train_loss_hist.value)
 
-        # Save batch-wise train loss plot using TensorBoard. Better not to use it
-        # as it increases the TensorBoard log sizes by a good extent (in 100s of MBs).
-        # tensorboard_loss_log('Train loss', np.array(train_loss_list), writer)
-        # Save epoch-wise train loss plot using TensorBoard.
+        # Save batch-wise train loss plot using TensorBoard.
         tensorboard_loss_log(
-            "Train loss", np.array(train_loss_list_epoch), writer, epoch
+            "Train loss",
+            np.array(train_loss_list_epoch),
+            writer,
+            epoch,
         )
         #  if epoch % args['eval_n_epochs'] == 0:
         stats, val_pred_image = evaluate(
@@ -334,7 +354,14 @@ def main(args):
 
         # Save best model if the current mAP @0.5:0.95 IoU is
         # greater than the last hightest.
-        save_best_model(model, val_map[-1], epoch, OUT_DIR, data_configs, args["model"])
+        save_best_model(
+            model,
+            val_map[-1],
+            epoch,
+            OUT_DIR,
+            data_configs,
+            args["model"],
+        )
         if not args["disable_wandb"]:
             wandb_save_model(OUT_DIR)
 

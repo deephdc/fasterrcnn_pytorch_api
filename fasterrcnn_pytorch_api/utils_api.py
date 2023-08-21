@@ -40,11 +40,13 @@ def ls_remote():
 
 def list_directories_with_rclone(remote_name, directory_path):
     """
-    Function to list directories within a given directory in Nextcloud using rclone.
+    Function to list directories within a given directory in Nextcloud
+    using rclone.
 
     Args:
         remote_name (str): Name of the configured Nextcloud remote in rclone.
-        directory_path (str): Path of the parent directory to list the directories from.
+        directory_path (str): Path of the parent directory to list the
+        directories from.
 
     Returns:
         list: List of directory names within the specified parent directory.
@@ -55,7 +57,9 @@ def list_directories_with_rclone(remote_name, directory_path):
 
     if result.returncode == 0:
         directory_names = result.stdout.splitlines()
-        directory_names = [d.rstrip("/") for d in directory_names if d[0].isdigit()]
+        directory_names = [
+            d.rstrip("/") for d in directory_names if d[0].isdigit()
+        ]
         return directory_names
     else:
         print("Error executing rclone command:", result.stderr)
@@ -73,7 +77,8 @@ def download_model_from_nextcloud(timestamp):
        None
 
     Raises:
-       Exception: If no files were copied to the checkpoint directory after downloading the model from the URL.
+       Exception: If no files were copied to the checkpoint directory after
+       downloading the model from the URL.
 
     """
     logger.debug("Scanning at: %s", timestamp)
@@ -85,7 +90,9 @@ def download_model_from_nextcloud(timestamp):
         print("downloading the chekpoint from nextcloud")
         remote_directory = configs.REMOTE_PATH
         model_path = os.path.join(remote_directory, timestamp)
-        download_directory_with_rclone("rshare", model_path, local_path)
+        download_directory_with_rclone(
+            "rshare", model_path, local_path
+        )
 
         if "best_model.pth" not in os.listdir(ckpt_path):
             raise Exception(f"No files were copied to {ckpt_path}")
@@ -94,24 +101,33 @@ def download_model_from_nextcloud(timestamp):
 
     else:
         print(
-            f"Skipping download for {timestamp} as the model already exists in {ckpt_path}"
+            f"Skipping download for {timestamp} as the model already exists in"
+            f" {ckpt_path}"
         )
 
 
-def download_directory_with_rclone(remote_name, remote_directory, local_directory):
+def download_directory_with_rclone(
+    remote_name, remote_directory, local_directory
+):
     """
     Function to download a directory using rclone.
 
     Args:
         remote_name (str): Name of the configured remote in rclone.
         remote_directory (str): Path of the remote directory to be downloaded.
-        local_directory (str): Path of the local directory to save the downloaded files.
+        local_directory (str): Path of the local directory to save the
+        downloaded files.
 
     Returns:
         None
     """
 
-    command = ["rclone", "copy", remote_name + ":" + remote_directory, local_directory]
+    command = [
+        "rclone",
+        "copy",
+        remote_name + ":" + remote_directory,
+        local_directory,
+    ]
     result = subprocess.run(command, capture_output=True, text=True)
 
     if result.returncode == 0:

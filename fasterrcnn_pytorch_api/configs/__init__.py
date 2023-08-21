@@ -51,7 +51,9 @@ try:  # Local path for caching   sub/models
     TEST_MODEL = os.path.join(base_dir, TEST_MODEL)
     os.environ["TEST_MODEL"] = TEST_MODEL
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for test model path") from err
+    raise RuntimeError(
+        "Undefined configuration for test model path"
+    ) from err
 
 
 try:  # remote path sub/models
@@ -61,13 +63,17 @@ except KeyError as err:
     raise RuntimeError("Undefined configuration for Remotepath") from err
 
 try:  # Port for monitoring using tensorboard
-    MONITOR_PORT = os.getenv("MONITOR_PORT", settings["monitorPORT"]["port"])
+    MONITOR_PORT = os.getenv(
+        "MONITOR_PORT", settings["monitorPORT"]["port"]
+    )
     os.environ["MONITOR_PORT"] = MONITOR_PORT
 except KeyError as err:
     raise RuntimeError("Undefined Monitor port for tensorboar") from err
 
 try:
-    WANDB_TOKEN = os.getenv("wandb_token", settings["wandb_token"]["token"])
+    WANDB_TOKEN = os.getenv(
+        "wandb_token", settings["wandb_token"]["token"]
+    )
 except KeyError as err:
     raise RuntimeError("Undefined configuration for WANDB_TOKEN") from err
 
@@ -82,10 +88,13 @@ except KeyError as err:
 
 try:
     DATA_AUG_OPTION = os.getenv(
-        "data_augmentation_options", settings["data_augmentation_options"]["names"]
+        "data_augmentation_options",
+        settings["data_augmentation_options"]["names"],
     )
     if isinstance(DATA_AUG_OPTION, str):
         # Parse the string as a list of strings
         DATA_AUG_OPTION = ast.literal_eval(DATA_AUG_OPTION)
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for data augmentation options") from err
+    raise RuntimeError(
+        "Undefined configuration for data augmentation options"
+    ) from err

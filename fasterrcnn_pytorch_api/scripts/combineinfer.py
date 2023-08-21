@@ -6,7 +6,7 @@ import yaml
 import os
 import json
 from io import BytesIO
-import tempfile 
+import tempfile
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import (
     create_model,
 )
@@ -23,7 +23,8 @@ from fasterrcnn_pytorch_api import configs
 
 def get_video_dimensions(video_path):
     """
-    Reads a video and returns the capture object and its frame dimensions.
+    Reads a video and returns the capture object and its
+    frame dimensions.
 
     Args:
         video_path (str): Path to the input video file.
@@ -66,18 +67,28 @@ class InferenceEngine:
             self.CLASSES = data_configs["CLASSES"]
             try:
                 build_model_fn = create_model[args["model"]]
-                self.model, _ = build_model_fn(num_classes=NUM_CLASSES, coco_model=True)
+                self.model, _ = build_model_fn(
+                    num_classes=NUM_CLASSES, coco_model=True
+                )
             except KeyError:
                 build_model_fn = create_model["fasterrcnn_resnet50_fpn_v2"]
-                self.model, _ = build_model_fn(num_classes=NUM_CLASSES, coco_model=True)
-            self.colors = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
+                self.model, _ = build_model_fn(
+                    num_classes=NUM_CLASSES, coco_model=True
+                )
+            self.colors = np.random.uniform(
+                0, 255, size=(len(self.CLASSES), 3)
+            )
         else:
             checkpoint = torch.load(args["weights"], map_location=self.device)
             NUM_CLASSES = len(checkpoint["data"]["CLASSES"])
             self.CLASSES = checkpoint["data"]["CLASSES"]
-            self.colors = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
+            self.colors = np.random.uniform(
+                0, 255, size=(len(self.CLASSES), 3)
+            )
             build_model_fn = create_model[checkpoint["model_name"]]
-            self.model = build_model_fn(num_classes=NUM_CLASSES, coco_model=False)
+            self.model = build_model_fn(
+                num_classes=NUM_CLASSES, coco_model=False
+            )
             self.model.load_state_dict(checkpoint["model_state_dict"])
         self.model.to(self.device).eval()
 
@@ -112,7 +123,11 @@ class InferenceEngine:
                     break
 
                 orig_frame = frame.copy()
-                orig_frame, json_string, fps = self.generate_json_response(
+                (
+                    orig_frame,
+                    json_string,
+                    fps,
+                ) = self.generate_json_response(
                     orig_frame, frame_width, **args
                 )
                 orig_frame = annotate_fps(orig_frame, fps)
@@ -129,7 +144,8 @@ class InferenceEngine:
 
     def infer_single_image(self, image_path, **args):
         """
-        Performs inference on a single image and returns JSON results and image buffer.
+        Performs inference on a single image and returns JSON results
+        and image buffer.
 
         Args:
             image_path (str): Path to the input image file.
@@ -156,7 +172,8 @@ class InferenceEngine:
 
     def generate_json_response(self, orig_image, frame_width, **args):
         """
-        Generates JSON response and annotations based on the inference results.
+        Generates JSON response and annotations based on the
+        inference results.
 
         Args:
             orig_image (numpy.ndarray): Original image data.
@@ -172,7 +189,9 @@ class InferenceEngine:
             RESIZE_TO = args["imgsz"]
         else:
             RESIZE_TO = frame_width
-        image_resized = resize(orig_image, RESIZE_TO, square=args["square_img"])
+        image_resized = resize(
+            orig_image, RESIZE_TO, square=args["square_img"]
+        )
         image = cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB)
         image = infer_transforms(image)
         image = torch.unsqueeze(image, 0)

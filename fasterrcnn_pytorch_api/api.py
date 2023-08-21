@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
 Functions to integrate your model with the DEEPaaS API.
-It's usually good practice to keep this file minimal, only performing the interfacing
-tasks. In this way, you don't mix your true code with DEEPaaS code and everything is
-more modular. That is, if you need to write the predict() function in api.py, you
-would import your true predict function and call it from here (with some processing /
-postprocessing in between if needed).
+It's usually good practice to keep this file minimal, only
+performing the interfacing tasks. In this way, you don't mix
+your true code with DEEPaaS code and everything is more modular.
+That is, if you need to write the predict() function in api.py, you
+would import your true predict function and call it from here
+(with some processing /postprocessing in between if needed).
 For example:
 
     import mycustomfile
@@ -16,8 +17,8 @@ For example:
         resp = postprocess(resp)
         return resp
 
-To start populating this file, take a look at the docs [1] and at a canonical exemplar
-module [2].
+To start populating this file, take a look at the docs [1] and
+at a canonical exemplar module [2].
 
 [1]: https://docs.deep-hybrid-datacloud.eu/
 [2]: https://github.com/deephdc/demo_app
@@ -99,8 +100,12 @@ def train(**args):
         logger.info("Training model...")
         logger.debug("Train with args: %s", args)
         assert not (
-            args.get("resume_training", False) and not args.get("weights")
-        ), "weights argument should not be empty when resume_training is True"
+            args.get("resume_training", False)
+            and not args.get("weights")
+        ), (
+            "weights argument should not be empty when resume_training is"
+            " True"
+        )
         if not args["disable_wandb"]:
             wandb.login(key=configs.WANDB_TOKEN)
 
@@ -113,7 +118,9 @@ def train(**args):
         ckpt_path = os.path.join(configs.MODEL_DIR, timestamp)
         os.makedirs(ckpt_path, exist_ok=True)
         args["name"] = ckpt_path
-        args["data_config"] = os.path.join(configs.DATA_PATH, args["data_config"])
+        args["data_config"] = os.path.join(
+            configs.DATA_PATH, args["data_config"]
+        )
 
         p = Process(
             target=utils_api.launch_tensorboard,
@@ -152,10 +159,16 @@ def predict(**args):
 
         with tempfile.TemporaryDirectory() as tmpdir:
             args["input"] = [args["input"]]
-            file_format = utils_api.check_input_type(args["input"][0].original_filename)
+            file_format = utils_api.check_input_type(
+                args["input"][0].original_filename
+            )
             for f in args["input"]:
-                shutil.copy(f.filename, tmpdir + "/" + f.original_filename)
-            args["input"] = [os.path.join(tmpdir, t) for t in os.listdir(tmpdir)]
+                shutil.copy(
+                    f.filename, tmpdir + "/" + f.original_filename
+                )
+            args["input"] = [
+                os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
+            ]
             engine = combineinfer.InferenceEngine(args)
             json_string, buffer = engine.infer(file_format, **args)
             logger.debug("Response json_string: %d", json_string)
@@ -192,12 +205,16 @@ if __name__ == "__main__":
         "disable_wandb": True,
     }
     # train(**args)
-    input_file = "/srv/yolov8_api/data/mixkit-white-cat-lying-among-the-grasses-seen-up-close-22732-large.mp4"
-    from deepaas.model.v2.wrapper import UploadedFile
+    input_file = "/srv/yolov8_api/data/mixkit-white-cat-lying" + \
+    "-among-the-grasses-seen-up-close-22732-large.mp4"
 
+    from deepaas.model.v2.wrapper import UploadedFile
     pred_kwds = {
         "input": UploadedFile(
-            "input", input_file, "application/octet-stream", "input.mp4"
+            "input",
+            input_file,
+            "application/octet-stream",
+            "input.mp4",
         ),
         "timestamp": "2023-05-10_121810",
         "model": "",
