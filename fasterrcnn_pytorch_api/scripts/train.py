@@ -3,7 +3,6 @@ from fasterrcnn_pytorch_training_pipeline.torch_utils.engine import (
     evaluate,
     utils,
 )
-
 from fasterrcnn_pytorch_training_pipeline.datasets import (
     create_train_dataset,
     create_valid_dataset,
@@ -21,6 +20,7 @@ from fasterrcnn_pytorch_training_pipeline.utils.general import (
     yaml_save,
     init_seeds,
 )
+
 from fasterrcnn_pytorch_training_pipeline.utils.logging import (
     set_log,
     set_summary_writer,
@@ -288,7 +288,7 @@ def main(args):
         )
         # Save the model dictionary only for the current epoch.
         save_model_state(model, OUT_DIR, data_configs, args["model"])
-        # Append the current epoch's batch-wise losses
+        # Append the current epoch's batch-wise losses 
         # to the `train_loss_list`.
         train_loss_list.extend(batch_loss_list)
         loss_cls_list.append(
