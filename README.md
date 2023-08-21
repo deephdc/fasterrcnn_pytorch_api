@@ -181,3 +181,20 @@ token= your_token #replace with your actual token string
 ```
 5. To track your experiments, simply log in [here](https://wandb.ai/).
 
+## Inference Methods
+
+You can utilize the Swagger interface to upload your images or videos and obtain the following outputs:
+
+- For images:
+
+    - An annotated image highlighting the object of interest with a bounding box.
+    - A JSON string providing the coordinates of the bounding box, the object's name within the box, and the confidence score of the object detection.
+
+- For videos:
+
+    - A video with bounding boxes delineating objects of interest throughout.
+    - A JSON string accompanying each frame, supplying bounding box coordinates, object names within the boxes, and confidence scores for the detected objects.
+
+
+
+
