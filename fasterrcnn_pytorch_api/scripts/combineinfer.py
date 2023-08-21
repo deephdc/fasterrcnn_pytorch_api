@@ -7,9 +7,9 @@ import os
 import json
 from io import BytesIO
 import tempfile
-from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import (
-    create_model,
-)
+from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model\
+    import create_model
+
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import (
     inference_annotations,
     annotate_fps,
@@ -37,14 +37,18 @@ def get_video_dimensions(video_path):
     cap = cv2.VideoCapture(video_path)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
-    assert frame_width != 0 and frame_height != 0, "Please check video path..."
+    assert (
+        frame_width != 0 and frame_height != 0
+    ), "Please check video path..."
     return cap, frame_width, frame_height
 
 
 class InferenceEngine:
     def __init__(self, args):
         self.device = torch.device(
-            "cuda:0" if args["device"] and torch.cuda.is_available() else "cpu"
+            "cuda:0"
+            if args["device"] and torch.cuda.is_available()
+            else "cpu"
         )
         self.build_model(args)
 
@@ -60,7 +64,9 @@ class InferenceEngine:
         """
         if args["weights"] is None:
             with open(
-                os.path.join(configs.DATA_PATH, "coco_config/coco_config.yaml")
+                os.path.join(
+                    configs.DATA_PATH, "coco_config/coco_config.yaml"
+                )
             ) as file:
                 data_configs = yaml.safe_load(file)
             NUM_CLASSES = data_configs["NC"]
@@ -71,7 +77,9 @@ class InferenceEngine:
                     num_classes=NUM_CLASSES, coco_model=True
                 )
             except KeyError:
-                build_model_fn = create_model["fasterrcnn_resnet50_fpn_v2"]
+                build_model_fn = create_model[
+                    "fasterrcnn_resnet50_fpn_v2"
+                ]
                 self.model, _ = build_model_fn(
                     num_classes=NUM_CLASSES, coco_model=True
                 )
@@ -79,7 +87,9 @@ class InferenceEngine:
                 0, 255, size=(len(self.CLASSES), 3)
             )
         else:
-            checkpoint = torch.load(args["weights"], map_location=self.device)
+            checkpoint = torch.load(
+                args["weights"], map_location=self.device
+            )
             NUM_CLASSES = len(checkpoint["data"]["CLASSES"])
             self.CLASSES = checkpoint["data"]["CLASSES"]
             self.colors = np.random.uniform(
@@ -94,7 +104,8 @@ class InferenceEngine:
 
     def infer_video(self, video_path, **args):
         """
-        Performs inference on a video and returns JSON results and a video message.
+        Performs inference on a video and returns JSON results
+        and a video message.
 
         Args:
             video_path (str): Path to the input video file.
@@ -104,7 +115,9 @@ class InferenceEngine:
             dict: JSON output containing annotations for each frame.
             binary: Binary video message.
         """
-        cap, frame_width, frame_height = get_video_dimensions(video_path)
+        cap, frame_width, frame_height = get_video_dimensions(
+            video_path
+        )
         output_format = "mp4"
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         with tempfile.NamedTemporaryFile(
@@ -132,7 +145,9 @@ class InferenceEngine:
                 )
                 orig_frame = annotate_fps(orig_frame, fps)
                 out.write(orig_frame)
-                json_out[f"frame_{frame_count}"] = json.loads(json_string)
+                json_out[f"frame_{frame_count}"] = json.loads(
+                    json_string
+                )
                 frame_count += 1
 
         cap.release()
@@ -201,7 +216,9 @@ class InferenceEngine:
         end_time = time.time()
         fps = 1 / (end_time - start_time)
 
-        outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
+        outputs = [
+            {k: v.to("cpu") for k, v in t.items()} for t in outputs
+        ]
 
         if len(outputs[0]["boxes"]) != 0:
             orig_image = inference_annotations(
@@ -244,14 +261,14 @@ class InferenceEngine:
 
 if __name__ == "__main__":
     args = {
-        "device": "cuda",  # 'cuda' or 'cpu'
-        "weights": "path_to_weights.pth",  # Provide the path to your weights file
-        "model": "your_model_name",  # Specify your model name
-        "imgsz": None,  # Specify your desired image size
-        "square_img": False,  # Specify whether to resize to square images
-        "threshold": 0.3,  # Specify your detection threshold
+        "device": "cuda",
+        "weights": "path_to_weights.pth",
+        "model": "your_model_name",
+        "imgsz": None,
+        "square_img": False,
+        "threshold": 0.3,
     }
     engine = InferenceEngine(args)
-    file_format = "video"  # Specify input type ('video' or 'image')
+    file_format = "video"
     results = engine.infer(file_format, **args)
     print(results)

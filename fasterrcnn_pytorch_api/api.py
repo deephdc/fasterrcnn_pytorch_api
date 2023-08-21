@@ -100,8 +100,7 @@ def train(**args):
         logger.info("Training model...")
         logger.debug("Train with args: %s", args)
         assert not (
-            args.get("resume_training", False)
-            and not args.get("weights")
+            args.get("resume_training", False) and not args.get("weights")
         ), (
             "weights argument should not be empty when resume_training is"
             " True"
@@ -163,9 +162,7 @@ def predict(**args):
                 args["input"][0].original_filename
             )
             for f in args["input"]:
-                shutil.copy(
-                    f.filename, tmpdir + "/" + f.original_filename
-                )
+                shutil.copy(f.filename, tmpdir + "/" + f.original_filename)
             args["input"] = [
                 os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
             ]
@@ -205,10 +202,13 @@ if __name__ == "__main__":
         "disable_wandb": True,
     }
     # train(**args)
-    input_file = "/srv/yolov8_api/data/mixkit-white-cat-lying" + \
-    "-among-the-grasses-seen-up-close-22732-large.mp4"
+    input_file = (
+        "/srv/yolov8_api/data/mixkit-white-cat-lying"
+        + "-among-the-grasses-seen-up-close-22732-large.mp4"
+    )
 
     from deepaas.model.v2.wrapper import UploadedFile
+
     pred_kwds = {
         "input": UploadedFile(
             "input",

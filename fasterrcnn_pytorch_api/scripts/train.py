@@ -9,9 +9,8 @@ from fasterrcnn_pytorch_training_pipeline.datasets import (
     create_train_loader,
     create_valid_loader,
 )
-from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model import (
-    create_model,
-)
+from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model\
+    import create_model
 from fasterrcnn_pytorch_training_pipeline.utils.general import (
     Averager,
     save_model,
@@ -288,7 +287,7 @@ def main(args):
         )
         # Save the model dictionary only for the current epoch.
         save_model_state(model, OUT_DIR, data_configs, args["model"])
-        # Append the current epoch's batch-wise losses 
+        # Append the current epoch's batch-wise losses
         # to the `train_loss_list`.
         train_loss_list.extend(batch_loss_list)
         loss_cls_list.append(

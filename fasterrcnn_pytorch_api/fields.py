@@ -35,7 +35,8 @@ class MyCustomFieldForJson(fields.String):
                         0 <= v2 <= 1.0
                     ):
                         raise ValidationError(
-                            f"Invalid value for 'p' in {k2}: {v2}. It must be a float between 0 and 1."
+                            f"Invalid value for 'p' in {k2}: {v2}."
+                            "It must be a float between 0 and 1."
                         )
                 elif k2 in [
                     "max_w_size",
@@ -53,7 +54,8 @@ class MyCustomFieldForJson(fields.String):
                         v2, (float, float)
                     ):
                         raise ValidationError(
-                            f"Invalid value for '{k2}': {v2}. It must be a float or (float, float)."
+                            f"Invalid value for '{k2}': {v2}."
+                            "It must be a float or (float, float)."
                         )
                 elif k2 == "rotate_limit":
                     if not isinstance(v2, int) or not isinstance(
@@ -92,7 +94,8 @@ class TrainArgsSchema(Schema):
 
     aug_training_option = MyCustomFieldForJson(
         description="Augmentation options.\n"
-        "blur_limit (int) - maximum kernel size for blurring the input image.\n"
+        "blur_limit (int) - maximum kernel size for blurring"
+        "the input image.\n"
         "p (float) - probability of applying the transform.\n"
         "shift_limit ((float, float) or float) - shift factor range for"
         "both height and width.\n"
@@ -207,7 +210,8 @@ class PredictArgsSchema(Schema):
         location="form",
         description="Input either an image or a video.\n"
         "video must be in the format MP4, AVI, MKV, MOV, WMV, FLV, WebM.\n"
-        "Images must be in the format JPEG, PNG, BMP, GIF, TIFF, PPM, EXR, WebP. \n",
+        "Images must be in the format JPEG, PNG, BMP, GIF, TIFF, PPM,"
+        "EXR, WebP.",
     )
 
     timestamp = fields.Str(

@@ -3,12 +3,13 @@
 
 import fnmatch
 import os
-from pathlib import Path
 import pytest
 from deepaas.model.v2.wrapper import UploadedFile
 from fasterrcnn_pytorch_api import configs, api, utils_api
 
-DATA_FILES = os.listdir(os.path.join(configs.DATA_PATH, "test_data/validation/img"))
+DATA_FILES = os.listdir(
+    os.path.join(configs.DATA_PATH, "test_data/validation/img")
+)
 MODELS_CKPT = utils_api.ls_local()
 BACKBONES = configs.BACKBONES
 
@@ -30,7 +31,10 @@ def metadata():
 
 # FIXME:name of the data config
 @pytest.fixture(
-    scope="module", params=[os.path.join(configs.DATA_PATH, "test_data/submarin.yaml")]
+    scope="module",
+    params=[
+        os.path.join(configs.DATA_PATH, "test_data/submarin.yaml")
+    ],
 )
 def data_config(request):
     """Fixture to return data_configs argument to test."""
@@ -178,16 +182,21 @@ def trained_model_path(train_kwds):
 
 @pytest.fixture(
     scope="module",
-    params=fnmatch.filter(DATA_FILES, "*.jpg") + fnmatch.filter(DATA_FILES, "*.png"),
+    params=fnmatch.filter(DATA_FILES, "*.jpg")
+    + fnmatch.filter(DATA_FILES, "*.png"),
 )
 def input(request):
     """Fixture to return input_file argument to test."""
-    file = os.path.join(configs.DATA_PATH, "test_data/validation/img", request.param)
+    file = os.path.join(
+        configs.DATA_PATH, "test_data/validation/img", request.param
+    )
     content_type = "application/octet-stream"
     return UploadedFile("input", file, content_type, request.param)
 
 
-@pytest.fixture(scope="module", params=["image/png", "application/json"])
+@pytest.fixture(
+    scope="module", params=["image/png", "application/json"]
+)
 def accept(request):
     """Fixture to return accept arguments to test."""
     return request.param
@@ -236,7 +245,15 @@ def remote_name(request):
 
 @pytest.fixture(scope="module")
 def pred_kwds(
-    input, timestamp, threshold, model, imgsz, device, no_labels, square_img, accept
+    input,
+    timestamp,
+    threshold,
+    model,
+    imgsz,
+    device,
+    no_labels,
+    square_img,
+    accept,
 ):
     """Fixture to return arbitrary keyword arguments for predictions."""
     pred_kwds = {
