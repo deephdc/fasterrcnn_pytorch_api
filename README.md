@@ -208,7 +208,7 @@ value= False
 # Directory containing trained model for prediction  on the nextcloud  
 path = models_sub
 ```
-If you have not already configured the rclone in your env, you can configure your rclone credentials in the same script.
+If you have not already configured the rclone in your env, you can configure your rclone credentials in the same script otherwise leave it as it is.
 
 ```
 [RCLONE_CONFIG_RSHARE_PASS]
