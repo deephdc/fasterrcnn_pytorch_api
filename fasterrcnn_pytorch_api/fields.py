@@ -265,8 +265,9 @@ class PredictArgsSchema(Schema):
         "resize.",
     )
 
+
     accept = fields.Str(
-        missing="application/pdf",
+        missing="application/json",
         location="headers",
         validate=validate.OneOf(
             ["application/json", "image/png", "video/mp4"]

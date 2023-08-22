@@ -150,14 +150,23 @@ def predict(**args):
     """
     # try:
     logger.debug("Predict with args: %s", args)
-
-    if args["timestamp"] is not None:
-        utils_api.download_model_from_nextcloud(args["timestamp"])
+    timestamp = args.get("timestamp")
+    if timestamp is not None:
+        if eval(configs.USE_RCLONE):
+            logger.error(
+                "Set the rclone configuration in settings.ini"
+            )
+            utils_api.download_model_from_nextcloud(timestamp)
+        if timestamp not in os.listdir(
+            configs.MODEL_DIR
+        ):
+            raise ValueError(
+                f"Timestamp '{timestamp}' not found in '{configs.MODEL_DIR}'"
+            )
         args["weights"] = os.path.join(
-            configs.MODEL_DIR, args["timestamp"], "best_model.pth"
+            configs.MODEL_DIR, timestamp, "best_model.pth"
         )
-        if os.path.exists(args["weights"]):
-            print("best_model.pth exists at the specified path.")
+
     else:
         args["weights"] = None
 
@@ -224,7 +233,7 @@ if __name__ == "__main__":
             "application/octet-stream",
             "input.mp4",
         ),
-        "timestamp": None,
+        "timestamp": "2023-05-10_121810",
         "model": "fasterrcnn_resnet50_fpn_v2",
         "threshold": 0.5,
         "imgsz": 640,

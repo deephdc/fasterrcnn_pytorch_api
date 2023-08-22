@@ -195,6 +195,40 @@ You can utilize the Swagger interface to upload your images or videos and obtain
     - A video with bounding boxes delineating objects of interest throughout.
     - A JSON string accompanying each frame, supplying bounding box coordinates, object names within the boxes, and confidence scores for the detected objects.
 
+# Use rclone to copy from remote
 
+If you want to use rclone to download trained models from nextcloud
+set  'use_rclone' in the 'fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/settings.ini' to true and pass the path to your model directory on the nextcloud
+in the remote variable. 
+```
+[use_rclone]
+value= False 
 
+[remote]
+# Directory containing downloaded sub/models for prediction  
+path = models_sub
+```
+If you have not already configured the rclone in your env, you can configure your rclone credentials in the same script.
 
+```
+[RCLONE_CONFIG_RSHARE_PASS]
+#Rclone password
+password= <password> # replce with your  password
+[RCLONE_CONFIG_RSHARE_USER]
+#Rclone username
+username= user_name # replce with your username
+[RCLONE_CONFIG_RSHARE_TYPE]
+#Rclone type
+type= webdav
+[RCLONE_CONFIG_RSHARE_URL]
+#Rclone url
+url= DEEP_IAM-da6568e7-7fad-43ac-a124-b0f58994d988
+[RCLONE_CONFIG_RSHARE_VENDOR]
+#Rclone vendor
+vendor= ''
+[RCLONE_CONFIG]
+#Rclone path config
+rclone_config = /srv/.rclone/rclone.conf #create this file on your machine and pu the path here
+
+```
+Give the timestamp of the model as a prediction argument and use it for inference purposes.

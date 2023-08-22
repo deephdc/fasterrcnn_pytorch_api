@@ -11,7 +11,8 @@ base_dir = os.path.dirname(os.path.abspath(homedir))
 # Get configuration from user env and merge with pkg settings
 SETTINGS_FILE = pathlib.Path(__file__).parent / "settings.ini"
 SETTINGS_FILE = os.getenv(
-    "fasterrcnn-pytorch-training-pipeline_SERRING", default=SETTINGS_FILE
+    "fasterrcnn-pytorch-training-pipeline_SERRING",
+    default=SETTINGS_FILE,
 )
 settings = configparser.ConfigParser()
 settings.read(SETTINGS_FILE)
@@ -25,42 +26,43 @@ def resolve_path(base_dir):
 
 
 try:  # Configure model metadata from pkg metadata
-    MODEL_NAME = os.getenv("MODEL_NAME", default=settings["model"]["name"])
+    MODEL_NAME = os.getenv(
+        "MODEL_NAME", default=settings["model"]["name"]
+    )
     MODEL_METADATA = _metadata(MODEL_NAME)
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for [model]name") from err
-
-
-try:  # Configure input files for testing and possible training
-    DATA_PATH = os.getenv("DATA_PATH", default=settings["data"]["path"])
-    # Selbstaufsicht requires currently the setup of DATA_PATH env variable
-    DATA_PATH = os.path.join(base_dir, DATA_PATH)
-    os.environ["DATA_PATH"] = DATA_PATH
-except KeyError as err:
-    raise RuntimeError("Undefined configuration for [data]path") from err
-
-try:  # Local path for caching   sub/models
-    MODEL_DIR = os.getenv("MODEL_DIR", settings["model_dir"]["path"])
-    MODEL_DIR = os.path.join(base_dir, MODEL_DIR)
-    os.environ["MODEL_DIR"] = MODEL_DIR
-except KeyError as err:
-    raise RuntimeError("Undefined configuration for model path") from err
-
-try:  # Local path for caching   sub/models
-    TEST_MODEL = os.getenv("TEST_MODEL", settings["test_model"]["path"])
-    TEST_MODEL = os.path.join(base_dir, TEST_MODEL)
-    os.environ["TEST_MODEL"] = TEST_MODEL
-except KeyError as err:
     raise RuntimeError(
-        "Undefined configuration for test model path"
+        "Undefined configuration for [model] name"
     ) from err
 
 
-try:  # remote path sub/models
+try:  # Configure input files for testing and possible training
+    DATA_PATH_DEFAULT = os.path.join(
+        base_dir, settings["data"]["path"]
+    )
+    DATA_PATH = os.getenv("DATA_PATH", default=DATA_PATH_DEFAULT)
+except KeyError as err:
+    raise RuntimeError(
+        "Undefined configuration for [data]path"
+    ) from err
+
+try:
+    MODEL_DIR_DEFAULT = os.path.join(
+        base_dir, settings["model_dir"]["path"]
+    )
+    MODEL_DIR = os.getenv("MODEL_DIR", default=MODEL_DIR_DEFAULT)
+except KeyError as err:
+    raise RuntimeError(
+        "Undefined configuration for model path"
+    ) from err
+
+try:  # remote path to test model
     REMOTE_PATH = os.getenv("REMOTE", settings["remote"]["path"])
     os.environ["REMOTE_PATH"] = REMOTE_PATH
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for Remotepath") from err
+    raise RuntimeError(
+        "Undefined configuration for Remotepath"
+    ) from err
 
 try:  # Port for monitoring using tensorboard
     MONITOR_PORT = os.getenv(
@@ -68,14 +70,18 @@ try:  # Port for monitoring using tensorboard
     )
     os.environ["MONITOR_PORT"] = MONITOR_PORT
 except KeyError as err:
-    raise RuntimeError("Undefined Monitor port for tensorboar") from err
+    raise RuntimeError(
+        "Undefined Monitor port for tensorboar"
+    ) from err
 
 try:
     WANDB_TOKEN = os.getenv(
         "wandb_token", settings["wandb_token"]["token"]
     )
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for WANDB_TOKEN") from err
+    raise RuntimeError(
+        "Undefined configuration for WANDB_TOKEN"
+    ) from err
 
 
 try:
@@ -84,7 +90,9 @@ try:
         # Parse the string as a list of strings
         BACKBONES = ast.literal_eval(BACKBONES)
 except KeyError as err:
-    raise RuntimeError("Undefined configuration for backbones") from err
+    raise RuntimeError(
+        "Undefined configuration for backbones"
+    ) from err
 
 try:
     DATA_AUG_OPTION = os.getenv(
@@ -97,4 +105,68 @@ try:
 except KeyError as err:
     raise RuntimeError(
         "Undefined configuration for data augmentation options"
+    ) from err
+
+try:
+    DATA_AUG_OPTION = os.getenv(
+        "data_augmentation_options",
+        settings["data_augmentation_options"]["names"],
+    )
+    if isinstance(DATA_AUG_OPTION, str):
+        # Parse the string as a list of strings
+        DATA_AUG_OPTION = ast.literal_eval(DATA_AUG_OPTION)
+except KeyError as err:
+    raise RuntimeError(
+        "Undefined configuration for data augmentation options"
+    ) from err
+
+try:
+    USE_RCLONE = os.getenv(
+        "use_rclone", settings["use_rclone"]["value"]
+    )
+except KeyError as err:
+    raise RuntimeError(
+        "Undefined configuration for use_rclone options"
+    ) from err
+
+try:  # Configure model rclone settings
+    RCLONE_CONFIG_RSHARE_USER = os.getenv(
+        "RCLONE_CONFIG_RSHARE_USER",
+        default=settings["RCLONE_CONFIG_RSHARE_USER"]["username"],
+    )
+
+    os.environ[
+        "RCLONE_CONFIG_RSHARE_USER"
+    ] = RCLONE_CONFIG_RSHARE_USER
+    
+    RCLONE_CONFIG_RSHARE_PASS = os.getenv(
+        "RCLONE_CONFIG_RSHARE_PASS",
+        settings["RCLONE_CONFIG_RSHARE_PASS"]["password"],
+    )
+    os.environ[
+        "RCLONE_CONFIG_RSHARE_PASS"
+    ] = RCLONE_CONFIG_RSHARE_PASS
+
+    RCLONE_CONFIG_RSHARE_TYPE = os.getenv(
+        "RCLONE_CONFIG_RSHARE_TYPE",
+        default=settings["RCLONE_CONFIG_RSHARE_TYPE"]["type"],
+    )
+    os.environ[
+        "RCLONE_CONFIG_RSHARE_TYPE"
+    ] = RCLONE_CONFIG_RSHARE_TYPE
+
+    RCLONE_CONFIG_RSHARE_URL = os.getenv(
+        "RCLONE_CONFIG_RSHARE_URL",
+        default=settings["RCLONE_CONFIG_RSHARE_URL"]["url"],
+    )
+    os.environ["RCLONE_CONFIG_RSHARE_URL"] = RCLONE_CONFIG_RSHARE_URL
+    RCLONE_CONFIG = os.getenv(
+        "RCLONE_CONFIG",
+        default=settings["RCLONE_CONFIG"]["rclone_config"],
+    )
+
+    os.environ["RCLONE_CONFIG"] = RCLONE_CONFIG
+except KeyError as err:
+    raise RuntimeError(
+        "Undefined configuration for Rclone settings"
     ) from err
