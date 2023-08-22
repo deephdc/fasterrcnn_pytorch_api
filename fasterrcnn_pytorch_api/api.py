@@ -99,12 +99,17 @@ def train(**args):
     try:
         logger.info("Training model...")
         logger.debug("Train with args: %s", args)
-        assert not (
-            args.get("resume_training", False) and not args.get("weights")
-        ), (
-            "weights argument should not be empty when resume_training is"
-            " True"
-        )
+        if args.get("resume_training", False) and not args.get(
+            "weights"
+        ):
+            logger.error(
+                "weights argument should not be empty when"
+                "resume_training is True"
+            )
+            raise ValueError(
+                "Weights argument is missing for resumed training"
+            )
+
         if not args["disable_wandb"]:
             wandb.login(key=configs.WANDB_TOKEN)
 
@@ -162,7 +167,9 @@ def predict(**args):
                 args["input"][0].original_filename
             )
             for f in args["input"]:
-                shutil.copy(f.filename, tmpdir + "/" + f.original_filename)
+                shutil.copy(
+                    f.filename, tmpdir + "/" + f.original_filename
+                )
             args["input"] = [
                 os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
             ]

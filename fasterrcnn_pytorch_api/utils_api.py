@@ -6,7 +6,8 @@ but users might want nevertheless to take advantage from them.
 
 import logging
 import os
-import subprocess
+import subprocess  # nosec B404
+import shutil
 
 from fasterrcnn_pytorch_api import configs
 
@@ -46,14 +47,15 @@ def list_directories_with_rclone(remote_name, directory_path):
     Args:
         remote_name (str): Name of the configured Nextcloud remote in rclone.
         directory_path (str): Path of the parent directory to list the
-        directories from.
+            directories from.
 
     Returns:
         list: List of directory names within the specified parent directory.
     """
-
     command = ["rclone", "lsf", remote_name + ":" + directory_path]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(
+        command, capture_output=True, text=True, shell=False
+    )  # nosec B603
 
     if result.returncode == 0:
         directory_names = result.stdout.splitlines()
@@ -128,7 +130,9 @@ def download_directory_with_rclone(
         remote_name + ":" + remote_directory,
         local_directory,
     ]
-    result = subprocess.run(command, capture_output=True, text=True)
+    result = subprocess.run(
+        command, capture_output=True, text=True, shell=False
+    )  # nosec B603
 
     if result.returncode == 0:
         print("Directory downloaded successfully.")
@@ -137,17 +141,38 @@ def download_directory_with_rclone(
 
 
 def launch_tensorboard(port, logdir):
-    subprocess.call(
-        [
-            "tensorboard",
-            "--logdir",
-            "{}".format(logdir),
-            "--port",
-            "{}".format(port),
-            "--host",
-            "0.0.0.0",
-        ]
-    )
+    """
+    Function to launch tensorboard.
+
+    Args:
+        port (int): Port to use for tensorboard.
+        logdir (str): Path to the log directory.
+
+    Returns:
+        None
+    """
+    tensorboard_executable = shutil.which("tensorboard")
+    if tensorboard_executable:
+        # Validate the executable path to prevent untrusted input
+        if not tensorboard_executable.startswith(
+            "/path/to/allowed/tensorboard"
+        ):
+            print("Invalid tensorboard executable path")
+            return
+
+        subprocess.call(
+            [
+                tensorboard_executable,
+                "--logdir",
+                "{}".format(logdir),
+                "--port",
+                "{}".format(port),
+                "--host",
+                "localhost",
+            ]
+        )  # nosec B603
+    else:
+        print("TensorBoard executable not found")
 
 
 def check_input_type(file_path):

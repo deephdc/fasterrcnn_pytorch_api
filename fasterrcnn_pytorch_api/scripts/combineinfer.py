@@ -8,7 +8,8 @@ import json
 from io import BytesIO
 import tempfile
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model\
-    import create_model
+ import create_model
+
 
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import (
     inference_annotations,
@@ -37,9 +38,10 @@ def get_video_dimensions(video_path):
     cap = cv2.VideoCapture(video_path)
     frame_width = int(cap.get(3))
     frame_height = int(cap.get(4))
-    assert (
-        frame_width != 0 and frame_height != 0
-    ), "Please check video path..."
+    if frame_width == 0 or frame_height == 0:
+        raise ValueError(
+            "Invalid video dimensions. Please check video path..."
+        )
     return cap, frame_width, frame_height
 
 
