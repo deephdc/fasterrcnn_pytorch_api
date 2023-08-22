@@ -13,4 +13,4 @@ def test_train_function(trained_model_path):
         checkpoint_file
     ), "last_model.pth does not exist"
     # Remove the saved model directory and its contents
-    shutil.rmtree(trained_model_path)  #
+    shutil.rmtree(trained_model_path)

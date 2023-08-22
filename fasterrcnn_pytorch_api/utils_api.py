@@ -7,7 +7,6 @@ but users might want nevertheless to take advantage from them.
 import logging
 import os
 import subprocess  # nosec B404
-import shutil
 
 from fasterrcnn_pytorch_api import configs
 
@@ -151,28 +150,17 @@ def launch_tensorboard(port, logdir):
     Returns:
         None
     """
-    tensorboard_executable = shutil.which("tensorboard")
-    if tensorboard_executable:
-        # Validate the executable path to prevent untrusted input
-        if not tensorboard_executable.startswith(
-            "/path/to/allowed/tensorboard"
-        ):
-            print("Invalid tensorboard executable path")
-            return
-
-        subprocess.call(
-            [
-                tensorboard_executable,
-                "--logdir",
-                "{}".format(logdir),
-                "--port",
-                "{}".format(port),
-                "--host",
-                "127.0.0.1",
-            ]
-        )  # nosec B603
-    else:
-        print("TensorBoard executable not found")
+    subprocess.call(
+        [
+            "tensorboard",
+            "--logdir",
+            "{}".format(logdir),
+            "--port",
+            "{}".format(port),
+            "--host",
+            "127.0.0.1",
+        ]
+    )  # nosec B603
 
 
 def check_input_type(file_path):
