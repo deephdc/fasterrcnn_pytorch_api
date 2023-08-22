@@ -198,7 +198,7 @@ You can utilize the Swagger interface to upload your images or videos and obtain
 # Use rclone to copy from remote
 
 If you want to use rclone to download trained models from nextcloud
-set  'use_rclone' in the 'fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/settings.ini' to true and pass the path to your model directory on the nextcloud
+set  `use_rclone` in the `./fasterrcnn_pytorch_api/fasterrcnn_pytorch_api/configs/setting.ini` to true and pass the path to your model directory on the nextcloud
 in the remote variable. 
 ```
 [use_rclone]
