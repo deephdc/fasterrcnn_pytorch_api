@@ -205,7 +205,7 @@ in the remote variable.
 value= False 
 
 [remote]
-# Directory containing downloaded sub/models for prediction  
+# Directory containing trained model for prediction  on the nextcloud  
 path = models_sub
 ```
 If you have not already configured the rclone in your env, you can configure your rclone credentials in the same script.
