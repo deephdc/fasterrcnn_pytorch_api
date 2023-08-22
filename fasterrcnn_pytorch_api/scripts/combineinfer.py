@@ -7,9 +7,9 @@ import os
 import json
 from io import BytesIO
 import tempfile
+from aiohttp.web import HTTPException
 from fasterrcnn_pytorch_training_pipeline.models.create_fasterrcnn_model\
- import create_model
-
+    import create_model
 
 from fasterrcnn_pytorch_training_pipeline.utils.annotations import (
     inference_annotations,
@@ -48,9 +48,7 @@ def get_video_dimensions(video_path):
 class InferenceEngine:
     def __init__(self, args):
         self.device = torch.device(
-            "cuda:0"
-            if args["device"] and torch.cuda.is_available()
-            else "cpu"
+            "cuda:0" if args["device"] and torch.cuda.is_available() else "cpu"
         )
         self.build_model(args)
 
@@ -65,43 +63,44 @@ class InferenceEngine:
             None
         """
         if args["weights"] is None:
-            with open(
-                os.path.join(
-                    configs.DATA_PATH, "coco_config/coco_config.yaml"
-                )
-            ) as file:
-                data_configs = yaml.safe_load(file)
+            try:
+                with open(
+                    os.path.join(
+                        configs.DATA_PATH, "coco_config/coco_config.yaml"
+                    )
+                ) as file:
+                    data_configs = yaml.safe_load(file)
+            except FileNotFoundError as file_err:
+                raise HTTPException(
+                    reason=f"YAML file not found: {file_err}"
+                ) from file_err
+
             NUM_CLASSES = data_configs["NC"]
             self.CLASSES = data_configs["CLASSES"]
             try:
                 build_model_fn = create_model[args["model"]]
-                self.model, _ = build_model_fn(
+                self.model = build_model_fn(
                     num_classes=NUM_CLASSES, coco_model=True
                 )
+                if isinstance(self.model, tuple):
+                    self.model = self.model[0]
             except KeyError:
-                build_model_fn = create_model[
-                    "fasterrcnn_resnet50_fpn_v2"
-                ]
-                self.model, _ = build_model_fn(
+                build_model = create_model["fasterrcnn_resnet50_fpn_v2"]
+                self.model, _ = build_model(
                     num_classes=NUM_CLASSES, coco_model=True
                 )
-            self.colors = np.random.uniform(
-                0, 255, size=(len(self.CLASSES), 3)
-            )
+
         else:
-            checkpoint = torch.load(
-                args["weights"], map_location=self.device
-            )
+            checkpoint = torch.load(args["weights"], map_location=self.device)
             NUM_CLASSES = len(checkpoint["data"]["CLASSES"])
             self.CLASSES = checkpoint["data"]["CLASSES"]
-            self.colors = np.random.uniform(
-                0, 255, size=(len(self.CLASSES), 3)
-            )
+
             build_model_fn = create_model[checkpoint["model_name"]]
             self.model = build_model_fn(
                 num_classes=NUM_CLASSES, coco_model=False
             )
             self.model.load_state_dict(checkpoint["model_state_dict"])
+        self.colors = np.random.uniform(0, 255, size=(len(self.CLASSES), 3))
         self.model.to(self.device).eval()
 
     def infer_video(self, video_path, **args):
@@ -117,9 +116,7 @@ class InferenceEngine:
             dict: JSON output containing annotations for each frame.
             binary: Binary video message.
         """
-        cap, frame_width, frame_height = get_video_dimensions(
-            video_path
-        )
+        cap, frame_width, frame_height = get_video_dimensions(video_path)
         output_format = "mp4"
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         with tempfile.NamedTemporaryFile(
@@ -147,9 +144,7 @@ class InferenceEngine:
                 )
                 orig_frame = annotate_fps(orig_frame, fps)
                 out.write(orig_frame)
-                json_out[f"frame_{frame_count}"] = json.loads(
-                    json_string
-                )
+                json_out[f"frame_{frame_count}"] = json.loads(json_string)
                 frame_count += 1
 
         cap.release()
@@ -218,9 +213,7 @@ class InferenceEngine:
         end_time = time.time()
         fps = 1 / (end_time - start_time)
 
-        outputs = [
-            {k: v.to("cpu") for k, v in t.items()} for t in outputs
-        ]
+        outputs = [{k: v.to("cpu") for k, v in t.items()} for t in outputs]
 
         if len(outputs[0]["boxes"]) != 0:
             orig_image = inference_annotations(

@@ -168,7 +168,7 @@ def launch_tensorboard(port, logdir):
                 "--port",
                 "{}".format(port),
                 "--host",
-                "localhost",
+                "127.0.0.1",
             ]
         )  # nosec B603
     else:

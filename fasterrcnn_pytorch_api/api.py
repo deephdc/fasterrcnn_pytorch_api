@@ -148,43 +148,44 @@ def predict(**args):
     Returns:
         either a JSON file, PNG image or video with bounding boxes.
     """
-    try:
-        logger.debug("Predict with args: %s", args)
+    # try:
+    logger.debug("Predict with args: %s", args)
 
-        if args["timestamp"] is not None:
-            utils_api.download_model_from_nextcloud(args["timestamp"])
-            args["weights"] = os.path.join(
-                configs.MODEL_DIR, args["timestamp"], "best_model.pth"
+    if args["timestamp"] is not None:
+        utils_api.download_model_from_nextcloud(args["timestamp"])
+        args["weights"] = os.path.join(
+            configs.MODEL_DIR, args["timestamp"], "best_model.pth"
+        )
+        if os.path.exists(args["weights"]):
+            print("best_model.pth exists at the specified path.")
+    else:
+        args["weights"] = None
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        args["input"] = [args["input"]]
+        file_format = utils_api.check_input_type(
+            args["input"][0].original_filename
+        )
+        for f in args["input"]:
+            shutil.copy(
+                f.filename, tmpdir + "/" + f.original_filename
             )
-            if os.path.exists(args["weights"]):
-                print("best_model.pth exists at the specified path.")
+        args["input"] = [
+            os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
+        ]
+        engine = combineinfer.InferenceEngine(args)
+        json_string, buffer = engine.infer(file_format, **args)
+        logger.debug("Response json_string: %d", json_string)
+        logger.debug("Response buffer: %d", buffer)
+
+        if args["accept"] == "application/json":
+            return json_string
         else:
-            args["weights"] = None
+            return buffer
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            args["input"] = [args["input"]]
-            file_format = utils_api.check_input_type(
-                args["input"][0].original_filename
-            )
-            for f in args["input"]:
-                shutil.copy(
-                    f.filename, tmpdir + "/" + f.original_filename
-                )
-            args["input"] = [
-                os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
-            ]
-            engine = combineinfer.InferenceEngine(args)
-            json_string, buffer = engine.infer(file_format, **args)
-            logger.debug("Response json_string: %d", json_string)
-            logger.debug("Response buffer: %d", buffer)
 
-            if args["accept"] == "application/json":
-                return json_string
-            else:
-                return buffer
-
-    except Exception as err:
-        raise HTTPException(reason=err) from err
+#   except Exception as err:
+# raise HTTPException(reason=err) from err
 
 
 if __name__ == "__main__":
@@ -223,11 +224,11 @@ if __name__ == "__main__":
             "application/octet-stream",
             "input.mp4",
         ),
-        "timestamp": "2023-05-10_121810",
-        "model": "",
+        "timestamp": None,
+        "model": "fasterrcnn_resnet50_fpn_v2",
         "threshold": 0.5,
         "imgsz": 640,
-        "device": False,
+        "device": True,
         "no_labels": False,
         "square_img": False,
         "accept": "application/json",

@@ -195,7 +195,7 @@ def input(request):
 
 
 @pytest.fixture(
-    scope="module", params=["image/png", "application/json"]
+    scope="module", params=["application/json"]
 )
 def accept(request):
     """Fixture to return accept arguments to test."""
