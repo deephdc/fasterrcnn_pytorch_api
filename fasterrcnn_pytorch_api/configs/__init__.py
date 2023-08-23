@@ -138,7 +138,7 @@ try:  # Configure model rclone settings
     os.environ[
         "RCLONE_CONFIG_RSHARE_USER"
     ] = RCLONE_CONFIG_RSHARE_USER
-    
+
     RCLONE_CONFIG_RSHARE_PASS = os.getenv(
         "RCLONE_CONFIG_RSHARE_PASS",
         settings["RCLONE_CONFIG_RSHARE_PASS"]["password"],

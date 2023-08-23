@@ -265,7 +265,6 @@ class PredictArgsSchema(Schema):
         "resize.",
     )
 
-
     accept = fields.Str(
         missing="application/json",
         location="headers",

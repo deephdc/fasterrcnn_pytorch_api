@@ -31,6 +31,7 @@ import tempfile
 from datetime import datetime
 from multiprocessing import Process
 from aiohttp.web import HTTPException
+import ast
 
 import wandb
 from fasterrcnn_pytorch_api import configs, fields, utils_api
@@ -152,7 +153,7 @@ def predict(**args):
     logger.debug("Predict with args: %s", args)
     timestamp = args.get("timestamp")
     if timestamp is not None:
-        if eval(configs.USE_RCLONE):
+        if ast.literal_eval(configs.USE_RCLONE):
             logger.error(
                 "Set the rclone configuration in settings.ini"
             )
