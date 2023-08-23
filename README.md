@@ -64,7 +64,7 @@ apt install -y libgl1
 
 ## Dataset Preparation
 
-To train the FasterRCNN model, your annotations should be saved as XML files. Please organize your data in the following structure:
+To train the FasterRCNN model, your annotations should be saved as Pascal VOC XML formats. Please organize your data in the following structure:
 ```
 data
 │
