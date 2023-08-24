@@ -37,7 +37,7 @@ import json
 
 import wandb
 from fasterrcnn_pytorch_api import configs, fields, utils_api
-from fasterrcnn_pytorch_api.scripts.train import main
+from fasterrcnn_pytorch_api.scripts.train import main as train_model
 from fasterrcnn_pytorch_api.scripts import combineinfer
 
 logger = logging.getLogger(__name__)
@@ -91,13 +91,13 @@ def get_predict_args():
 
 def train(**args):
     """
-        Performs training on the dataset.
+    Performs training on the dataset.
 
-        Args:
-            **args: keyword arguments from get_train_args.
+    Args:
+        **args: keyword arguments from get_train_args.
 
-        Returns:
-            path to the trained model
+    Returns:
+        path to the trained model
     """
     try:
         logger.info("Training model...")
@@ -135,7 +135,7 @@ def train(**args):
             daemon=True,
         )
         p.start()
-        main(args)
+        train_model(args)
         return {f'model was saved in {args["name"]}'}
     except Exception as err:
         raise HTTPException(reason=err) from err
@@ -160,11 +160,10 @@ def predict(**args):
                     "Set the rclone configuration in settings.ini"
                 )
                 utils_api.download_model_from_nextcloud(timestamp)
-            if timestamp not in os.listdir(
-                configs.MODEL_DIR
-            ):
+            if timestamp not in os.listdir(configs.MODEL_DIR):
                 raise ValueError(
-                    f"Timestamp '{timestamp}' not found in '{configs.MODEL_DIR}'"
+                    f"Timestamp '{timestamp}' not found in'\
+                     '{configs.MODEL_DIR}'"
                 )
             args["weights"] = os.path.join(
                 configs.MODEL_DIR, timestamp, "best_model.pth"
@@ -197,14 +196,16 @@ def predict(**args):
 
     except Exception as err:
         raise HTTPException(reason=err) from err
+
+
 def main():
     """
     Runs above-described methods from CLI
     """
     method_dispatch = {
-        'get_metadata': get_metadata,
-        'predict': predict,
-        'train': train
+        "get_metadata": get_metadata,
+        "predict": predict,
+        "train": train,
     }
 
     chosen_method = args.method
@@ -212,12 +213,11 @@ def main():
     if chosen_method in method_dispatch:
         method_function = method_dispatch[chosen_method]
 
-        if chosen_method == 'get_metadata':
+        if chosen_method == "get_metadata":
             results = method_function()
         else:
             logger.debug("Calling method with args: %s", args)
             results = method_function(**vars(args))
-            
 
         print(json.dumps(results))
         logger.debug("Results: %s", results)
@@ -226,31 +226,34 @@ def main():
         print("Invalid method specified.")
 
 
-
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Model parameters', 
-                                     add_help=False)
+    parser = argparse.ArgumentParser(
+        description="Model parameters", add_help=False
+    )
     cmd_parser = argparse.ArgumentParser()
     subparsers = cmd_parser.add_subparsers(
-                            help='methods. Use \"api.py method --help\" to get more info', 
-                            dest='method')          
-    get_metadata_parser = subparsers.add_parser('get_metadata', 
-                                         help='get_metadata method',
-                                         parents=[parser])                                               
-    
-    predict_parser = subparsers.add_parser('predict', 
-                                           help='commands for prediction',
-                                           parents=[parser]) 
+        help='methods. Use "api.py method --help" to get more info',
+        dest="method",
+    )
+    get_metadata_parser = subparsers.add_parser(
+        "get_metadata", help="get_metadata method", parents=[parser]
+    )
 
-    utils_api.add_arguments_from_schema(fields.PredictArgsSchema(), predict_parser) 
+    predict_parser = subparsers.add_parser(
+        "predict", help="commands for prediction", parents=[parser]
+    )
 
-    train_parser = subparsers.add_parser('train', 
-                                         help='commands for training',
-                                         parents=[parser])    
-    utils_api.add_arguments_from_schema(fields.TrainArgsSchema(), train_parser)                                                                        
+    utils_api.add_arguments_from_schema(
+        fields.PredictArgsSchema(), predict_parser
+    )
 
-    
-  
+    train_parser = subparsers.add_parser(
+        "train", help="commands for training", parents=[parser]
+    )
+    utils_api.add_arguments_from_schema(
+        fields.TrainArgsSchema(), train_parser
+    )
+
     args = cmd_parser.parse_args()
-    
+
     main()
