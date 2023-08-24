@@ -13,7 +13,7 @@ pipeline {
         author_name = "Fahimeh"
         author_email = "f.alibabaee@gmail.com"
         app_name = "fasterrcnn_pytorch_api"
-        job_location = "Pipeline-as-code/DEEP-OC-org/UC--DEEP-OC-fasterrcnn_pytorch_api/${env.BRANCH_NAME}"
+        job_location = "Pipeline-as-code/DEEP-OC-org/DEEP-OC-fasterrcnn_pytorch_api/${env.BRANCH_NAME}"
     }
 
     stages {

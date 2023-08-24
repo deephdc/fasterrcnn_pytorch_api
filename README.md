@@ -1,6 +1,6 @@
 # fasterrcnn_pytorch_api
 
-[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/UC--fasterrcnn_pytorch_api/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/UC--fasterrcnn_pytorch_api/job/master)
+[![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/fasterrcnn_pytorch_api/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/fasterrcnn_pytorch_api/job/master)
 
 [This external repository](https://github.com/sovit-123/fasterrcnn-pytorch-training-pipeline)  provides a pipeline for training PyTorch FasterRCNN models on custom datasets. With this pipeline, you have the flexibility to choose between official PyTorch models trained on the COCO dataset, use any backbone from Torchvision classification models, or even define your own custom backbones. The trained models can be used for object detection tasks on your specific datasets.
 ## Training and Inference
@@ -34,6 +34,7 @@ apt update
 apt install -y unzip
 apt install -y gcc
 apt install -y libgl1
+apt install -y libglib2.0-0
 ```
 
 ><span style="color:Blue">**Note:**</span>  The associated Docker container for this module can be found at: https://git.scc.kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
