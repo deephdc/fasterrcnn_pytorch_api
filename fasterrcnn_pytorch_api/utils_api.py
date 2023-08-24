@@ -7,6 +7,8 @@ but users might want nevertheless to take advantage from them.
 import logging
 import os
 import subprocess  # nosec B404
+import argparse
+from marshmallow import fields
 
 from fasterrcnn_pytorch_api import configs
 
@@ -180,6 +182,43 @@ def check_input_type(file_path):
     else:
         return "unknown"
 
+import argparse
+from marshmallow import fields
 
+def add_arguments_from_schema(schema, parser):
+    for field_name, field_obj in schema.fields.items():
+        arg_name = f"--{field_name}"
+        
+        arg_kwargs = {
+            "type": str,
+            "help": field_name,  # Default help message is the field name
+        }
+        
+        if isinstance(field_obj, fields.Str):
+            arg_kwargs["type"] = str
+        elif isinstance(field_obj, fields.Int):
+            arg_kwargs["type"] = int
+        elif isinstance(field_obj, fields.Bool):
+            arg_kwargs["type"] = bool
+        elif isinstance(field_obj, fields.Float):
+            arg_kwargs["type"] = float  
+        
+        if field_obj.required:
+            arg_kwargs["required"] = True
+        
+        if field_obj.metadata.get("description"):
+            arg_kwargs["help"] = field_obj.metadata["description"]
+
+        parser.add_argument(arg_name, **arg_kwargs)
+
+
+
+
+
+ 
 if __name__ == "__main__":
-    print("Remote directory path:", configs.REMOTE_PATH)
+    from fasterrcnn_pytorch_api import   fields as fl
+    predict_parser=argparse.ArgumentParser()
+    add_arguments_from_schema(fl.TrainArgsSchema(), predict_parser)
+    parsed_args = predict_parser.parse_args()
+    print(parsed_args) 

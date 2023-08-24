@@ -32,6 +32,8 @@ from datetime import datetime
 from multiprocessing import Process
 from aiohttp.web import HTTPException
 import ast
+import argparse
+import json
 
 import wandb
 from fasterrcnn_pytorch_api import configs, fields, utils_api
@@ -89,13 +91,13 @@ def get_predict_args():
 
 def train(**args):
     """
-    Performs training on the dataset.
+        Performs training on the dataset.
 
-    Args:
-        **args: keyword arguments from get_train_args.
+        Args:
+            **args: keyword arguments from get_train_args.
 
-    Returns:
-        path to the trained model
+        Returns:
+            path to the trained model
     """
     try:
         logger.info("Training model...")
@@ -149,98 +151,106 @@ def predict(**args):
     Returns:
         either a JSON file, PNG image or video with bounding boxes.
     """
-    # try:
-    logger.debug("Predict with args: %s", args)
-    timestamp = args.get("timestamp")
-    if timestamp is not None:
-        if ast.literal_eval(configs.USE_RCLONE):
-            logger.error(
-                "Set the rclone configuration in settings.ini"
+    try:
+        logger.debug("Predict with args: %s", args)
+        timestamp = args.get("timestamp")
+        if timestamp is not None:
+            if ast.literal_eval(configs.USE_RCLONE):
+                logger.error(
+                    "Set the rclone configuration in settings.ini"
+                )
+                utils_api.download_model_from_nextcloud(timestamp)
+            if timestamp not in os.listdir(
+                configs.MODEL_DIR
+            ):
+                raise ValueError(
+                    f"Timestamp '{timestamp}' not found in '{configs.MODEL_DIR}'"
+                )
+            args["weights"] = os.path.join(
+                configs.MODEL_DIR, timestamp, "best_model.pth"
             )
-            utils_api.download_model_from_nextcloud(timestamp)
-        if timestamp not in os.listdir(
-            configs.MODEL_DIR
-        ):
-            raise ValueError(
-                f"Timestamp '{timestamp}' not found in '{configs.MODEL_DIR}'"
-            )
-        args["weights"] = os.path.join(
-            configs.MODEL_DIR, timestamp, "best_model.pth"
-        )
 
-    else:
-        args["weights"] = None
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        args["input"] = [args["input"]]
-        file_format = utils_api.check_input_type(
-            args["input"][0].original_filename
-        )
-        for f in args["input"]:
-            shutil.copy(
-                f.filename, tmpdir + "/" + f.original_filename
-            )
-        args["input"] = [
-            os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
-        ]
-        engine = combineinfer.InferenceEngine(args)
-        json_string, buffer = engine.infer(file_format, **args)
-        logger.debug("Response json_string: %d", json_string)
-        logger.debug("Response buffer: %d", buffer)
-
-        if args["accept"] == "application/json":
-            return json_string
         else:
-            return buffer
+            args["weights"] = None
 
+        with tempfile.TemporaryDirectory() as tmpdir:
+            args["input"] = [args["input"]]
+            file_format = utils_api.check_input_type(
+                args["input"][0].original_filename
+            )
+            for f in args["input"]:
+                shutil.copy(
+                    f.filename, tmpdir + "/" + f.original_filename
+                )
+            args["input"] = [
+                os.path.join(tmpdir, t) for t in os.listdir(tmpdir)
+            ]
+            engine = combineinfer.InferenceEngine(args)
+            json_string, buffer = engine.infer(file_format, **args)
+            logger.debug("Response json_string: %d", json_string)
+            logger.debug("Response buffer: %d", buffer)
 
-#   except Exception as err:
-# raise HTTPException(reason=err) from err
+            if args["accept"] == "application/json":
+                return json_string
+            else:
+                return buffer
+
+    except Exception as err:
+        raise HTTPException(reason=err) from err
+def main():
+    """
+    Runs above-described methods from CLI
+    """
+    method_dispatch = {
+        'get_metadata': get_metadata,
+        'predict': predict,
+        'train': train
+    }
+
+    chosen_method = args.method
+    logger.debug("Calling method: %s", chosen_method)
+    if chosen_method in method_dispatch:
+        method_function = method_dispatch[chosen_method]
+
+        if chosen_method == 'get_metadata':
+            results = method_function()
+        else:
+            logger.debug("Calling method with args: %s", args)
+            results = method_function(**vars(args))
+            
+
+        print(json.dumps(results))
+        logger.debug("Results: %s", results)
+        return results
+    else:
+        print("Invalid method specified.")
+
 
 
 if __name__ == "__main__":
-    args = {
-        "model": "fasterrcnn_convnext_small",
-        "data_config": "submarine_det/brackish.yaml",
-        "use_train_aug": True,
-        "aug_training_option": configs.DATA_AUG_OPTION,
-        "device": True,
-        "epochs": 3,
-        "workers": 4,
-        "batch": 1,
-        "lr": 0.001,
-        "imgsz": 640,
-        "no_mosaic": True,
-        "cosine_annealing": False,
-        "weights": None,
-        "resume_training": False,
-        "square_training": False,
-        "seed": 0,
-        "eval_n_epochs": 3,
-        "disable_wandb": True,
-    }
-    # train(**args)
-    input_file = (
-        "/srv/yolov8_api/data/mixkit-white-cat-lying"
-        + "-among-the-grasses-seen-up-close-22732-large.mp4"
-    )
+    parser = argparse.ArgumentParser(description='Model parameters', 
+                                     add_help=False)
+    cmd_parser = argparse.ArgumentParser()
+    subparsers = cmd_parser.add_subparsers(
+                            help='methods. Use \"api.py method --help\" to get more info', 
+                            dest='method')          
+    get_metadata_parser = subparsers.add_parser('get_metadata', 
+                                         help='get_metadata method',
+                                         parents=[parser])                                               
+    
+    predict_parser = subparsers.add_parser('predict', 
+                                           help='commands for prediction',
+                                           parents=[parser]) 
 
-    from deepaas.model.v2.wrapper import UploadedFile
+    utils_api.add_arguments_from_schema(fields.PredictArgsSchema(), predict_parser) 
 
-    pred_kwds = {
-        "input": UploadedFile(
-            "input",
-            input_file,
-            "application/octet-stream",
-            "input.mp4",
-        ),
-        "timestamp": "2023-05-10_121810",
-        "model": "fasterrcnn_resnet50_fpn_v2",
-        "threshold": 0.5,
-        "imgsz": 640,
-        "device": True,
-        "no_labels": False,
-        "square_img": False,
-        "accept": "application/json",
-    }
-    predict(**pred_kwds)
+    train_parser = subparsers.add_parser('train', 
+                                         help='commands for training',
+                                         parents=[parser])    
+    utils_api.add_arguments_from_schema(fields.TrainArgsSchema(), train_parser)                                                                        
+
+    
+  
+    args = cmd_parser.parse_args()
+    
+    main()

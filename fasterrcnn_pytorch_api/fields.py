@@ -78,7 +78,8 @@ class TrainArgsSchema(Schema):
     )
 
     data_config = fields.Str(
-        required=True, description="Path to the data config file."
+        required=True, description="Path to the data_config.yaml"
+        "file e.g.  my_dataset/data_config.yaml"
     )
 
     use_train_aug = fields.Bool(
@@ -165,7 +166,8 @@ class TrainArgsSchema(Schema):
         missing=None,
         description="Path to model weights if using custom pretrained weights."
         "The name of the directory that contains the checkpoint within"
-        'the "model" directory.',
+        'the "model" directory. To see the list of available trained models'
+        'please refere to metadata methods.',
     )
 
     resume_training = fields.Bool(

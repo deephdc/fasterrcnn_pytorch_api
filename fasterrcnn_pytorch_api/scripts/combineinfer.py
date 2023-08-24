@@ -257,13 +257,14 @@ class InferenceEngine:
 if __name__ == "__main__":
     args = {
         "device": "cuda",
-        "weights": "path_to_weights.pth",
+        "weights": "/srv/fasterrcnn_pytorch_api/models/2023-05-10_121810/last_model.pth",
         "model": "your_model_name",
         "imgsz": None,
         "square_img": False,
         "threshold": 0.3,
     }
     engine = InferenceEngine(args)
-    file_format = "video"
-    results = engine.infer(file_format, **args)
-    print(results)
+    #file_format = "video"
+    #results = engine.infer(file_format, **args)
+    #print(results)
+    engine.build_model(**args)
