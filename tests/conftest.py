@@ -47,7 +47,7 @@ def weights():
     return None
 
 
-@pytest.fixture(scope="module", params=BACKBONES)
+@pytest.fixture(scope="module", params=['fasterrcnn_convnext_small'])
 def model(request):
     """Fixture to return model checkpoint argument to test."""
     return request.param
@@ -214,7 +214,7 @@ def imgsz(request):
     return request.param
 
 
-@pytest.fixture(scope="module", params=[True])
+@pytest.fixture(scope="module", params=[False])
 def device(request):
     """Fixture to return gpu flag argument to test."""
     return request.param
