@@ -47,11 +47,10 @@ def get_video_dimensions(video_path):
 
 class InferenceEngine:
     def __init__(self, args):
-        self.device = torch.device(
-            "cuda:0"
-            if args["device"] and torch.cuda.is_available()
-            else "cpu"
-        )
+        if args["device"] and torch.cuda.is_available():
+            self.device = torch.device("cuda:0")
+        else:
+            self.device = torch.device("cpu")
         self.build_model(args)
 
     def build_model(self, args):
