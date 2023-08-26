@@ -4,9 +4,11 @@
 
 def job_result_url = ''
 
+ci_cd_image = 'mteamkit/cicd-fasterrcnn_pytorch_api'
+
 pipeline {
     agent {
-        label 'python3.6'
+        docker { image "${ci_cd_image}" }
     }
 
     environment {
@@ -29,13 +31,14 @@ pipeline {
             }
         }
 
-        stage('Unit testing coverage') {
+        stage('Unit testing with Coverage') {
             steps {
                 ToxEnvRun('qc.cov')
             }
             post {
                 success {
                     HTMLReport('cover', 'index.html', 'Coverage report')
+                    CoberturaReport('**/coverage.xml')
                 }
             }
         }
