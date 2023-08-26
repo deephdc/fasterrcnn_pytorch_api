@@ -88,7 +88,7 @@ def use_train_aug(request):
     return request.param
 
 
-@pytest.fixture(scope="module", params=[2])
+@pytest.fixture(scope="module", params=[1])
 def epochs(request):
     """Fixture to return number of epochs argument to test."""
     return request.param
@@ -100,7 +100,7 @@ def seed(request):
     return request.param
 
 
-@pytest.fixture(scope="module", params=[4])
+@pytest.fixture(scope="module", params=[2])
 def workers(request):
     """Fixture to return number of workers argument to test."""
     return request.param

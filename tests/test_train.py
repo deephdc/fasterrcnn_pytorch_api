@@ -1,7 +1,8 @@
 import os
+#import pytest
 import shutil
 
-
+#@pytest.mark.skip(reason="Currently takes too much resources")
 def test_train_function(trained_model_path):
     checkpoint_file = os.path.join(
         trained_model_path, "last_model.pth"

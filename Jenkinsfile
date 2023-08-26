@@ -25,24 +25,17 @@ pipeline {
 
         stage('Style analysis: PEP8') {
             steps {
-                ToxEnvRun('pep8')
-            }
-            post {
-                always {
-                    recordIssues(tools: [flake8(pattern: 'flake8.log')])
-                }
+                ToxEnvRun('qc.sty')
             }
         }
 
         stage('Unit testing coverage') {
             steps {
-                ToxEnvRun('cover')
-                ToxEnvRun('cobertura')
+                ToxEnvRun('qc.cov')
             }
             post {
                 success {
-                    HTMLReport('cover', 'index.html', 'coverage.py report')
-                    CoberturaReport('**/coverage.xml')
+                    HTMLReport('cover', 'index.html', 'Coverage report')
                 }
             }
         }
@@ -64,7 +57,7 @@ pipeline {
 
         stage('Security scanner') {
             steps {
-                ToxEnvRun('bandit-report')
+                ToxEnvRun('qc.sec')
                 script {
                     if (currentBuild.result == 'FAILURE') {
                         currentBuild.result = 'UNSTABLE'
