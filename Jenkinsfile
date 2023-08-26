@@ -38,7 +38,6 @@ pipeline {
             post {
                 success {
                     HTMLReport('htmlcov', 'index.html', 'Coverage report')
-                    CoberturaReport('**/coverage.xml')
                 }
             }
         }
@@ -59,20 +58,20 @@ pipeline {
             }
         }
 
-        stage('Metrics gathering') {
-            agent {
-                label 'sloc'
-            }
-            steps {
-                checkout scm
-                SLOCRun()
-            }
-            post {
-                success {
-                    SLOCPublish()
-                }
-            }
-        }
+//        stage('Metrics gathering') {
+//            agent {
+//                label 'sloc'
+//            }
+//            steps {
+//                checkout scm
+//                SLOCRun()
+//            }
+//            post {
+//                success {
+//                    SLOCPublish()
+//                }
+//            }
+//        }
 
         stage("Re-build Docker images") {
             when {

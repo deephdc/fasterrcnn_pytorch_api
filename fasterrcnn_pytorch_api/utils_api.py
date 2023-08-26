@@ -192,7 +192,7 @@ def add_arguments_from_schema(schema, parser):
             "help": field_name,  # Default help message is the field name
         }
 
-        if (isinstance(field_obj, fields.Str) or 
+        if (isinstance(field_obj, fields.Str) or
                 isinstance(field_obj, fields.Field)):
             arg_kwargs["type"] = str
         elif isinstance(field_obj, fields.Int):
