@@ -37,23 +37,8 @@ pipeline {
             }
             post {
                 success {
-                    HTMLReport('cover', 'index.html', 'Coverage report')
+                    HTMLReport('htmlcov', 'index.html', 'Coverage report')
                     CoberturaReport('**/coverage.xml')
-                }
-            }
-        }
-
-        stage('Metrics gathering') {
-            agent {
-                label 'sloc'
-            }
-            steps {
-                checkout scm
-                SLOCRun()
-            }
-            post {
-                success {
-                    SLOCPublish()
                 }
             }
         }
@@ -70,6 +55,21 @@ pipeline {
             post {
                always {
                     HTMLReport("/tmp/bandit", 'index.html', 'Bandit report')
+                }
+            }
+        }
+
+        stage('Metrics gathering') {
+            agent {
+                label 'sloc'
+            }
+            steps {
+                checkout scm
+                SLOCRun()
+            }
+            post {
+                success {
+                    SLOCPublish()
                 }
             }
         }
