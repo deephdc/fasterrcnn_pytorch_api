@@ -89,5 +89,15 @@ pipeline {
             }
         }
 
-}
+    }
+
+    post {
+        // Clean after build (always delete .tox directory)
+        always {
+            cleanWs(cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.tox', type: 'INCLUDE']])
+        }
+    }
 }
