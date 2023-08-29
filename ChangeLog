@@ -1,27 +1,4 @@
 CHANGES
 =======
 
-* update the code
-* update the code
-* update the code
-* update readme
-* update readme
-* add rclone cofing to setting.ini
-* add rclone cofing to setting.ini
-* update
-* update the code
-* update the style
-* update the code
-* update the code
-* update the readme
-* update the tox.ini
-* update the code
-* update the code
-* update the code
-* update
-* update
-* update
-* update the code
-* add video input to inference
-* add video input to inference
-* Update README.md
+* [cicd] update tox.ini for the bandit directory already exists
