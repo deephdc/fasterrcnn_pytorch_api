@@ -24,7 +24,7 @@ To launch the API, first, install the package, and then run [DeepaaS](https://gi
 git clone --depth 1 https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git
 cd fasterrcnn_pytorch_api
 git submodule init
-git submodule update
+git submodule update --remote --merge
 pip install -e ./path/to/submodule/dir
 pip install -e .
 ```
