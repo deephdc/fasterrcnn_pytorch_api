@@ -1,4 +1,5 @@
 CHANGES
 =======
 
+* update the tox.ini
 * [cicd] update tox.ini for the bandit directory already exists
