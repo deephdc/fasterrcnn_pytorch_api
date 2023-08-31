@@ -184,26 +184,30 @@ def check_input_type(file_path):
 
 
 def add_arguments_from_schema(schema, parser):
+   
     for field_name, field_obj in schema.fields.items():
         arg_name = f"--{field_name}"
 
         arg_kwargs = {
-            "type": str,
-            "help": field_name,  # Default help message is the field name
+            "help": field_name, 
         }
 
-        if (isinstance(field_obj, fields.Str) or
-                isinstance(field_obj, fields.Field)):
-            arg_kwargs["type"] = str
-        elif isinstance(field_obj, fields.Int):
+        if type(field_obj)==  fields.Int:
             arg_kwargs["type"] = int
-        elif isinstance(field_obj, fields.Bool):
-            arg_kwargs["type"] = bool
-        elif isinstance(field_obj, fields.Float):
+        elif type(field_obj)==  fields.Bool:
+           # arg_kwargs["type"] = bool
+            arg_kwargs["action"]= 'store_true'
+        elif type(field_obj)==  fields.Float:
             arg_kwargs["type"] = float
+        else:
+            arg_kwargs["type"] = str 
+
 
         if field_obj.required:
             arg_kwargs["required"] = True
+
+        if hasattr(field_obj, "missing"):
+            arg_kwargs["default"] = field_obj.missing  
 
         if field_obj.metadata.get("description"):
             arg_kwargs["help"] = field_obj.metadata["description"]
