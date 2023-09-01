@@ -218,7 +218,7 @@ def main():
         else:
             logger.debug("Calling method with args: %s", args)
             del vars(args)['method'] 
-            if args.input:
+            if hasattr(args, 'input'):
                 file_extension = os.path.splitext(args.input)[1]
                 args.input=  UploadedFile(
                 "input", args.input, "application/octet-stream", f"input{file_extension}")
