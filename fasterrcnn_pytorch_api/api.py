@@ -217,6 +217,11 @@ def main():
             results = method_function()
         else:
             logger.debug("Calling method with args: %s", args)
+            del vars(args)['method'] 
+            if args.input:
+                file_extension = os.path.splitext(args.input)[1]
+                args.input=  UploadedFile(
+                "input", args.input, "application/octet-stream", f"input{file_extension}")
             results = method_function(**vars(args))
 
         print(json.dumps(results))
