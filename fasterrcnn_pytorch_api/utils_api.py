@@ -192,15 +192,14 @@ def add_arguments_from_schema(schema, parser):
             "help": field_name, 
         }
 
-        if type(field_obj)==  fields.Int:
+        if isinstance(field_obj, fields.Int):
             arg_kwargs["type"] = int
-        elif type(field_obj)==  fields.Bool:
-           # arg_kwargs["type"] = bool
-            arg_kwargs["action"]= 'store_true'
-        elif type(field_obj)==  fields.Float:
+        elif isinstance(field_obj, fields.Bool):
+            arg_kwargs["action"] = "store_true"
+        elif isinstance(field_obj, fields.Float):
             arg_kwargs["type"] = float
         else:
-            arg_kwargs["type"] = str 
+            arg_kwargs["type"] = str
 
 
         if field_obj.required:
