@@ -118,18 +118,19 @@ def train(**args):
 
         if args["weights"] is not None:
             args["weights"] = os.path.join(
-                configs.MODEL_DIR, args["weights"], "last_model.pth"
+                args["weights"], "last_model.pth"
             )
-            validate_and_modify_path(args["weights"], configs.MODEL_DIR)
+            args["weights"] = validate_and_modify_path(
+                args["weights"], configs.MODEL_DIR
+            )
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         ckpt_path = os.path.join(configs.MODEL_DIR, timestamp)
         os.makedirs(ckpt_path, exist_ok=True)
         args["name"] = ckpt_path
-        args["data_config"] = os.path.join(
-            configs.DATA_PATH, args["data_config"]
+        args["data_config"] = validate_and_modify_path(
+            args["data_config"], configs.DATA_PATH
         )
-
         p = Process(
             target=utils_api.launch_tensorboard,
             args=(configs.MONITOR_PORT, configs.MODEL_DIR),
@@ -220,11 +221,15 @@ def main():
             results = method_function()
         else:
             logger.debug("Calling method with args: %s", args)
-            del vars(args)['method'] 
-            if hasattr(args, 'input'):
+            del vars(args)["method"]
+            if hasattr(args, "input"):
                 file_extension = os.path.splitext(args.input)[1]
-                args.input=  UploadedFile(
-                "input", args.input, "application/octet-stream", f"input{file_extension}")
+                args.input = UploadedFile(
+                    "input",
+                    args.input,
+                    "application/octet-stream",
+                    f"input{file_extension}",
+                )
             results = method_function(**vars(args))
 
         print(json.dumps(results))
