@@ -83,7 +83,7 @@ class TrainArgsSchema(Schema):
         required=True,
         metadata={
             "description": "Path to the data_config.yaml file. It can be an absolute path or"
-            "e.g. my_dataset/data_config.yaml, if your data is in the configs.DATA_PATH directory."
+            "e.g. my_dataset/data_config.yaml, if your data is in the data (configs.DATA_PATH) directory."
         },
     )
 
@@ -187,7 +187,7 @@ class TrainArgsSchema(Schema):
             "description": "path to model directory with ckpt(last_model.pth)"
             "if custom pretrain weights are used"
             "It should be an absolute path like 'path/to/ckpt_dir' or "
-            "a path from configs.MODEL_DIR directory (for example: 'timestamps/weights')."
+            "a path from model (configs.MODEL_DIR) directory (for example: 'timestamps/weights')."
             "To see the list of available trained models, please use the metadata methods."
         },
     )
