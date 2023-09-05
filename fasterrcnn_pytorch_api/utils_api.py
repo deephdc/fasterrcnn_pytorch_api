@@ -184,33 +184,52 @@ def check_input_type(file_path):
 
 
 def add_arguments_from_schema(schema, parser):
-   
+    """
+    Iterates through the fields defined in a schema and adds
+    corresponding commandline arguments to the provided
+    ArgumentParser object.
+
+    Args:
+        schema (marshmallow.Schema): The schema object containing field
+        definitions.
+        parser (argparse.ArgumentParser): The ArgumentParser object
+        to which arguments will be added.
+
+    Returns:
+        None
+    """
     for field_name, field_obj in schema.fields.items():
         arg_name = f"--{field_name}"
 
         arg_kwargs = {
-            "help": field_name, 
+            "help": field_name,
         }
 
         if isinstance(field_obj, fields.Int):
             arg_kwargs["type"] = int
         elif isinstance(field_obj, fields.Bool):
-            arg_kwargs["action"] = "store_true"
+            arg_kwargs["action"] = (
+                "store_true"
+                if field_obj.load_default == False
+                else "store_false"
+            )
+
         elif isinstance(field_obj, fields.Float):
             arg_kwargs["type"] = float
         else:
             arg_kwargs["type"] = str
 
-
         if field_obj.required:
             arg_kwargs["required"] = True
 
-        if hasattr(field_obj, "missing"):
-            arg_kwargs["default"] = field_obj.missing  
+        if field_obj.load_default and not isinstance(
+            field_obj, fields.Bool
+        ):
+            arg_kwargs["default"] = field_obj.load_default
 
         if field_obj.metadata.get("description"):
             arg_kwargs["help"] = field_obj.metadata["description"]
-
+        # Debug print statements
         parser.add_argument(arg_name, **arg_kwargs)
 
 
