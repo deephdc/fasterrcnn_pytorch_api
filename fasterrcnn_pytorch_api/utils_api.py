@@ -233,6 +233,29 @@ def add_arguments_from_schema(schema, parser):
         parser.add_argument(arg_name, **arg_kwargs)
 
 
+def validate_and_modify_path(path, base_path):
+    """
+    Validate and modify a file path, ensuring it exists
+
+    Args:
+        path (str): The input file path to validate.
+        base_path (str): The base path to join with 'path' if it
+        doesn't exist as-is.
+
+    Returns:
+        str: The validated and possibly modified file path.
+    """
+    if not os.path.isfile(path):
+        modified_path = os.path.join(base_path, path)
+        if not os.path.isfile(modified_path):
+            raise ValueError(
+                f"The path {path} does not exist."
+                "Please provide a valid path."
+            )
+        return modified_path
+    return path
+
+
 if __name__ == "__main__":
     from fasterrcnn_pytorch_api import fields as fl
 

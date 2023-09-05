@@ -120,6 +120,7 @@ def train(**args):
             args["weights"] = os.path.join(
                 configs.MODEL_DIR, args["weights"], "last_model.pth"
             )
+            validate_and_modify_path(args["weights"], configs.MODEL_DIR)
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
         ckpt_path = os.path.join(configs.MODEL_DIR, timestamp)
@@ -201,6 +202,8 @@ def predict(**args):
 def main():
     """
     Runs above-described methods from CLI
+    uses: python3 path/to/api.py method --arg1 ARG1_VALUE
+     --arg2 ARG2_VALUE
     """
     method_dispatch = {
         "get_metadata": get_metadata,

@@ -72,155 +72,159 @@ class TrainArgsSchema(Schema):
         ordered = True
 
     model = fields.Str(
-        
         required=True,
         metadata={
-            "description":"Name of the model.",
-            "enum":configs.BACKBONES}
+            "description": "Name of the model.",
+            "enum": configs.BACKBONES,
+        },
     )
 
     data_config = fields.Str(
-        required=True, 
+        required=True,
         metadata={
-        "description":"Path to the data_config.yaml"
-        "file e.g.  my_dataset/data_config.yaml"}
+            "description": "Path to the data_config.yaml"
+            "file e.g.  my_dataset/data_config.yaml"
+        },
     )
 
     use_train_aug = fields.Bool(
         required=False,
         load_default=False,
         metadata={
-            "description":"Whether to use train augmentation, uses"
-        "some advanced augmentation that may make training"
-        "difficult when used with mosaic. If true, it uses"
-        "the options in aug_training_option. You can change"
-        "that to have custom augmentation.",
-        "enum":[True, False],}
+            "description": "Whether to use train augmentation, uses"
+            "some advanced augmentation that may make training"
+            "difficult when used with mosaic. If true, it uses"
+            "the options in aug_training_option. You can change"
+            "that to have custom augmentation.",
+            "enum": [True, False],
+        },
     )
 
     aug_training_option = MyCustomFieldForJson(
         metadata={
-            "description":"Augmentation options.\n"
-        "blur_limit (int) - maximum kernel size for blurring"
-        "the input image.\n"
-        "p (float) - probability of applying the transform.\n"
-        "shift_limit ((float, float) or float) - shift factor range for"
-        "both height and width.\n"
-        "scale_limit ((float, float) or float) - scaling factor range.\n"
-        "rotate_limit ((int, int) or int) - rotation range.\n"
-        "num_holes (int) - number of regions to zero out.\n"
-        "max_h_size (int) - maximum height of the hole.\n"
-        "max_w_size (int) - maximum width of the hole.\n"},
+            "description": "Augmentation options.\n"
+            "blur_limit (int) - maximum kernel size for blurring"
+            "the input image.\n"
+            "p (float) - probability of applying the transform.\n"
+            "shift_limit ((float, float) or float) - shift factor range for"
+            "both height and width.\n"
+            "scale_limit ((float, float) or float) - scaling factor range.\n"
+            "rotate_limit ((int, int) or int) - rotation range.\n"
+            "num_holes (int) - number of regions to zero out.\n"
+            "max_h_size (int) - maximum height of the hole.\n"
+            "max_w_size (int) - maximum width of the hole.\n"
+        },
         load_default=json.dumps(configs.DATA_AUG_OPTION),
     )
 
     device = fields.Bool(
         required=False,
         load_default=True,
-        
         metadata={
-            "description":"Computation/training device, default is GPU if"
-        "GPU present.",
-        "enum":[True, False],}
+            "description": "Computation/training device, default is GPU if"
+            "GPU present.",
+            "enum": [True, False],
+        },
     )
 
     epochs = fields.Int(
         required=False,
         load_default=4,
-        metadata={
-            "description":"Number of epochs to train."}
+        metadata={"description": "Number of epochs to train."},
     )
 
     workers = fields.Int(
         required=False,
         load_default=4,
         metadata={
-            "description":"Number of workers for data processing/transforms"
-        "/augmentations."}
+            "description": "Number of workers for data processing/transforms"
+            "/augmentations."
+        },
     )
 
     batch = fields.Int(
         required=False,
         load_default=4,
-        metadata={
-            "description":"Batch size to load the data."}
+        metadata={"description": "Batch size to load the data."},
     )
 
     lr = fields.Float(
         required=False,
         load_default=0.001,
-        metadata={
-            "description":"Learning rate for training."}
+        metadata={"description": "Learning rate for training."},
     )
 
     imgsz = fields.Int(
         required=False,
         load_default=640,
         metadata={
-            "description":"Image size to feed to the network."}
+            "description": "Image size to feed to the network."
+        },
     )
 
     no_mosaic = fields.Bool(
         required=False,
         load_default=True,
         metadata={
-            "description":"Pass this to not use mosaic augmentation.",
-            "enum":[True, False],}
+            "description": "Pass this to not use mosaic augmentation.",
+            "enum": [True, False],
+        },
     )
 
     cosine_annealing = fields.Bool(
         required=False,
         load_default=True,
-        
         metadata={
-            "description":"Use cosine annealing warm restarts.",
-            "enum":[True, False]}
+            "description": "Use cosine annealing warm restarts.",
+            "enum": [True, False],
+        },
     )
 
     weights = fields.Str(
         required=False,
         load_default=None,
         metadata={
-            "description":"Path to model weights if using custom pretrained weights."
-        "The name of the directory that contains the checkpoint within"
-        'the "model" directory. To see the list of available trained models'
-        'please refere to metadata methods.'}
+            "description": "path to model directory with ckpt(last_model.pth)"
+            "if custom pretrain weights are used"
+            "It should be an absolute path like 'path/to/ckpt_dir' or "
+            "a path from the model directory (for example: 'timestamps/weights')."
+            "To see the list of available trained models, please use the metadata methods."
+        },
     )
 
     resume_training = fields.Bool(
         required=False,
         load_default=False,
         metadata={
-            "description":"If using custom pretrained weights, resume training from"
-        "the last step of the provided checkpoint. If True, the path to"
-        "the weights should be specified in the argument weights.",
-        "enum":[True, False]}
+            "description": "If using custom pretrained weights, resume training from"
+            "the last step of the provided checkpoint. If True, the path to"
+            "the weights should be specified in the argument weights.",
+            "enum": [True, False],
+        },
     )
 
     square_training = fields.Bool(
         required=False,
         load_default=True,
-        
         metadata={
-            "description":"Resize images to square shape instead of aspect ratio"
-        "resizing for single image training. For mosaic training,"
-        "this resizes single images to square shape first then puts"
-        "them on a square canvas.",
-        "enum":[True, False],}
+            "description": "Resize images to square shape instead of aspect ratio"
+            "resizing for single image training. For mosaic training,"
+            "this resizes single images to square shape first then puts"
+            "them on a square canvas.",
+            "enum": [True, False],
+        },
     )
 
     disable_wandb = fields.Bool(
         required=False,
         load_default=True,
-        metadata={
-            "description":"Whether to use WandB for logging."}
+        metadata={"description": "Whether to use WandB for logging."},
     )
 
     seed = fields.Int(
         required=False,
         load_default=0,
-        metadata={
-            "description":"Global seed for training."}
+        metadata={"description": "Global seed for training."},
     )
 
 
@@ -233,69 +237,74 @@ class PredictArgsSchema(Schema):
         type="file",
         location="form",
         metadata={
-            "description":"Input either an image or a video.\n"
-        "video must be in the format MP4, AVI, MKV, MOV, WMV, FLV, WebM.\n"
-        "Images must be in the format JPEG, PNG, BMP, GIF, TIFF, PPM,"
-        "EXR, WebP."}
+            "description": "Input either an image or a video.\n"
+            "video must be in the format MP4, AVI, MKV, MOV, WMV, FLV, WebM.\n"
+            "Images must be in the format JPEG, PNG, BMP, GIF, TIFF, PPM,"
+            "EXR, WebP."
+        },
     )
 
     timestamp = fields.Str(
         required=False,
         load_default=None,
         metadata={
-            "description":"Model timestamp to be used for prediction. To see "
-        "the available timestamp, please run the get_metadata function."
-        "If no timestamp is given, the model will be loaded from COCO."}
+            "description": "Model timestamp to be used for prediction. To see "
+            "the available timestamp, please run the get_metadata function."
+            "If no timestamp is given, the model will be loaded from COCO."
+        },
     )
 
     model = fields.Str(
         required=False,
         load_default="fasterrcnn_resnet50_fpn_v2",
-        
         metadata={
-            "description":"Please provide the name of the model you want to use"
-        "for inference. If you have specified neither timestamp nor model"
-        "name, the default model 'fasterrcnn_resnet50_fpn_v2' is loaded.",
-        "enum":configs.BACKBONES}
+            "description": "Please provide the name of the model you want to use"
+            "for inference. If you have specified neither timestamp nor model"
+            "name, the default model 'fasterrcnn_resnet50_fpn_v2' is loaded.",
+            "enum": configs.BACKBONES,
+        },
     )
 
     threshold = fields.Float(
         required=False,
         load_default=0.5,
-        metadata={
-            "description":"Detection threshold."}
+        metadata={"description": "Detection threshold."},
     )
 
     imgsz = fields.Int(
         required=False,
         load_default=640,
         metadata={
-            "description":"Image size to feed to the network."}
+            "description": "Image size to feed to the network."
+        },
     )
 
     device = fields.Bool(
         required=False,
         load_default=True,
         metadata={
-            "description":"Computation device, default is GPU if GPU is present.",
-            "enum":[True, False],}
+            "description": "Computation device, default is GPU if GPU is present.",
+            "enum": [True, False],
+        },
     )
 
     no_labels = fields.Bool(
         required=False,
         load_default=False,
         metadata={
-            "description":"Visualize output only if this argument is passed",
-            "enum":[True, False]}
+            "description": "Visualize output only if this argument is passed",
+            "enum": [True, False],
+        },
     )
 
     square_img = fields.Bool(
         required=False,
         load_default=True,
         metadata={
-            "description":"Whether to use square image resize, else use aspect ratio"
-        "resize.",
-        "enum":[True, False]}
+            "description": "Whether to use square image resize, else use aspect ratio"
+            "resize.",
+            "enum": [True, False],
+        },
     )
 
     accept = fields.Str(
@@ -305,8 +314,9 @@ class PredictArgsSchema(Schema):
             ["application/json", "image/png", "video/mp4"]
         ),
         metadata={
-            "description":"Returns a PNG file with detection results or a JSON with"
-        "the prediction."}
+            "description": "Returns a PNG file with detection results or a JSON with"
+            "the prediction."
+        },
     )
 
 
