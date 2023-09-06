@@ -210,7 +210,7 @@ def add_arguments_from_schema(schema, parser):
         elif isinstance(field_obj, fields.Bool):
             arg_kwargs["action"] = (
                 "store_true"
-                if field_obj.load_default == False
+                if not field_obj.load_default
                 else "store_false"
             )
 
