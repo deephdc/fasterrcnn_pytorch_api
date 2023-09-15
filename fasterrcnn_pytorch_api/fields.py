@@ -8,7 +8,6 @@ from fasterrcnn_pytorch_api import configs
 class MyCustomFieldForJson(fields.String):
     def __init__(self, *args, **kwargs):
         self.metadata = kwargs.get("metadata", {})
-        self.metadata["description"] = kwargs.get("description")
         super().__init__(*args, **kwargs)
 
     def _deserialize(self, value, attr, data, **kwargs):
@@ -82,7 +81,7 @@ class TrainArgsSchema(Schema):
     data_config = fields.Str(
         required=True,
         metadata={
-            "description": "Path to the data_config.yaml file. It can be an absolute path or"
+            "description": "Path to the data_config.yaml file. It can be an absolute path or "
             "e.g. my_dataset/data_config.yaml, if your data is in the data (configs.DATA_PATH) directory."
         },
     )
@@ -91,16 +90,17 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=False,
         metadata={
-            "description": "Whether to use train augmentation, uses"
-            "some advanced augmentation that may make training"
-            "difficult when used with mosaic. If true, it uses"
-            "the options in aug_training_option. You can change"
+            "description": "Whether to use train augmentation, "
+            "uses some advanced augmentation that may make training "
+            "difficult when used with mosaic. If true, it uses "
+            "the options in aug_training_option. You can change "
             "that to have custom augmentation.",
             "enum": [True, False],
         },
     )
 
     aug_training_option = MyCustomFieldForJson(
+        load_default=json.dumps(configs.DATA_AUG_OPTION),
         metadata={
             "description": "Augmentation options.\n"
             "blur_limit (int) - maximum kernel size for blurring"
@@ -114,14 +114,13 @@ class TrainArgsSchema(Schema):
             "max_h_size (int) - maximum height of the hole.\n"
             "max_w_size (int) - maximum width of the hole.\n"
         },
-        load_default=json.dumps(configs.DATA_AUG_OPTION),
     )
 
     device = fields.Bool(
         required=False,
         load_default=True,
         metadata={
-            "description": "Computation/training device, default is GPU if"
+            "description": "Computation/training device, default is GPU if "
             "GPU present.",
             "enum": [True, False],
         },
@@ -184,8 +183,8 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=None,
         metadata={
-            "description": "path to model directory with ckpt(last_model.pth)"
-            "if custom pretrain weights are used"
+            "description": "path to model directory with ckpt(last_model.pth) "
+            "if custom pretrain weights are used. "
             "It should be an absolute path like 'path/to/ckpt_dir' or "
             "a path from model (configs.MODEL_DIR) directory (for example: 'timestamps/weights')."
             "To see the list of available trained models, please use the metadata methods."
@@ -196,8 +195,8 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=False,
         metadata={
-            "description": "If using custom pretrained weights, resume training from"
-            "the last step of the provided checkpoint. If True, the path to"
+            "description": "If using custom pretrained weights, resume training from "
+            "the last step of the provided checkpoint. If True, the path to "
             "the weights should be specified in the argument weights.",
             "enum": [True, False],
         },
@@ -207,9 +206,9 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=True,
         metadata={
-            "description": "Resize images to square shape instead of aspect ratio"
-            "resizing for single image training. For mosaic training,"
-            "this resizes single images to square shape first then puts"
+            "description": "Resize images to square shape instead of aspect ratio "
+            "resizing for single image training. For mosaic training, "
+            "this resizes single images to square shape first then puts "
             "them on a square canvas.",
             "enum": [True, False],
         },
@@ -249,7 +248,7 @@ class PredictArgsSchema(Schema):
         load_default=None,
         metadata={
             "description": "Model timestamp to be used for prediction. To see "
-            "the available timestamp, please run the get_metadata function."
+            "the available timestamp, please run the get_metadata function. "
             "If no timestamp is given, the model will be loaded from COCO."
         },
     )
@@ -258,8 +257,8 @@ class PredictArgsSchema(Schema):
         required=False,
         load_default="fasterrcnn_resnet50_fpn_v2",
         metadata={
-            "description": "Please provide the name of the model you want to use"
-            "for inference. If you have specified neither timestamp nor model"
+            "description": "Please provide the name of the model you want to use "
+            "for inference. If you have specified neither timestamp nor model "
             "name, the default model 'fasterrcnn_resnet50_fpn_v2' is loaded.",
             "enum": configs.BACKBONES,
         },
