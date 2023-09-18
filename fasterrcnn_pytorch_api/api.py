@@ -120,7 +120,7 @@ def train(**args):
             args["weights"] = os.path.join(
                 args["weights"], "last_model.pth"
             )
-            args["weights"] = validate_and_modify_path(
+            args["weights"] = utils_api.validate_and_modify_path(
                 args["weights"], configs.MODEL_DIR
             )
 
@@ -128,7 +128,7 @@ def train(**args):
         ckpt_path = os.path.join(configs.MODEL_DIR, timestamp)
         os.makedirs(ckpt_path, exist_ok=True)
         args["name"] = ckpt_path
-        args["data_config"] = validate_and_modify_path(
+        args["data_config"] = utils_api.validate_and_modify_path(
             args["data_config"], configs.DATA_PATH
         )
         p = Process(
@@ -140,6 +140,7 @@ def train(**args):
         train_model(args)
         return {f'model was saved in {args["name"]}'}
     except Exception as err:
+        logger.critical(err, exc_info=True)
         raise HTTPException(reason=err) from err
 
 
