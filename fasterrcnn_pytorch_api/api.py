@@ -138,7 +138,7 @@ def train(**args):
         )
         p.start()
         train_model(args)
-        return {f'model was saved in {args["name"]}'}
+        return {'result': f'model was saved in {args["name"]}'}
     except Exception as err:
         logger.critical(err, exc_info=True)
         raise HTTPException(reason=err) from err

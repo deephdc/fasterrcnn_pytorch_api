@@ -71,7 +71,8 @@ class TrainArgsSchema(Schema):
         ordered = True
 
     model = fields.Str(
-        required=True,
+        required=False,
+        load_default='fasterrcnn_resnet50_fpn_v2',
         metadata={
             "description": "Name of the model.",
             "enum": configs.BACKBONES,
