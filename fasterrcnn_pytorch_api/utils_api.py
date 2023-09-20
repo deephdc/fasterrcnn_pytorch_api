@@ -152,6 +152,8 @@ def launch_tensorboard(port, logdir):
     Returns:
         None
     """
+    # host has to be 0.0.0.0 (!),
+    # otherwise requests from outside are not accepted
     subprocess.call(
         [
             "tensorboard",
@@ -160,7 +162,7 @@ def launch_tensorboard(port, logdir):
             "--port",
             "{}".format(port),
             "--host",
-            "127.0.0.1",
+            "0.0.0.0",
         ]
     )  # nosec B603, B607
 
