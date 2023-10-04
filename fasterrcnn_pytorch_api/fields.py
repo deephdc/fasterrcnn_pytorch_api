@@ -223,7 +223,7 @@ class TrainArgsSchema(Schema):
 
     seed = fields.Int(
         required=False,
-        load_default=0,
+        load_default=42,
         metadata={"description": "Global seed for training."},
     )
 
