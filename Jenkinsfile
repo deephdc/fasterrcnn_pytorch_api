@@ -32,6 +32,18 @@ pipeline {
             }
         }
 
+        stage('Metrics gathering') {
+            steps {
+                //SLOCRun()
+                sh "cloc --by-file --fullpath --not-match-d='(.tox|htmlcov|.egg-info)' --xml --out=cloc.xml ."
+            }
+            post {
+                success {
+                    SLOCPublish()
+                }
+            }
+        }
+
         stage('Style analysis: PEP8') {
             steps {
                 ToxEnvRun('qc.sty')
@@ -64,21 +76,6 @@ pipeline {
                 }
             }
         }
-
-//        stage('Metrics gathering') {
-//            agent {
-//                label 'sloc'
-//            }
-//            steps {
-//                checkout scm
-//                SLOCRun()
-//            }
-//            post {
-//                success {
-//                    SLOCPublish()
-//                }
-//            }
-//        }
 
         stage("Re-build Docker images") {
             when {
