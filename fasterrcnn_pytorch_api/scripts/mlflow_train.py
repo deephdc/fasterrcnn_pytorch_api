@@ -61,29 +61,19 @@ from mlflow import log_metric, log_param, log_artifacts
 
 
 # Remote MLFlow server
-MLFLOW_REMOTE_SERVER="http://mlflow.dev.ai4eosc.eu"
+MLFLOW_REMOTE_SERVER= os.getenv('MLFLOW_REMOTE_SERVER', default='https://mlflow.dev.ai4eosc.eu')
 #Set the MLflow server and backend and artifact stores
 mlflow.set_tracking_uri(MLFLOW_REMOTE_SERVER)
-USERNAME = "<your-username>" # User who is logging the experiment, if not set then the default value of a user will be your local username
-#set the environmental vars to allow 'mlflow_user' to track experiments using MLFlow
-os.environ["LOGNAME"] = USERNAME  
-
-# for direct API calls via HTTP we need to inject credentials
-MLFLOW_TRACKING_USERNAME = 'mlflow_user'
-MLFLOW_TRACKING_PASSWORD =  getpass.getpass()  # inject password by typing manually
-
 
 # for MLFLow-way we have to set the following environment variables
-os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
-
-os.environ['MLFLOW_TRACKING_USERNAME'] = MLFLOW_TRACKING_USERNAME
-os.environ['MLFLOW_TRACKING_PASSWORD'] = MLFLOW_TRACKING_PASSWORD
+MLFLOW_TRACKING_USERNAME=os.environ.get('MLFLOW_TRACKING_USERNAME')
+MLFLOW_TRACKING_PASSWORD=os.environ.get('MLFLOW_TRACKING_PASSWORD')
 
 # Name of the experiment (e.g. name of the  code repository)
-MLFLOW_EXPERIMENT_NAME="experiment_name"
+MLFLOW_EXPERIMENT_NAME= os.getenv('MLFLOW_EXPERIMENT_NAME', default='frcnn_with_mlflow_2') 
 
 
-run_name = datetime.now().strftime("%Y%m%d_%H%M%S")
+run_name =os.getenv('RUN_NAME',  default=datetime.now().strftime("%Y%m%d_%H%M%S"))
 
 
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -102,7 +92,7 @@ def parse_opt():
     )
     parser.add_argument(
         '--data', 
-        default=None,
+        default='/home/se1131/football-players-detection.v4i.voc/data.yaml',
         help='path to the data config file'
     )
     parser.add_argument(
@@ -264,17 +254,18 @@ def main(args):
     BATCH_SIZE = args['batch']
     OUT_DIR = args['name'] 
     COLORS = np.random.uniform(0, 1, size=(len(CLASSES), 3))
-    yaml_save(file_path=os.path.join(OUT_DIR, 'opt.yaml'), data=args)
+   # yaml_save(file_path=os.path.join(OUT_DIR, 'opt.yaml'), data=args)
 
     # Model configurations
     IMAGE_SIZE = args['imgsz']
     
-    train_dataset = create_train_dataset(
+    train_dataset =  create_train_dataset(
         TRAIN_DIR_IMAGES, 
         TRAIN_DIR_LABELS,
         IMAGE_SIZE, 
         CLASSES,
-        #use_train_aug=args['use_train_aug'],
+        aug_option=args['aug_option'],
+        use_train_aug=args['use_train_aug'],
         no_mosaic=args['no_mosaic'],
         square_training=args['square_training']
     )
@@ -283,6 +274,7 @@ def main(args):
         VALID_DIR_LABELS, 
         IMAGE_SIZE, 
         CLASSES,
+        aug_option=args['aug_option'],
         square_training=args['square_training']
     )
     print('Creating data loaders')
@@ -415,8 +407,15 @@ def main(args):
     
     with mlflow.start_run(run_name = run_name) as mlflow_run: 
        #mlflow.pytorch.autolog(log_every_n_epoch=1, log_models=True, disable_for_unsupported_versions=False,  registered_model_name='submarin_animal_detection')
-
+         
         #Log all the params
+        
+        if 'aug_option' in args:
+            for key, value in args['aug_option'].items():
+                 args[key] = value
+
+            args.pop('aug_option')  
+      
         mlflow.log_params(args)
         mlflow.set_tag("model",args['model'])
 
@@ -494,10 +493,13 @@ def main(args):
 
 
 if __name__ == '__main__':
+    import json
+    from fasterrcnn_pytorch_api import configs
     args={'model': 'fasterrcnn_squeezenet1_1',
-           'data_config': '/home/fasterrcnn/mlflow_fasterrcnn/data/submarine_det/brackish.yaml',
+           'data_config': '/home/se1131/football-players-detection_frcnn/data.yaml',
            'name':'/home/fasterrcnn/mlflow_fasterrcnn/data',
            'use_train_aug': False,
+           'aug_option': configs.DATA_AUG_OPTION,
            'device': False,
            'epochs': 1,
            'workers': 4,
