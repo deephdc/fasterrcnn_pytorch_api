@@ -72,7 +72,7 @@ class TrainArgsSchema(Schema):
 
     model = fields.Str(
         required=False,
-        load_default='fasterrcnn_resnet50_fpn_v2',
+        load_default="fasterrcnn_resnet50_fpn_v2",
         metadata={
             "description": "Name of the model.",
             "enum": configs.BACKBONES,
@@ -82,8 +82,9 @@ class TrainArgsSchema(Schema):
     data_config = fields.Str(
         required=True,
         metadata={
-            "description": "Path to the data_config.yaml file. It can be an absolute path or "
-            "e.g. my_dataset/data_config.yaml, if your data is in the data (configs.DATA_PATH) directory."
+            "description": "Path to the data_config.yaml file. It can  "
+            "be an absolute path or e.g. my_dataset/data_config.yaml, "
+            "if your data is in the data (configs.DATA_PATH) directory."
         },
     )
 
@@ -184,21 +185,23 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=None,
         metadata={
-            "description": "path to model directory with ckpt(last_model.pth) "
-            "if custom pretrain weights are used. "
-            "It should be an absolute path like 'path/to/ckpt_dir' or "
-            "a path from model (configs.MODEL_DIR) directory (for example: 'timestamps/weights')."
-            "To see the list of available trained models, please use the metadata methods."
+            "description": "Path to the model directory with the checkpoint "
+            "file (last_model.pth). If custom pretrain weights "
+            "are used, it should be an absolute path, such as "
+            "'path/to/ckpt_dir', or a path from the model directory "
+            "(configs.MODEL_DIR), for example, 'timestamps/weights'. "
+            "To see the list of available trained models, please "
+            "use the metadata methods."
         },
     )
-
     resume_training = fields.Bool(
         required=False,
         load_default=False,
         metadata={
-            "description": "If using custom pretrained weights, resume training from "
-            "the last step of the provided checkpoint. If True, the path to "
-            "the weights should be specified in the argument weights.",
+            "description": "If using custom pretrained weights, resume"
+            " training from  the last step of the provided checkpoint."
+            " If True, the path to the weights should be specified in"
+            " the argument weights.",
             "enum": [True, False],
         },
     )
@@ -207,10 +210,10 @@ class TrainArgsSchema(Schema):
         required=False,
         load_default=True,
         metadata={
-            "description": "Resize images to square shape instead of aspect ratio "
-            "resizing for single image training. For mosaic training, "
-            "this resizes single images to square shape first then puts "
-            "them on a square canvas.",
+            "description": "Resize images to square shape instead of  "
+            "aspect ratioresizing for single image training. For "
+            "mosaic training, this resizes single images to square "
+            "shape first then puts them on a square canvas.",
             "enum": [True, False],
         },
     )
@@ -258,9 +261,10 @@ class PredictArgsSchema(Schema):
         required=False,
         load_default="fasterrcnn_resnet50_fpn_v2",
         metadata={
-            "description": "Please provide the name of the model you want to use "
-            "for inference. If you have specified neither timestamp nor model "
-            "name, the default model 'fasterrcnn_resnet50_fpn_v2' is loaded.",
+            "description": "Please provide the name of the model you want "
+            " to use for inference. If you have specified neither timestamp"
+            " nor model name, the default model 'fasterrcnn_resnet50_fpn_v2'"
+            " is loaded.",
             "enum": configs.BACKBONES,
         },
     )
@@ -283,7 +287,8 @@ class PredictArgsSchema(Schema):
         required=False,
         load_default=True,
         metadata={
-            "description": "Computation device, default is GPU if GPU is present.",
+            "description": "Computation device, default is GPU"
+            " if GPU is present.",
             "enum": [True, False],
         },
     )
@@ -301,8 +306,8 @@ class PredictArgsSchema(Schema):
         required=False,
         load_default=True,
         metadata={
-            "description": "Whether to use square image resize, else use aspect ratio"
-            "resize.",
+            "description": "Whether to use square image resize, "
+            "else use aspect ratio resize.",
             "enum": [True, False],
         },
     )
@@ -314,8 +319,8 @@ class PredictArgsSchema(Schema):
             ["application/json", "image/png", "video/mp4"]
         ),
         metadata={
-            "description": "Returns a PNG file with detection results or a JSON with"
-            "the prediction."
+            "description": "Returns a PNG file with detection"
+            " results or a JSON with the prediction."
         },
     )
 
