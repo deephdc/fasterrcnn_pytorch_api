@@ -21,7 +21,7 @@ In this repository, we have integrated a DeepaaS API into the existing codebase,
 To launch the API, first, install the package, and then run [DeepaaS](https://github.com/indigo-dc/DEEPaaS):
 
 ```bash
-git clone --depth 1 https://git.scc.kit.edu/m-team/ai/fasterrcnn_pytorch_api.git
+git clone --depth 1 https://codebase.helmholtz.cloud/m-team/ai/fasterrcnn_pytorch_api.git
 cd fasterrcnn_pytorch_api
 git submodule init
 git submodule update --remote --merge
@@ -37,7 +37,7 @@ apt install -y libgl1
 apt install -y libglib2.0-0
 ```
 
-><span style="color:Blue">**Note:**</span>  The associated Docker container for this module can be found at: https://git.scc.kit.edu/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
+><span style="color:Blue">**Note:**</span>  The associated Docker container for this module can be found at: https://codebase.helmholtz.cloud/m-team/ai/DEEP-OC-fasterrcnn_pytorch_api.git
 
 ## Project Structure
 
