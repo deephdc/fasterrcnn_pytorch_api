@@ -1,3 +1,8 @@
+---
+# The Repository is ARCHIVED!
+### it is now maintained in https://codebase.helmholtz.cloud/m-team/ai/ai4os-fasterrcnn-torch <br>(mirrored to https://github.com/ai4os-hub/ai4os-fasterrcnn-torch)
+---
+
 # fasterrcnn_pytorch_api
 
 [![Build Status](https://jenkins.indigo-datacloud.eu/buildStatus/icon?job=Pipeline-as-code/DEEP-OC-org/fasterrcnn_pytorch_api/master)](https://jenkins.indigo-datacloud.eu/job/Pipeline-as-code/job/DEEP-OC-org/job/fasterrcnn_pytorch_api/job/master)
